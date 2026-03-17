@@ -78,7 +78,13 @@
     </style>
 </head>
 <body>
-
+<!-- माथिको पट्टी (Header) यहाँ थप्नुहोस् -->
+    <header style="display: flex; align-items: center; padding: 0 20px; position: fixed; top: 0; width: 100%; height: 65px; background: rgba(10,10,10,0.9); z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px);">
+        <div id="back-btn" onclick="goHome()" style="display: none; margin-right: 15px; cursor: pointer;">
+            <i class="fas fa-arrow-left" style="color: var(--p-yellow); font-size: 1.2rem;"></i>
+        </div>
+        <div style="font-weight: 600; color: var(--p-yellow);">RBA-KALIKOT</div>
+    </header>
     <!-- HOME TAB -->
     <div id="home" class="tab-content active" style="padding: 0;">
         <div class="hero">
@@ -147,31 +153,48 @@
         <a href="#" onclick="showTab('contact', this)"><i class="fas fa-user-circle"></i>Contact</a>
     </nav>
 
-    <script>
+<script>
         function showTab(tabId, el) {
-            if (tabId === 'contact') {
-                // पहिले Home ट्याब खोल्ने
-                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-                document.getElementById('home').classList.add('active');
-                
-                // मेनुको रङ्ग मिलाउने
-                document.querySelectorAll('nav a').forEach(link => link.classList.remove('active'));
-                document.querySelector('nav a:first-child').classList.add('active');
+            const backBtn = document.getElementById('back-btn');
+            
+            // १. होम बाहेक अरु ट्याबमा जाँदा 'ब्याक' बटन देखाउने र हिस्ट्री सेभ गर्ने
+            if (tabId !== 'home') {
+                backBtn.style.display = 'block';
+                history.pushState({tab: tabId}, null, "#" + tabId);
+            } else {
+                backBtn.style.display = 'none';
+            }
 
-                // सरर्र कन्ट्याक्ट भएको ठाउँमा स्क्रोल गर्ने
+            // २. कन्ट्याक्ट ट्याबको विशेष सेटिङ (सरर्र तल झर्ने)
+            if (tabId === 'contact') {
+                document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+                document.getElementById('home').style.display = 'block';
+                document.querySelectorAll('nav a').forEach(link => link.classList.remove('active'));
+                document.querySelector('nav a:last-child').classList.add('active');
                 setTimeout(() => {
                     document.getElementById('contact-info').scrollIntoView({ behavior: 'smooth' });
                 }, 100);
                 return;
             }
 
-            // अन्य ट्याब (Music, Updates) को लागि
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            // ३. अन्य ट्याब (Music, Updates) खोल्ने नियम
+            document.querySelectorAll('.tab-content').forEach(tab => tab.style.display = 'none');
             document.querySelectorAll('nav a').forEach(link => link.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            el.classList.add('active');
+            document.getElementById(tabId).style.display = 'block';
+            if(el) el.classList.add('active');
             window.scrollTo(0, 0);
         }
+
+        // ४. होममा फर्किने फङ्सन (यो माथिको आइकन थिच्दा चल्छ)
+        function goHome() {
+            showTab('home', document.querySelector('nav a:first-child'));
+            history.replaceState(null, null, " "); 
+        }
+
+        // ५. मोबाइलको आफ्नै ब्याक बटन थिच्दा चल्ने कोड
+        window.onpopstate = function() {
+            goHome(); 
+        };
     </script>
 </body>
 </html>
