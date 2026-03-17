@@ -111,7 +111,50 @@
             <p style="font-size: 1rem; letter-spacing: 2px;">"कालिकोटदेखि विश्वसम्म"</p>
         </div>
     </div>
+<!-- यहाँ कन्ट्याक्टको जानकारी थपियो -->
+        <div id="contact-info" style="padding: 40px 20px;">
+            <div class="card">
+                <h2>About Artist</h2>
+                <p style="line-height: 1.8;">नमस्कार, म राजन् बोहरा 'आरक्षक' (RBA-Kalikot)। कालिकोट, कर्णालीबाट मेरो सांगीतिक यात्रा सुरु भएको हो।</p>
+            </div>
+            <div class="card" style="text-align: center;">
+                <p>Connect with me:</p>
+                <div class="social-grid">
+                    <a href="https://youtube.com/@rba-kalikot" target="_blank" style="color: #FF0000;"><i class="fab fa-youtube"></i></a>
+                    <a href="https://www.facebook.com/share/1HtznSabqV/" target="_blank" style="color: #1877F2;"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.tiktok.com/@rbakalikot" target="_blank" style="color: #ffffff;"><i class="fab fa-tiktok"></i></a>
+                    <a href="https://www.instagram.com/rba_kal_ikot" target="_blank" style="color: #E1306C;"><i class="fab fa-instagram"></i></a>
+                    <a href="https://wa.me/9768978945" target="_blank" style="color: #25D366;"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+        </div>
+    <a href="#" onclick="showTab('contact', this)"><i class="fas fa-user-circle"></i>Contact</a>
 
+    function showTab(tabId, el) {
+            if (tabId === 'contact') {
+                // पहिले Home ट्याब खोल्ने
+                document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+                document.getElementById('home').style.display = 'block';
+                
+                // मेनुको रङ्ग मिलाउने
+                document.querySelectorAll('nav a').forEach(link => link.classList.remove('active'));
+                document.querySelector('nav a:first-child').classList.add('active');
+
+                // सरर्र कन्ट्याक्ट भएको ठाउँमा स्क्रोल गर्ने
+                setTimeout(() => {
+                    document.getElementById('contact-info').scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+                return;
+            }
+
+            // अन्य ट्याब (Music, Updates) को लागि पहिलेकै नियम
+            document.querySelectorAll('.tab-content').forEach(tab => tab.style.display = 'none');
+            document.querySelectorAll('nav a').forEach(link => link.classList.remove('active'));
+            document.getElementById(tabId).style.display = 'block';
+            el.classList.add('active');
+            window.scrollTo(0, 0);
+        }
+    
     <!-- MUSIC TAB -->
     <div id="music" class="tab-content">
         <h2>YouTube Official</h2>
@@ -144,24 +187,6 @@
         </div>
     </div>
 
-    <!-- CONTACT TAB -->
-    <div id="contact" class="tab-content">
-        <h2>About RBA-Kalikot</h2>
-        <div class="card">
-            <p style="line-height: 1.6; font-size: 0.95rem;">नमस्कार, म राजन् बोहरा 'आरक्षक' (RBA-Kalikot)। मेरो सबै म्युजिक मोबाइल फोनबाटै तयार गरिन्छ। कालिकोटको सुगन्ध विश्वभर पुर्याउने मेरो लक्ष्य हो।</p>
-        </div>
-        <div class="card" style="text-align: center;">
-            <p>Connect with me:</p>
-            <div class="social-grid">
-                <a href="https://youtube.com/@rba-kalikot" target="_blank" style="color: #FF0000;"><i class="fab fa-youtube"></i></a>
-                <a href="https://www.facebook.com/share/1HtznSabqV/" target="_blank" style="color: #1877F2;"><i class="fab fa-facebook-f"></i></a>
-                <a href="https://www.tiktok.com/@rbakalikot" target="_blank" style="color: #ffffff;"><i class="fab fa-tiktok"></i></a>
-                <a href="https://www.instagram.com/rba_kalikot" target="_blank" style="color: #E1306C;"><i class="fab fa-instagram"></i></a>
-                <a href="https://wa.me/9768978945" target="_blank" style="color: #25D366;"><i class="fab fa-whatsapp"></i></a>
-            </div>
-        </div>
-        <center><p style="font-size: 0.7rem; color: #444; margin-top: 10px;">&copy; 2024 RBA-Kalikot Official</p></center>
-    </div>
 
     <!-- BOTTOM FLOATING NAV -->
     <nav>
