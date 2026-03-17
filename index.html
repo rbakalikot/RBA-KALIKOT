@@ -2,7 +2,7 @@
 <html lang="ne">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>RBA-Kalikot Official</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -18,7 +18,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden; }
 
-        /* --- 1. Wide Screen Background Fix --- */
+        /* --- Background Animation Fix --- */
         .hero {
             height: 100vh;
             width: 100%;
@@ -34,124 +34,151 @@
         .hero-bg {
             position: absolute;
             top: 0; left: 0;
-            width: 110%; /* अलि ठूलो राखिएको छ ताकि हल्लिन पाओस् */
-            height: 100%;
+            width: 100%; height: 100%;
             background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('bg.jpg');
-            background-size: cover; /* यसले ल्यापटपमा खाली ठाउँ हटाउँछ */
+            background-size: cover; 
             background-position: center;
             z-index: -1;
-            animation: cinematicPan 30s ease-in-out infinite alternate;
+            transform: scale(1.2);
+            animation: cinematicPan 25s ease-in-out infinite alternate;
         }
 
         @keyframes cinematicPan {
-            from { transform: translateX(-5%); }
-            to { transform: translateX(0%); }
+            from { transform: scale(1.2) translateX(-3%); }
+            to { transform: scale(1.2) translateX(3%); }
         }
 
-        .logo { width: 150px; border-radius: 50%; border: 4px solid var(--p-yellow); box-shadow: 0 0 20px var(--p-yellow); animation: logoZoom 4s infinite; }
+        .logo { width: 140px; border-radius: 50%; border: 4px solid var(--p-yellow); box-shadow: 0 0 20px var(--p-yellow); animation: logoZoom 4s infinite; }
         @keyframes logoZoom { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 
-        /* --- 2. Clean Tab System Style --- */
-        .tab-content { display: none; padding: 100px 20px 40px; min-height: 100vh; animation: fadeIn 0.5s ease; }
-        .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* Bottom Navigation */
-        nav {
-            position: fixed; bottom: 0; width: 100%; background: rgba(46, 125, 50, 0.95);
-            display: flex; justify-content: space-around; padding: 15px; z-index: 2000;
-            backdrop-filter: blur(10px); border-top: 1px solid rgba(255,255,255,0.1);
+        /* --- Tab System with Bottom Padding Fix --- */
+        .tab-content { 
+            display: none; 
+            padding: 80px 20px 140px; /* तल धेरै खाली ठाउँ छोडिएको छ ताकि मेनुले नछोपोस् */
+            min-height: 100vh; 
+            animation: fadeIn 0.5s ease; 
         }
-        nav a { color: white; text-decoration: none; font-size: 0.8rem; text-align: center; font-weight: 600; opacity: 0.7; }
-        nav a.active { opacity: 1; color: var(--p-yellow); }
-        nav a i { display: block; font-size: 1.4rem; margin-bottom: 3px; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* General Card Style */
+        /* --- Improved Floating Nav Bar --- */
+        nav {
+            position: fixed; 
+            bottom: 15px; /* मोबाइलको बटनभन्दा अलि माथि सारिएको */
+            left: 5%;
+            width: 90%; 
+            background: rgba(46, 125, 50, 0.95);
+            display: flex; 
+            justify-content: space-around; 
+            padding: 12px; 
+            z-index: 3000;
+            backdrop-filter: blur(15px); 
+            border-radius: 20px; /* 'Floating' लुकको लागि गोलो कुना */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        nav a { color: white; text-decoration: none; font-size: 0.7rem; text-align: center; font-weight: 600; opacity: 0.6; }
+        nav a.active { opacity: 1; color: var(--p-yellow); }
+        nav a i { display: block; font-size: 1.3rem; margin-bottom: 3px; }
+
+        /* Cards & Buttons */
         .card { background: rgba(255, 255, 255, 0.05); border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(128,128,128,0.2); }
-        h2 { color: var(--p-yellow); margin-bottom: 20px; border-left: 5px solid var(--p-yellow); padding-left: 10px; }
+        h2 { color: var(--p-yellow); margin-bottom: 20px; border-left: 5px solid var(--p-yellow); padding-left: 12px; font-size: 1.3rem; }
         .btn { background: var(--p-green); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; cursor: pointer; font-weight: 600; }
+        
+        input, textarea { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #333; background: rgba(0,0,0,0.3); color: white; outline: none; }
+        
+        /* Social Grid for 5 Icons */
+        .social-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            font-size: 1.8rem;
+            margin-top: 20px;
+        }
+        .social-grid a { transition: 0.3s; }
+        .social-grid a:active { transform: scale(0.8); }
     </style>
 </head>
 <body>
 
-    <!-- HOME TAB (Only Hero Section) -->
+    <!-- HOME TAB -->
     <div id="home" class="tab-content active" style="padding: 0;">
         <div class="hero">
             <div class="hero-bg"></div>
             <img src="logo.png" alt="RBA Logo" class="logo">
-            <h1 style="color: var(--p-yellow); margin-top: 20px;">RBA-Kalikot</h1>
-            <p>"कालिकोटदेखि विश्वसम्म"</p>
+            <h1 style="color: var(--p-yellow); margin-top: 20px; font-size: 2.2rem;">RBA-Kalikot</h1>
+            <p style="font-size: 1rem; letter-spacing: 2px;">"कालिकोटदेखि विश्वसम्म"</p>
         </div>
     </div>
 
-    <!-- MUSIC TAB (YouTube & Spotify) -->
+    <!-- MUSIC TAB -->
     <div id="music" class="tab-content">
-        <h2>Official Tracks</h2>
+        <h2>YouTube Official</h2>
         <div class="card" style="padding: 0; overflow: hidden; aspect-ratio: 16/9;">
             <iframe width="100%" height="100%" src="https://www.youtube.com/embed/videoseries?list=PLbIVhUB2hspnM4N7Xk-U8vHe71mqFJ4pX" frameborder="0" allowfullscreen></iframe>
         </div>
-        <h2>Listen on Spotify</h2>
-        <div class="card" style="padding: 0;">
+        <h2>Spotify Playlist</h2>
+        <div class="card" style="padding: 0; border-radius: 12px; overflow: hidden;">
             <iframe src="https://open.spotify.com/embed/playlist/3AA6Sjr7E5lhGvqdAOWUqQ?utm_source=generator&theme=0" width="100%" height="380" frameBorder="0" allowfullscreen="" loading="lazy"></iframe>
         </div>
     </div>
 
-    <!-- UPDATES TAB (Subscribe & Feedback) -->
+    <!-- UPDATES TAB -->
     <div id="updates" class="tab-content">
-        <h2>Get Updates</h2>
+        <h2>Stay Updated</h2>
         <div class="card">
-            <p>नयाँ गीत र भिडियोको जानकारी पाउन इमेल लेख्नुहोस्:</p>
+            <p style="font-size: 0.9rem;">नयाँ धुन रिलिज हुँदा इमेल पाउनुहोस्:</p>
             <form action="https://formspree.io/f/mojkndve" method="POST">
-                <input type="email" name="Email" placeholder="Your Email" style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 8px; border: 1px solid #333; background: #000; color: white;">
-                <button type="submit" class="btn">Subscribe Now</button>
+                <input type="email" name="Email" placeholder="Your Email" required>
+                <button type="submit" class="btn">Subscribe</button>
             </form>
         </div>
         <h2>Feedback</h2>
         <div class="card">
             <form action="https://formspree.io/f/mojkndve" method="POST">
-                <textarea name="Message" placeholder="Your Feedback" style="width: 100%; height: 100px; padding: 10px; border-radius: 8px; border: 1px solid #333; background: #000; color: white;"></textarea>
-                <button type="submit" class="btn" style="margin-top: 10px;">Send Feedback</button>
+                <input type="text" name="Name" placeholder="तपाईंको नाम" required>
+                <textarea name="Message" placeholder="तपाईंको प्रतिक्रिया..." rows="3" required></textarea>
+                <button type="submit" class="btn">Send</button>
             </form>
         </div>
     </div>
 
-    <!-- CONTACT TAB (About & Socials) -->
+    <!-- CONTACT TAB -->
     <div id="contact" class="tab-content">
         <h2>About RBA-Kalikot</h2>
         <div class="card">
-            <p>नमस्कार, म राजन् बोहरा 'आरक्षक' (RBA-Kalikot)। कालिकोट, कर्णालीको सांगीतिक यात्रा मोबाइल फोनबाटै सुरु भएको हो।</p>
+            <p style="line-height: 1.6; font-size: 0.95rem;">नमस्कार, म राजन् बोहरा 'आरक्षक' (RBA-Kalikot)। मेरो सबै म्युजिक मोबाइल फोनबाटै तयार गरिन्छ। कालिकोटको सुगन्ध विश्वभर पुर्याउने मेरो लक्ष्य हो।</p>
         </div>
         <div class="card" style="text-align: center;">
-            <p>Follow Me On:</p>
-            <div style="font-size: 2rem; display: flex; justify-content: space-around; margin-top: 15px;">
-                <a href="https://youtube.com/@rba-kalikot" style="color: red;"><i class="fab fa-youtube"></i></a>
-                <a href="https://www.facebook.com/share/1HtznSabqV/" style="color: #1877F2;"><i class="fab fa-facebook-f"></i></a>
-                <a href="https://wa.me/9768978945" style="color: #25D366;"><i class="fab fa-whatsapp"></i></a>
+            <p>Connect with me:</p>
+            <div class="social-grid">
+                <a href="https://youtube.com/@rba-kalikot" target="_blank" style="color: #FF0000;"><i class="fab fa-youtube"></i></a>
+                <a href="https://www.facebook.com/share/1HtznSabqV/" target="_blank" style="color: #1877F2;"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.tiktok.com/@rbakalikot" target="_blank" style="color: #ffffff;"><i class="fab fa-tiktok"></i></a>
+                <a href="https://www.instagram.com/rba_kalikot" target="_blank" style="color: #E1306C;"><i class="fab fa-instagram"></i></a>
+                <a href="https://wa.me/9768978945" target="_blank" style="color: #25D366;"><i class="fab fa-whatsapp"></i></a>
             </div>
         </div>
+        <center><p style="font-size: 0.7rem; color: #444; margin-top: 10px;">&copy; 2024 RBA-Kalikot Official</p></center>
     </div>
 
-    <!-- BOTTOM NAVIGATION MENU -->
+    <!-- BOTTOM FLOATING NAV -->
     <nav>
         <a href="#" onclick="showTab('home', this)" class="active"><i class="fas fa-home"></i>Home</a>
-        <a href="#" onclick="showTab('music', this)"><i class="fas fa-music"></i>Music</a>
+        <a href="#" onclick="showTab('music', this)"><i class="fas fa-play-circle"></i>Music</a>
         <a href="#" onclick="showTab('updates', this)"><i class="fas fa-bell"></i>Updates</a>
         <a href="#" onclick="showTab('contact', this)"><i class="fas fa-user-circle"></i>Contact</a>
     </nav>
 
     <script>
         function showTab(tabId, el) {
-            // Hide all tabs
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            // Remove active class from nav links
-            document.querySelectorAll('nav a').forEach(link => link.classList.remove('active'));
-            
-            // Show selected tab
-            document.getElementById(tabId).classList.add('active');
-            // Add active class to clicked link
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.style.display = 'none');
+            const links = document.querySelectorAll('nav a');
+            links.forEach(link => link.classList.remove('active'));
+            document.getElementById(tabId).style.display = 'block';
             el.classList.add('active');
-
-            // Scroll to top when switching
             window.scrollTo(0, 0);
         }
     </script>
