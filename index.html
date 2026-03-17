@@ -18,7 +18,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden; }
 
-        /* --- Background Animation Fix --- */
         .hero {
             height: 100vh;
             width: 100%;
@@ -36,68 +35,46 @@
             top: 0; left: 0;
             width: 100%; height: 100%;
             background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('bg.jpg');
-            background-size: cover; 
-            background-position: center;
+            background-size: auto 100%; 
+            background-repeat: no-repeat;
             z-index: -1;
-            transform: scale(1.2);
-            animation: cinematicPan 25s ease-in-out infinite alternate;
+            animation: smoothPan 30s ease-in-out infinite alternate;
         }
 
-        @keyframes cinematicPan {
-            from { transform: scale(1.2) translateX(-3%); }
-            to { transform: scale(1.2) translateX(3%); }
+        @keyframes smoothPan {
+            0% { background-position: 0% center; }
+            100% { background-position: 100% center; }
         }
 
         .logo { width: 140px; border-radius: 50%; border: 4px solid var(--p-yellow); box-shadow: 0 0 20px var(--p-yellow); animation: logoZoom 4s infinite; }
         @keyframes logoZoom { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 
-        /* --- Tab System with Bottom Padding Fix --- */
         .tab-content { 
             display: none; 
-            padding: 80px 20px 140px; /* तल धेरै खाली ठाउँ छोडिएको छ ताकि मेनुले नछोपोस् */
+            padding: 80px 20px 150px; 
             min-height: 100vh; 
             animation: fadeIn 0.5s ease; 
         }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- Improved Floating Nav Bar --- */
         nav {
-            position: fixed; 
-            bottom: 15px; /* मोबाइलको बटनभन्दा अलि माथि सारिएको */
-            left: 5%;
-            width: 90%; 
+            position: fixed; bottom: 25px; left: 5%; width: 90%; 
             background: rgba(46, 125, 50, 0.95);
-            display: flex; 
-            justify-content: space-around; 
-            padding: 12px; 
-            z-index: 3000;
-            backdrop-filter: blur(15px); 
-            border-radius: 20px; /* 'Floating' लुकको लागि गोलो कुना */
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.1);
+            display: flex; justify-content: space-around; padding: 12px; z-index: 3000;
+            backdrop-filter: blur(15px); border-radius: 20px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);
         }
         nav a { color: white; text-decoration: none; font-size: 0.7rem; text-align: center; font-weight: 600; opacity: 0.6; }
         nav a.active { opacity: 1; color: var(--p-yellow); }
         nav a i { display: block; font-size: 1.3rem; margin-bottom: 3px; }
 
-        /* Cards & Buttons */
         .card { background: rgba(255, 255, 255, 0.05); border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(128,128,128,0.2); }
         h2 { color: var(--p-yellow); margin-bottom: 20px; border-left: 5px solid var(--p-yellow); padding-left: 12px; font-size: 1.3rem; }
         .btn { background: var(--p-green); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; cursor: pointer; font-weight: 600; }
-        
         input, textarea { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #333; background: rgba(0,0,0,0.3); color: white; outline: none; }
         
-        /* Social Grid for 5 Icons */
-        .social-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-            font-size: 1.8rem;
-            margin-top: 20px;
-        }
-        .social-grid a { transition: 0.3s; }
-        .social-grid a:active { transform: scale(0.8); }
+        .social-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; font-size: 1.8rem; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -110,12 +87,12 @@
             <h1 style="color: var(--p-yellow); margin-top: 20px; font-size: 2.2rem;">RBA-Kalikot</h1>
             <p style="font-size: 1rem; letter-spacing: 2px;">"कालिकोटदेखि विश्वसम्म"</p>
         </div>
-    </div>
-<!-- यहाँ कन्ट्याक्टको जानकारी थपियो -->
+
+        <!-- Home Tab भित्रै कन्ट्याक्ट थपियो -->
         <div id="contact-info" style="padding: 40px 20px;">
             <div class="card">
                 <h2>About Artist</h2>
-                <p style="line-height: 1.8;">नमस्कार, म राजन् बोहरा 'आरक्षक' (RBA-Kalikot)। कालिकोट, कर्णालीबाट मेरो सांगीतिक यात्रा सुरु भएको हो।</p>
+                <p style="line-height: 1.6;">नमस्कार, म राजन् बोहरा 'आरक्षक' (RBA-Kalikot)। कालिकोट, कर्णालीबाट मेरो सांगीतिक यात्रा सुरु भएको हो। मेरो सबै म्युजिक मोबाइल फोनबाटै तयार गरिन्छ।</p>
             </div>
             <div class="card" style="text-align: center;">
                 <p>Connect with me:</p>
@@ -128,33 +105,8 @@
                 </div>
             </div>
         </div>
-    <a href="#" onclick="showTab('contact', this)"><i class="fas fa-user-circle"></i>Contact</a>
+    </div>
 
-    function showTab(tabId, el) {
-            if (tabId === 'contact') {
-                // पहिले Home ट्याब खोल्ने
-                document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
-                document.getElementById('home').style.display = 'block';
-                
-                // मेनुको रङ्ग मिलाउने
-                document.querySelectorAll('nav a').forEach(link => link.classList.remove('active'));
-                document.querySelector('nav a:first-child').classList.add('active');
-
-                // सरर्र कन्ट्याक्ट भएको ठाउँमा स्क्रोल गर्ने
-                setTimeout(() => {
-                    document.getElementById('contact-info').scrollIntoView({ behavior: 'smooth' });
-                }, 100);
-                return;
-            }
-
-            // अन्य ट्याब (Music, Updates) को लागि पहिलेकै नियम
-            document.querySelectorAll('.tab-content').forEach(tab => tab.style.display = 'none');
-            document.querySelectorAll('nav a').forEach(link => link.classList.remove('active'));
-            document.getElementById(tabId).style.display = 'block';
-            el.classList.add('active');
-            window.scrollTo(0, 0);
-        }
-    
     <!-- MUSIC TAB -->
     <div id="music" class="tab-content">
         <h2>YouTube Official</h2>
@@ -187,7 +139,6 @@
         </div>
     </div>
 
-
     <!-- BOTTOM FLOATING NAV -->
     <nav>
         <a href="#" onclick="showTab('home', this)" class="active"><i class="fas fa-home"></i>Home</a>
@@ -198,11 +149,26 @@
 
     <script>
         function showTab(tabId, el) {
-            const tabs = document.querySelectorAll('.tab-content');
-            tabs.forEach(tab => tab.style.display = 'none');
-            const links = document.querySelectorAll('nav a');
-            links.forEach(link => link.classList.remove('active'));
-            document.getElementById(tabId).style.display = 'block';
+            if (tabId === 'contact') {
+                // पहिले Home ट्याब खोल्ने
+                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                document.getElementById('home').classList.add('active');
+                
+                // मेनुको रङ्ग मिलाउने
+                document.querySelectorAll('nav a').forEach(link => link.classList.remove('active'));
+                document.querySelector('nav a:first-child').classList.add('active');
+
+                // सरर्र कन्ट्याक्ट भएको ठाउँमा स्क्रोल गर्ने
+                setTimeout(() => {
+                    document.getElementById('contact-info').scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+                return;
+            }
+
+            // अन्य ट्याब (Music, Updates) को लागि
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('nav a').forEach(link => link.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
             el.classList.add('active');
             window.scrollTo(0, 0);
         }
