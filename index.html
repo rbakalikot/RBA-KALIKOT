@@ -255,6 +255,35 @@
             if (isPlaying) player.pauseVideo();
             else player.playVideo();
         }
+        // ३. सर्च इन्जिनको लजिक (यो कपी गरेर </script> भन्दा माथि राख्नुहोस्)
+        function handleSearch() {
+            let q = document.getElementById('mainSearch').value.toLowerCase();
+            let results = document.getElementById('search-res');
+            
+            if(q.length > 2) {
+                results.innerHTML = `
+                    <div class="song-strip" onclick="playSong('SOf-h_3f8wU', 'Resam Firiri')">
+                        <img src="https://img.youtube.com/vi/SOf-h_3f8wU/0.jpg" style="width:50px; border-radius:8px;">
+                        <div class="song-info" style="margin-left:15px; flex:1;">
+                            <h4 style="color:white; font-size:0.9rem;">Resam Firiri - RBA Kalikot</h4>
+                            <p style="color:#888; font-size:0.7rem;">Official Music</p>
+                        </div>
+                        <i class="fas fa-play-circle" style="color:var(--p-yellow); font-size:1.5rem;"></i>
+                    </div>
+                    <div style="opacity:0.5; margin-top:20px; text-align:center;">
+                        <p style="font-size:0.8rem; color:#888;">"${q}" को लागि युट्युबमा खोजिँदैछ...<br>(पछि यहाँ धेरै गीतहरू आउनेछन्)</p>
+                    </div>
+                `;
+            } else {
+                results.innerHTML = "<p style='text-align:center; color:#555; margin-top:50px;'>कमसेकम ३ अक्षर टाइप गर्नुहोस्...</p>";
+            }
+        }
+
+        // सर्च विन्डो खोल्ने र बन्द गर्ने फङ्सनहरू
+        function toggleSearch(show) {
+            document.getElementById('search-overlay').style.display = show ? 'flex' : 'none';
+            if(show) document.getElementById('mainSearch').focus();
+        }
     </script>
 </body>
 </html>
