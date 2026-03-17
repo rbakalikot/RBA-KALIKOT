@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RBA-Kalikot Official</title>
+    <title>RBA-Kalikot Official v1.5</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
@@ -13,93 +14,114 @@
             --p-yellow: #fdd835;
             --bg-color: #0a0a0a;
             --text-color: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.07);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden; scroll-behavior: smooth; }
+        .light-mode { --bg-color: #f8f9fa; --text-color: #121212; --card-bg: #ffffff; }
 
-        /* --- १. माथिको पट्टी (Header) --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; transition: 0.3s ease; }
+        body { background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden; scroll-behavior: smooth; }
+        body, p, h1, h2, h3, h4, span { color: var(--text-color); }
+
+        /* --- 1. Header with Search --- */
         header { 
             position: fixed; top: 0; width: 100%; height: 65px; 
             background: rgba(10,10,10,0.9); backdrop-filter: blur(10px); 
             display: flex; align-items: center; padding: 0 20px; z-index: 4000; 
             border-bottom: 1px solid rgba(255,255,255,0.1); 
         }
-        #back-btn { margin-right: 15px; cursor: pointer; display: none; } /* सुरुमा लुकेको */
+        .header-icon { color: var(--p-yellow); font-size: 1.3rem; cursor: pointer; }
+        #back-btn { display: none; margin-right: 15px; }
 
-        /* --- २. ब्याकग्राउन्ड हल्लिने (Panning) --- */
-        .hero {
-            height: 100vh; width: 100%; position: relative;
-            overflow: hidden; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; text-align: center;
+        /* --- 2. Full-Screen Search Overlay --- */
+        #search-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 5000; display: none; flex-direction: column;
+            padding: 15px; animation: fadeIn 0.3s ease;
+        }
+        .search-bar-ui { display: flex; align-items: center; gap: 15px; }
+        .search-bar-ui input { 
+            flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #333;
+            background: #111; color: white; outline: none; font-size: 1rem;
         }
 
+        /* --- 3. Cinematic Background --- */
+        .hero { height: 100vh; width: 100%; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
         .hero-bg {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('bg.jpg');
             background-size: auto 100%; background-repeat: no-repeat;
             z-index: -1; animation: smoothPan 30s ease-in-out infinite alternate;
         }
-
-        @keyframes smoothPan {
-            0% { background-position: 0% center; }
-            100% { background-position: 100% center; }
-        }
-
+        @keyframes smoothPan { 0% { background-position: 0% center; } 100% { background-position: 100% center; } }
         .logo { width: 140px; border-radius: 50%; border: 4px solid var(--p-yellow); box-shadow: 0 0 20px var(--p-yellow); animation: logoZoom 4s infinite; }
         @keyframes logoZoom { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 
-        /* --- ३. सेक्सन र ट्याब व्यवस्था --- */
-        .tab-content { 
-            display: none; padding: 80px 20px 150px; 
-            min-height: 100vh; animation: fadeIn 0.5s ease; 
-        }
+        /* --- 4. Tabs Management --- */
+        .tab-content { display: none; padding: 80px 20px 150px; min-height: 100vh; animation: fadeIn 0.5s ease; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* --- ४. मेनु (Navigation) --- */
-        nav {
-            position: fixed; bottom: 25px; left: 5%; width: 90%; 
-            background: rgba(46, 125, 50, 0.95); display: flex; 
-            justify-content: space-around; padding: 12px; z-index: 3000;
-            backdrop-filter: blur(15px); border-radius: 20px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);
+        /* --- 5. Spotify Style Player (Studio) --- */
+        .studio-player { text-align: center; padding: 20px; }
+        .disk { 
+            width: 220px; height: 220px; border-radius: 50%; margin: 0 auto 30px;
+            border: 5px solid var(--p-yellow); box-shadow: 0 0 30px rgba(253, 216, 53, 0.3);
+            object-fit: cover; animation: rotateDisk 10s linear infinite paused;
         }
-        nav a { color: white; text-decoration: none; font-size: 0.7rem; text-align: center; font-weight: 600; opacity: 0.6; cursor: pointer; }
-        nav a.active { opacity: 1; color: var(--p-yellow); }
+        .playing .disk { animation-play-state: running; }
+        @keyframes rotateDisk { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        
+        /* Visualizer Simulation */
+        .viz-container { display: flex; justify-content: center; gap: 5px; height: 50px; align-items: flex-end; margin-bottom: 20px; }
+        .viz-bar { width: 6px; background: var(--p-yellow); border-radius: 3px; height: 5px; }
+        .playing .viz-bar { animation: bounce 0.5s ease-in-out infinite alternate; }
+        @keyframes bounce { from { height: 5px; } to { height: 40px; } }
+
+        /* --- UI Elements --- */
+        nav { position: fixed; bottom: 25px; left: 5%; width: 90%; background: rgba(46, 125, 50, 0.95); display: flex; justify-content: space-around; padding: 12px; z-index: 3000; backdrop-filter: blur(15px); border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); }
+        nav a { color: white !important; text-decoration: none; font-size: 0.7rem; text-align: center; font-weight: 600; opacity: 0.6; cursor: pointer; }
+        nav a.active { opacity: 1; color: var(--p-yellow) !important; }
         nav a i { display: block; font-size: 1.3rem; margin-bottom: 3px; }
 
-        /* डिजाइनका अन्य कुराहरु */
-        .card { background: rgba(255, 255, 255, 0.05); border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(128,128,128,0.2); }
-        h2 { color: var(--p-yellow); margin-bottom: 20px; border-left: 5px solid var(--p-yellow); padding-left: 12px; font-size: 1.3rem; }
+        .card { background: var(--card-bg); border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(128,128,128,0.2); }
         .btn { background: var(--p-green); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; cursor: pointer; font-weight: 600; }
-        input, textarea { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #333; background: rgba(0,0,0,0.3); color: white; outline: none; }
         .social-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; font-size: 1.8rem; margin-top: 20px; text-align: center; }
-        .social-grid a { transition: 0.3s; }
     </style>
 </head>
 <body>
 
     <header>
-        <div id="back-btn" onclick="goHome()">
-            <i class="fas fa-arrow-left" style="color: var(--p-yellow); font-size: 1.2rem;"></i>
-        </div>
-        <div style="font-weight: 600; color: var(--p-yellow);">RBA-KALIKOT</div>
+        <div id="back-btn" class="header-icon" onclick="goHome()"><i class="fas fa-arrow-left"></i></div>
+        <div id="search-icon" class="header-icon" onclick="openSearch()"><i class="fas fa-search"></i></div>
+        <div style="font-weight: 600; color: var(--p-yellow); margin-left: 20px; flex: 1;">RBA-KALIKOT</div>
+        <div class="header-icon" onclick="document.body.classList.toggle('light-mode')"><i class="fas fa-adjust"></i></div>
     </header>
 
-    <!-- HOME TAB (Hero + Contact) -->
+    <!-- Search Overlay -->
+    <div id="search-overlay">
+        <div class="search-bar-ui">
+            <i class="fas fa-arrow-left" onclick="closeSearch()" style="color: var(--p-yellow); font-size: 1.3rem;"></i>
+            <input type="text" placeholder="संसारभरका गीतहरू खोज्नुहोस्..." id="searchInput">
+        </div>
+        <div id="results" style="margin-top: 30px; text-align: center; color: #555;">
+            <p>सर्च सजेसन यहाँ देखिनेछन्...</p>
+        </div>
+    </div>
+
+    <!-- TAB 1: HOME -->
     <div id="home" class="tab-content active" style="padding: 0;">
         <div class="hero">
             <div class="hero-bg"></div>
             <img src="logo.png" alt="RBA Logo" class="logo">
-            <h1 style="color: var(--p-yellow); margin-top: 20px; font-size: 2.2rem;">RBA-Kalikot</h1>
+            <h1 style="color: var(--p-yellow) !important; margin-top: 20px; font-size: 2.2rem;">RBA-Kalikot</h1>
             <p style="font-size: 1rem; letter-spacing: 2px;">"कालिकोटदेखि विश्वसम्म"</p>
         </div>
 
         <div id="contact-info" style="padding: 40px 20px;">
             <div class="card">
                 <h2>About Artist</h2>
-                <p style="line-height: 1.6;">नमस्कार, म राजन् बोहरा 'आरक्षक' (RBA-Kalikot)। कालिकोट, कर्णालीबाट मेरो सांगीतिक यात्रा सुरु भएको हो। मेरो सबै म्युजिक मोबाइल फोनबाटै तयार गरिन्छ।</p>
+                <p style="line-height: 1.8;">नमस्कार, म राजन् बोहरा 'आरक्षक' (RBA-Kalikot)। मेरो सबै म्युजिक मोबाइल फोनबाटै तयार गरिन्छ।</p>
             </div>
             <div class="card">
                 <p style="text-align: center;">Connect with me:</p>
@@ -115,88 +137,124 @@
         </div>
     </div>
 
-    <!-- MUSIC TAB -->
+    <!-- TAB 2: STUDIO (Professional Audio Player) -->
+    <div id="studio" class="tab-content">
+        <div class="studio-player" id="player-status">
+            <div class="viz-container">
+                <div class="viz-bar" style="animation-delay: 0s"></div>
+                <div class="viz-bar" style="animation-delay: 0.1s"></div>
+                <div class="viz-bar" style="animation-delay: 0.2s"></div>
+                <div class="viz-bar" style="animation-delay: 0.3s"></div>
+                <div class="viz-bar" style="animation-delay: 0.4s"></div>
+            </div>
+            
+            <img src="logo.png" class="disk" id="studio-art">
+            <h2 id="studio-title">Resam Firiri Dhun</h2>
+            <p style="opacity: 0.6; margin-bottom: 25px;">RBA-Kalikot Instrumental</p>
+            
+            <div style="font-size: 3.5rem; color: var(--p-yellow);" onclick="toggleStudioPlay()">
+                <i class="fas fa-play-circle" id="studio-btn"></i>
+            </div>
+            
+            <!-- Hidden Video Engine -->
+            <div style="position: absolute; left: -9999px;">
+                <div id="yt-engine"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 3: MUSIC (Playlists) -->
     <div id="music" class="tab-content">
-        <h2>Official Tracks</h2>
+        <h2>YouTube Collection</h2>
         <div class="card" style="padding: 0; overflow: hidden; aspect-ratio: 16/9;">
             <iframe width="100%" height="100%" src="https://www.youtube.com/embed/videoseries?list=PLbIVhUB2hspnM4N7Xk-U8vHe71mqFJ4pX" frameborder="0" allowfullscreen></iframe>
         </div>
-        <h2>Listen on Spotify</h2>
+        <h2>Spotify Official</h2>
         <div class="card" style="padding: 0; border-radius: 12px; overflow: hidden;">
             <iframe src="https://open.spotify.com/embed/playlist/3AA6Sjr7E5lhGvqdAOWUqQ?utm_source=generator&theme=0" width="100%" height="380" frameBorder="0" allowfullscreen="" loading="lazy"></iframe>
         </div>
     </div>
 
-    <!-- UPDATES TAB -->
+    <!-- TAB 4: UPDATES -->
     <div id="updates" class="tab-content">
         <h2>Stay Updated</h2>
         <div class="card">
-            <p style="font-size: 0.9rem;">नयाँ धुन रिलिज हुँदा इमेल पाउनुहोस्:</p>
             <form action="https://formspree.io/f/mojkndve" method="POST">
-                <input type="email" name="Email" placeholder="Your Email" required>
-                <button type="submit" class="btn">Subscribe</button>
-            </form>
-        </div>
-        <h2>Feedback</h2>
-        <div class="card">
-            <form action="https://formspree.io/f/mojkndve" method="POST">
-                <input type="text" name="Name" placeholder="तपाईंको नाम" required>
-                <textarea name="Message" placeholder="तपाईंको प्रतिक्रिया..." rows="3" required></textarea>
-                <button type="submit" class="btn">Send</button>
+                <input type="email" name="Email" placeholder="Your Email" style="width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; background: #111; color: white; border: 1px solid #333;" required>
+                <button type="submit" class="btn">Subscribe Now</button>
             </form>
         </div>
     </div>
 
     <!-- BOTTOM NAV -->
-    <nav id="main-nav">
+    <nav>
         <a onclick="showTab('home', this)" class="active"><i class="fas fa-home"></i>Home</a>
+        <a onclick="showTab('studio', this)"><i class="fas fa-headphones"></i>Studio</a>
         <a onclick="showTab('music', this)"><i class="fas fa-play-circle"></i>Music</a>
         <a onclick="showTab('updates', this)"><i class="fas fa-bell"></i>Updates</a>
-        <a onclick="showTab('contact', this)"><i class="fas fa-user-circle"></i>Contact</a>
     </nav>
 
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script>
+        let player;
+        let isPlaying = false;
+
+        // 1. YouTube IFrame API Setup
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('yt-engine', {
+                height: '0', width: '0',
+                videoId: 'SOf-h_3f8wU', // Default Track
+                events: { 'onStateChange': onPlayerStateChange }
+            });
+        }
+
+        function onPlayerStateChange(event) {
+            const btn = document.getElementById('studio-btn');
+            const status = document.getElementById('player-status');
+            if (event.data == YT.PlayerState.PLAYING) {
+                btn.className = "fas fa-pause-circle";
+                status.classList.add('playing');
+                isPlaying = true;
+            } else {
+                btn.className = "fas fa-play-circle";
+                status.classList.remove('playing');
+                isPlaying = false;
+            }
+        }
+
+        // 2. Tab System & Back Logic
         function showTab(tabId, el) {
             const backBtn = document.getElementById('back-btn');
+            const searchIcon = document.getElementById('search-icon');
             
-            // १. ब्याक बटन र हिस्ट्री म्यानेजमेन्ट
-            if (tabId !== 'home' && tabId !== 'contact') {
-                backBtn.style.display = 'block';
-                history.pushState({tab: tabId}, null, "#" + tabId);
-            } else if (tabId === 'home') {
+            if (tabId === 'home') {
                 backBtn.style.display = 'none';
-            }
-
-            // २. कन्ट्याक्ट थिच्दा होमको तल झर्ने
-            if (tabId === 'contact') {
-                document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
-                document.getElementById('home').style.display = 'block';
-                document.querySelectorAll('nav a').forEach(link => link.classList.remove('active'));
-                document.querySelector('nav a:last-child').classList.add('active');
+                searchIcon.style.display = 'block';
+            } else {
                 backBtn.style.display = 'block';
-                history.pushState({tab: 'contact'}, null, "#contact");
-                setTimeout(() => {
-                    document.getElementById('contact-info').scrollIntoView({ behavior: 'smooth' });
-                }, 100);
-                return;
+                searchIcon.style.display = 'none';
+                history.pushState({tab: tabId}, null, "#" + tabId);
             }
 
-            // ३. सामान्य ट्याब परिवर्तन
-            document.querySelectorAll('.tab-content').forEach(tab => tab.style.display = 'none');
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('nav a').forEach(link => link.classList.remove('active'));
-            document.getElementById(tabId).style.display = 'block';
+            document.getElementById(tabId).classList.add('active');
             if(el) el.classList.add('active');
             window.scrollTo(0, 0);
         }
 
-        function goHome() {
-            showTab('home', document.querySelector('nav a:first-child'));
-            history.replaceState(null, null, " "); 
-        }
+        function goHome() { showTab('home', document.querySelector('nav a:first-child')); history.replaceState(null, null, " "); }
+        window.onpopstate = function() { goHome(); };
 
-        window.onpopstate = function() {
-            goHome(); 
-        };
+        // 3. Search Overlay
+        function openSearch() { document.getElementById('search-overlay').style.display = 'flex'; }
+        function closeSearch() { document.getElementById('search-overlay').style.display = 'none'; }
+
+        // 4. Studio Controls
+        function toggleStudioPlay() {
+            if (isPlaying) player.pauseVideo();
+            else player.playVideo();
+        }
     </script>
 </body>
 </html>
