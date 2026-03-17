@@ -1,483 +1,159 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ne">
-    <head>
-        <meta charset="UTF-8" />
-        <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-        />
-        <title>RBA-Kalikot Official</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RBA-Kalikot Official</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --p-green: #2e7d32;
+            --p-yellow: #fdd835;
+            --bg-color: #0a0a0a;
+            --text-color: #ffffff;
+        }
 
-        <!-- Social Preview Tags -->
-        <meta property="og:title" content="RBA-Kalikot Official Site" />
-        <meta
-            property="og:description"
-            content="Mobile-made music artist from Kalikot. Listen to my tracks."
-        />
-        <meta property="og:image" content="logo.png" />
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden; }
 
-        <link
-            href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
-            rel="stylesheet"
-        />
-        <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-        />
+        /* --- 1. Wide Screen Background Fix --- */
+        .hero {
+            height: 100vh;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
 
-        <style>
-            :root {
-                --primary-green: #2e7d32;
-                --primary-yellow: #fdd835;
-                --bg-color: #0a0a0a;
-                --text-color: #ffffff;
-                --card-bg: rgba(255, 255, 255, 0.05);
-                --input-bg: rgba(255, 255, 255, 0.1);
-            }
+        .hero-bg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 110%; /* अलि ठूलो राखिएको छ ताकि हल्लिन पाओस् */
+            height: 100%;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('bg.jpg');
+            background-size: cover; /* यसले ल्यापटपमा खाली ठाउँ हटाउँछ */
+            background-position: center;
+            z-index: -1;
+            animation: cinematicPan 30s ease-in-out infinite alternate;
+        }
 
-            .light-mode {
-                --bg-color: #f8f9fa;
-                --text-color: #121212;
-                --card-bg: #ffffff;
-                --input-bg: #e9ecef;
-            }
+        @keyframes cinematicPan {
+            from { transform: translateX(-5%); }
+            to { transform: translateX(0%); }
+        }
 
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-                font-family: "Poppins", sans-serif;
-                transition: 0.4s ease;
-            }
-            body {
-                background-color: var(--bg-color);
-                color: var(--text-color);
-                overflow-x: hidden;
-                scroll-behavior: smooth;
-            }
+        .logo { width: 150px; border-radius: 50%; border: 4px solid var(--p-yellow); box-shadow: 0 0 20px var(--p-yellow); animation: logoZoom 4s infinite; }
+        @keyframes logoZoom { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 
-            /* Ensuring text visibility in both modes */
-            body,
-            .section,
-            .card,
-            p,
-            h2,
-            h3 {
-                color: var(--text-color) !important;
-            }
+        /* --- 2. Clean Tab System Style --- */
+        .tab-content { display: none; padding: 100px 20px 40px; min-height: 100vh; animation: fadeIn 0.5s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-            /* Navigation Bar */
-            nav {
-                position: fixed;
-                top: 0;
-                width: 100%;
-                background: var(--primary-green);
-                display: flex;
-                justify-content: space-around;
-                padding: 12px;
-                z-index: 2000;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-            }
-            nav a {
-                color: #fff !important;
-                text-decoration: none;
-                font-size: 0.8rem;
-                font-weight: 600;
-                text-align: center;
-            }
+        /* Bottom Navigation */
+        nav {
+            position: fixed; bottom: 0; width: 100%; background: rgba(46, 125, 50, 0.95);
+            display: flex; justify-content: space-around; padding: 15px; z-index: 2000;
+            backdrop-filter: blur(10px); border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        nav a { color: white; text-decoration: none; font-size: 0.8rem; text-align: center; font-weight: 600; opacity: 0.7; }
+        nav a.active { opacity: 1; color: var(--p-yellow); }
+        nav a i { display: block; font-size: 1.4rem; margin-bottom: 3px; }
 
-            /* Cinematic Pan Background */
-            .hero {
-                height: 85vh;
-                width: 100%;
-                position: relative;
-                margin-top: 50px;
-                background:
-                    linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-                    url("bg.jpg");
-                background-size: auto 100%;
-                background-repeat: no-repeat;
-                animation: cinematicPan 35s ease-in-out infinite alternate;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                text-align: center;
-            }
-            @keyframes cinematicPan {
-                0% {
-                    background-position: 0% center;
-                }
-                100% {
-                    background-position: 100% center;
-                }
-            }
+        /* General Card Style */
+        .card { background: rgba(255, 255, 255, 0.05); border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(128,128,128,0.2); }
+        h2 { color: var(--p-yellow); margin-bottom: 20px; border-left: 5px solid var(--p-yellow); padding-left: 10px; }
+        .btn { background: var(--p-green); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; cursor: pointer; font-weight: 600; }
+    </style>
+</head>
+<body>
 
-            /* Circular Zooming Logo */
-            .logo {
-                width: 155px;
-                height: 155px;
-                border-radius: 50%;
-                object-fit: cover;
-                border: 4px solid var(--primary-yellow);
-                box-shadow: 0 0 30px var(--primary-yellow);
-                animation: logoZoom 4s infinite;
-            }
-            @keyframes logoZoom {
-                0%,
-                100% {
-                    transform: scale(1);
-                }
-                50% {
-                    transform: scale(1.08);
-                }
-            }
-
-            /* Layout and Sections */
-            .section {
-                padding: 50px 20px;
-                max-width: 800px;
-                margin: auto;
-            }
-            h2 {
-                border-left: 6px solid var(--primary-yellow);
-                padding-left: 15px;
-                margin-bottom: 30px;
-                color: var(--primary-yellow) !important;
-                font-size: 1.8rem;
-            }
-            .card {
-                background: var(--card-bg);
-                border-radius: 20px;
-                padding: 25px;
-                margin-bottom: 25px;
-                border: 1px solid rgba(128, 128, 128, 0.2);
-            }
-
-            /* Forms */
-            input,
-            textarea {
-                width: 100%;
-                padding: 15px;
-                margin-top: 15px;
-                border-radius: 12px;
-                border: 1px solid rgba(128, 128, 128, 0.4);
-                background: var(--input-bg);
-                color: var(--text-color) !important;
-                font-size: 1rem;
-            }
-            .btn {
-                background: var(--primary-green);
-                color: white !important;
-                border: none;
-                padding: 14px 25px;
-                border-radius: 10px;
-                margin-top: 15px;
-                cursor: pointer;
-                font-weight: 600;
-                width: 100%;
-            }
-
-            /* Right Floating Controls */
-            .controls {
-                position: fixed;
-                top: 75px;
-                right: 15px;
-                display: flex;
-                flex-direction: column;
-                gap: 12px;
-                z-index: 1500;
-            }
-            .control-btn {
-                width: 48px;
-                height: 48px;
-                border-radius: 50%;
-                background: var(--primary-yellow);
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                color: #000 !important;
-                cursor: pointer;
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            }
-
-            /* Social Drawer (Bottom Left) */
-            .drawer-trigger {
-                position: fixed;
-                bottom: 25px;
-                left: 20px;
-                width: 55px;
-                height: 55px;
-                border-radius: 50%;
-                background: var(--primary-green);
-                color: white !important;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                font-size: 24px;
-                z-index: 1600;
-                cursor: pointer;
-            }
-            .social-drawer {
-                position: fixed;
-                bottom: 90px;
-                left: 22px;
-                display: flex;
-                flex-direction: column-reverse;
-                gap: 12px;
-                z-index: 1500;
-                pointer-events: none;
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            .social-drawer.active {
-                pointer-events: auto;
-                opacity: 1;
-                transform: translateY(0);
-            }
-            .drawer-icon {
-                width: 50px;
-                height: 50px;
-                border-radius: 50%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                color: white !important;
-                font-size: 22px;
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            }
-            .fb {
-                background: #1877f2;
-            }
-            .yt {
-                background: #ff0000;
-            }
-            .tt {
-                background: #000;
-            }
-            .in {
-                background: #e1306c;
-            }
-            .wa {
-                background: #25d366;
-            }
-
-            footer {
-                text-align: center;
-                padding: 60px 20px 100px 20px;
-                background: #000;
-                color: #777;
-                font-size: 0.8rem;
-            }
-        </style>
-    </head>
-    <body>
-        <!-- Menu Navigation -->
-        <nav>
-            <a href="#"><i class="fas fa-home"></i><br />Home</a>
-            <a href="#music"><i class="fas fa-play-circle"></i><br />Music</a>
-            <a href="#subscribe"><i class="fas fa-bell"></i><br />Updates</a>
-            <a href="#comments"><i class="fas fa-comment"></i><br />Contact</a>
-        </nav>
-
-        <!-- Theme & Share Controls -->
-        <div class="controls">
-            <div class="control-btn" onclick="toggleTheme()" id="themeBtn">
-                <i class="fas fa-moon"></i>
-            </div>
-            <div class="control-btn" onclick="shareSite()">
-                <i class="fas fa-share-alt"></i>
-            </div>
-        </div>
-
-        <!-- Hero Section -->
+    <!-- HOME TAB (Only Hero Section) -->
+    <div id="home" class="tab-content active" style="padding: 0;">
         <div class="hero">
-            <img src="logo.png" alt="RBA Logo" class="logo" />
-            <h1
-                style="
-                    color: var(--primary-yellow) !important;
-                    margin-top: 20px;
-                    font-size: 2.8rem;
-                    text-shadow: 2px 2px 10px #000;
-                "
-            >
-                RBA-Kalikot
-            </h1>
-            <p style="font-size: 1.2rem; font-weight: 300; letter-spacing: 2px">
-                "कालिकोटदेखि विश्वसम्म"
-            </p>
+            <div class="hero-bg"></div>
+            <img src="logo.png" alt="RBA Logo" class="logo">
+            <h1 style="color: var(--p-yellow); margin-top: 20px;">RBA-Kalikot</h1>
+            <p>"कालिकोटदेखि विश्वसम्म"</p>
         </div>
+    </div>
 
-        <!-- Music Section -->
-        <div id="music" class="section">
-            <h2>Official Tracks</h2>
-            <div
-                class="card"
-                style="
-                    padding: 0;
-                    overflow: hidden;
-                    border-radius: 15px;
-                    border: 1px solid var(--primary-yellow);
-                "
-            >
-                <!-- Stable YouTube Playlist Embed (16:9 Aspect) -->
-                <iframe
-                    width="100%"
-                    style="aspect-ratio: 16/9; border: none"
-                    src="https://www.youtube.com/embed/videoseries?list=PLbIVhUB2hspnM4N7Xk-U8vHe71mqFJ4pX"
-                    allowfullscreen
-                >
-                </iframe>
-            </div>
+    <!-- MUSIC TAB (YouTube & Spotify) -->
+    <div id="music" class="tab-content">
+        <h2>Official Tracks</h2>
+        <div class="card" style="padding: 0; overflow: hidden; aspect-ratio: 16/9;">
+            <iframe width="100%" height="100%" src="https://www.youtube.com/embed/videoseries?list=PLbIVhUB2hspnM4N7Xk-U8vHe71mqFJ4pX" frameborder="0" allowfullscreen></iframe>
+        </div>
+        <h2>Listen on Spotify</h2>
+        <div class="card" style="padding: 0;">
+            <iframe src="https://open.spotify.com/embed/playlist/3AA6Sjr7E5lhGvqdAOWUqQ?utm_source=generator&theme=0" width="100%" height="380" frameBorder="0" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+    </div>
 
-            <h2 style="margin-top: 40px">Listen on Spotify</h2>
-            <div
-                class="card"
-                style="padding: 0; overflow: hidden; border-radius: 15px"
-            >
-                <iframe
-                    style="border-radius: 12px"
-                    src="https://open.spotify.com/embed/playlist/3AA6Sjr7E5lhGvqdAOWUqQ?utm_source=generator&theme=0"
-                    width="100%"
-                    height="380"
-                    frameborder="0"
-                    allowfullscreen=""
-                    loading="lazy"
-                ></iframe>
+    <!-- UPDATES TAB (Subscribe & Feedback) -->
+    <div id="updates" class="tab-content">
+        <h2>Get Updates</h2>
+        <div class="card">
+            <p>नयाँ गीत र भिडियोको जानकारी पाउन इमेल लेख्नुहोस्:</p>
+            <form action="https://formspree.io/f/mojkndve" method="POST">
+                <input type="email" name="Email" placeholder="Your Email" style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 8px; border: 1px solid #333; background: #000; color: white;">
+                <button type="submit" class="btn">Subscribe Now</button>
+            </form>
+        </div>
+        <h2>Feedback</h2>
+        <div class="card">
+            <form action="https://formspree.io/f/mojkndve" method="POST">
+                <textarea name="Message" placeholder="Your Feedback" style="width: 100%; height: 100px; padding: 10px; border-radius: 8px; border: 1px solid #333; background: #000; color: white;"></textarea>
+                <button type="submit" class="btn" style="margin-top: 10px;">Send Feedback</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- CONTACT TAB (About & Socials) -->
+    <div id="contact" class="tab-content">
+        <h2>About RBA-Kalikot</h2>
+        <div class="card">
+            <p>नमस्कार, म राजन् बोहरा 'आरक्षक' (RBA-Kalikot)। कालिकोट, कर्णालीको सांगीतिक यात्रा मोबाइल फोनबाटै सुरु भएको हो।</p>
+        </div>
+        <div class="card" style="text-align: center;">
+            <p>Follow Me On:</p>
+            <div style="font-size: 2rem; display: flex; justify-content: space-around; margin-top: 15px;">
+                <a href="https://youtube.com/@rba-kalikot" style="color: red;"><i class="fab fa-youtube"></i></a>
+                <a href="https://www.facebook.com/share/1HtznSabqV/" style="color: #1877F2;"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://wa.me/9768978945" style="color: #25D366;"><i class="fab fa-whatsapp"></i></a>
             </div>
         </div>
+    </div>
 
-        <!-- Subscribe Section -->
-        <div id="subscribe" class="section">
-            <h2>Subscribe for Updates</h2>
-            <div class="card">
-                <p>
-                    नयाँ गीत र भिडियो रिलिज हुँदा जानकारी पाउन यहाँ आफ्नो इमेल
-                    लेख्नुहोस्:
-                </p>
-                <form action="https://formspree.io/f/mojkndve" method="POST">
-                    <input
-                        type="email"
-                        name="Subscriber_Email"
-                        placeholder="तपाईंको इमेल"
-                        required
-                    />
-                    <button type="submit" class="btn">Subscribe Now</button>
-                </form>
-            </div>
-        </div>
+    <!-- BOTTOM NAVIGATION MENU -->
+    <nav>
+        <a href="#" onclick="showTab('home', this)" class="active"><i class="fas fa-home"></i>Home</a>
+        <a href="#" onclick="showTab('music', this)"><i class="fas fa-music"></i>Music</a>
+        <a href="#" onclick="showTab('updates', this)"><i class="fas fa-bell"></i>Updates</a>
+        <a href="#" onclick="showTab('contact', this)"><i class="fas fa-user-circle"></i>Contact</a>
+    </nav>
 
-        <!-- Contact/Feedback Section -->
-        <div id="comments" class="section">
-            <h2>Contact & Feedback</h2>
-            <div class="card">
-                <form action="https://formspree.io/f/mojkndve" method="POST">
-                    <input
-                        type="text"
-                        name="Sender_Name"
-                        placeholder="तपाईंको नाम"
-                        required
-                    />
-                    <textarea
-                        name="Sender_Message"
-                        placeholder="प्रतिक्रिया लेख्नुहोस्..."
-                        rows="4"
-                        required
-                    ></textarea>
-                    <button type="submit" class="btn">सन्देश पठाउनुहोस्</button>
-                </form>
-            </div>
-        </div>
+    <script>
+        function showTab(tabId, el) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            // Remove active class from nav links
+            document.querySelectorAll('nav a').forEach(link => link.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabId).classList.add('active');
+            // Add active class to clicked link
+            el.classList.add('active');
 
-        <!-- Visitor Counter -->
-        <center>
-            <div
-                style="
-                    padding-bottom: 25px;
-                    font-size: 0.9rem;
-                    color: var(--primary-yellow) !important;
-                "
-            >
-                <i class="fas fa-users"></i> Total Visitors:
-                <img
-                    src="https://hitwebcounter.com/counter/counter.php?page=RBA-KALIKOT-OFFICIAL&style=0006&nbdigits=6&type=page&initCount=100"
-                    border="0"
-                    style="
-                        vertical-align: middle;
-                        height: 22px;
-                        margin-left: 8px;
-                    "
-                />
-            </div>
-        </center>
-
-        <!-- Social Media Drawer -->
-        <div class="drawer-trigger" onclick="toggleDrawer()" id="drawerBtn">
-            <i class="fas fa-plus"></i>
-        </div>
-        <div class="social-drawer" id="socialDrawer">
-            <a
-                href="https://wa.me/9768978945"
-                class="drawer-icon wa"
-                target="_blank"
-                ><i class="fab fa-whatsapp"></i
-            ></a>
-            <a
-                href="https://www.tiktok.com/@rbakalikot"
-                class="drawer-icon tt"
-                target="_blank"
-                ><i class="fab fa-tiktok"></i
-            ></a>
-            <a
-                href="https://youtube.com/@rba-kalikot"
-                class="drawer-icon yt"
-                target="_blank"
-                ><i class="fab fa-youtube"></i
-            ></a>
-            <a
-                href="https://www.instagram.com/rba_kalikot"
-                class="drawer-icon in"
-                target="_blank"
-                ><i class="fab fa-instagram"></i
-            ></a>
-            <a
-                href="https://www.facebook.com/share/1HtznSabqV/"
-                class="drawer-icon fb"
-                target="_blank"
-                ><i class="fab fa-facebook-f"></i
-            ></a>
-        </div>
-
-        <footer>
-            <p>&copy; 2024 RBA-Kalikot Official | कालिकोटदेखि विश्वसम्म</p>
-        </footer>
-
-        <script>
-            function toggleDrawer() {
-                const drawer = document.getElementById("socialDrawer");
-                const btn = document.getElementById("drawerBtn");
-                drawer.classList.toggle("active");
-                btn.innerHTML = drawer.classList.contains("active")
-                    ? '<i class="fas fa-times"></i>'
-                    : '<i class="fas fa-plus"></i>';
-            }
-            function toggleTheme() {
-                document.body.classList.toggle("light-mode");
-                const icon = document.querySelector("#themeBtn i");
-                icon.className = document.body.classList.contains("light-mode")
-                    ? "fas fa-sun"
-                    : "fas fa-moon";
-            }
-            function shareSite() {
-                if (navigator.share) {
-                    navigator.share({
-                        title: "RBA-Kalikot Official Site",
-                        url: window.location.href,
-                    });
-                } else {
-                    alert("Site Link: " + window.location.href);
-                }
-            }
-        </script>
-    </body>
+            // Scroll to top when switching
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
 </html>
