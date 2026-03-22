@@ -15,6 +15,7 @@
             --bg-dark: #0a0a0a;
             --card-dark: #1a1a1a;
             --text-white: #ffffff;
+            --spotify-green: #1DB954;
         }
 
         .light-mode {
@@ -72,7 +73,6 @@
         .card { background: var(--card-dark); border-radius: 18px; padding: 20px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05); }
         .btn-action { background: var(--p-green); color: white; border: none; padding: 12px; border-radius: 12px; width: 100%; font-weight: 600; cursor: pointer; margin-top: 10px; }
         
-        /* Language Selector Style */
         .lang-select { background: #222; color: white; border: 1px solid var(--p-yellow); padding: 10px; border-radius: 8px; width: 100%; margin-top: 10px; font-size: 1rem; }
 
         /* Visualizer */
@@ -160,6 +160,11 @@
         <div class="card" style="padding: 0; overflow: hidden; aspect-ratio: 16/9; border: 1px solid var(--p-yellow);">
             <iframe width="100%" height="100%" src="https://www.youtube.com/embed/videoseries?list=PLbIVhUB2hspnM4N7Xk-U8vHe71mqFJ4pX" frameborder="0" allowfullscreen></iframe>
         </div>
+
+        <h2 id="txt-spotify-title" style="margin-top: 20px;">Spotify Playlist</h2>
+        <div class="card" style="padding: 0; overflow: hidden; border-radius: 12px; border: 1px solid var(--spotify-green);">
+            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/3AA6Sjr7E5lhGvqdAOWUqQ?utm_source=generator&theme=0" width="100%" height="380" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        </div>
     </div>
 
     <!-- TAB: SETTINGS -->
@@ -178,7 +183,7 @@
             <button class="btn-action" onclick="toggleTheme()" id="btn-theme">Switch Theme</button>
         </div>
         <div style="text-align: center; font-size: 0.75rem; color: gray; margin-top: 20px;">
-            RBA-Kalikot Official App v3.0
+            RBA-Kalikot Official App v3.1
         </div>
     </div>
 
@@ -192,7 +197,6 @@
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        // --- 1. LANGUAGE DATA ---
         const translations = {
             ne: {
                 slogan: "सुरुवात सानो बाट",
@@ -200,7 +204,8 @@
                 introDesc: "नमस्कार म राजन बोहरा 'आरक्षक'/RBA-Kalikot",
                 visitor: "कुल आगन्तुक (Live)",
                 studio: "आर्टिस्ट स्टुडियो",
-                music: "म्युजिक प्लेलिस्ट",
+                music: "युट्युब म्युजिक",
+                spotify: "स्पोटिफाई प्लेलिस्ट",
                 settings: "सेटिङहरू",
                 langLabel: "भाषा चयन गर्नुहोस्",
                 themeLabel: "थिम परिवर्तन",
@@ -212,7 +217,8 @@
                 introDesc: "Namaste, I am Rajan Bohara 'Aarakshak'/RBA-Kalikot",
                 visitor: "Total Visitors (Live)",
                 studio: "Artist Studio",
-                music: "Music Playlist",
+                music: "YouTube Music",
+                spotify: "Spotify Playlist",
                 settings: "Settings",
                 langLabel: "Select Language",
                 themeLabel: "Change Theme",
@@ -224,7 +230,8 @@
                 introDesc: "नमस्ते, मैं राजन बोहरा 'आरक्षक'/RBA-Kalikot हूँ",
                 visitor: "कुल आगंतुक (Live)",
                 studio: "आर्टिस्ट स्टूडियो",
-                music: "म्यूजिक प्लेलिस्ट",
+                music: "यूट्यूब संगीत",
+                spotify: "स्पोटिफाई प्लेलिस्ट",
                 settings: "सेटिंग्स",
                 langLabel: "भाषा चुनें",
                 themeLabel: "थीम बदलें",
@@ -241,6 +248,7 @@
             document.getElementById('txt-visitor-title').innerText = t.visitor;
             document.getElementById('txt-studio-title').innerText = t.studio;
             document.getElementById('txt-music-title').innerText = t.music;
+            document.getElementById('txt-spotify-title').innerText = t.spotify;
             document.getElementById('txt-settings-title').innerText = t.settings;
             document.getElementById('txt-lang-label').innerText = t.langLabel;
             document.getElementById('txt-theme-label').innerText = t.themeLabel;
@@ -251,7 +259,6 @@
             localStorage.setItem('rba_lang', lang);
         }
 
-        // --- 2. CORE FUNCTIONS ---
         window.onload = () => {
             const savedLang = localStorage.getItem('rba_lang') || 'ne';
             document.getElementById('lang-switcher').value = savedLang;
@@ -269,7 +276,6 @@
 
         function toggleTheme() { document.body.classList.toggle('light-mode'); }
 
-        // --- 3. PLAYER LOGIC ---
         let player; let isPlaying = false;
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('yt-player', {
