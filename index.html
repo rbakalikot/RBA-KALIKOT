@@ -24,7 +24,7 @@
             --text-white: #121212;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; transition: 0.3s ease; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; transition: background 0.3s, color 0.3s; }
         body { background-color: var(--bg-dark); color: var(--text-white); overflow-x: hidden; }
 
         /* Splash Screen */
@@ -74,11 +74,21 @@
 
         .card { background: var(--card-dark); border-radius: 18px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
         .btn-action { background: var(--p-green); color: white; border: none; padding: 12px; border-radius: 12px; width: 100%; font-weight: 600; cursor: pointer; margin-top: 10px; }
-        .lang-select { background: #222; color: white; border: 1px solid var(--p-yellow); padding: 10px; border-radius: 8px; width: 100%; margin-top: 10px; }
         
-        /* Visualizer - Animated by JS */
-        .viz { display: flex; justify-content: center; gap: 6px; height: 60px; align-items: flex-end; margin: 20px 0; }
-        .bar { width: 10px; background: var(--p-yellow); border-radius: 5px; height: 4px; min-height: 4px; transition: height 0.05s ease; }
+        /* --- ADVANCED VISUALIZER STYLE --- */
+        .viz-box { 
+            height: 120px; display: flex; align-items: flex-end; justify-content: center; 
+            gap: 3px; padding-bottom: 10px; margin: 20px 0;
+        }
+        .bar { 
+            width: 8px; background: linear-gradient(to top, var(--p-yellow), #ffffff);
+            border-radius: 10px; height: 5px; min-height: 5px;
+            box-shadow: 0 0 10px rgba(253, 216, 53, 0.3);
+            transition: 0.08s ease; 
+        }
+        #play-icon { font-size: 4.5rem; color: var(--p-yellow); cursor: pointer; transition: 0.2s; }
+        .playing-icon { animation: playPulse 1s infinite alternate; }
+        @keyframes playPulse { from { transform: scale(1); opacity: 1; } to { transform: scale(1.1); opacity: 0.8; } }
 
         .counter-box { background: #222; display: inline-block; padding: 5px 15px; border-radius: 10px; border: 1px solid var(--p-yellow); margin-top: 10px; }
     </style>
@@ -136,25 +146,27 @@
     <!-- TAB: STUDIO -->
     <div id="studio" class="tab-content">
         <h2 id="txt-studio-title" style="text-align: center; margin-bottom: 20px;">Artist Studio</h2>
-        <div class="card" style="text-align: center;">
-            <div class="viz" id="studio-viz">
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
+        <div class="card" style="text-align: center; padding: 30px 10px;">
+            <div class="viz-box" id="visualizer-container">
+                <!-- 16 Bars for realistic look -->
+                <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
             </div>
-            <h4 id="song-name">RBA - Studio Session</h4>
-            <div style="font-size: 4rem; color: var(--p-yellow); margin: 25px 0;" onclick="toggleAudio()">
-                <i class="fas fa-play-circle" id="play-icon"></i>
+            
+            <h4 id="song-name" style="margin-bottom: 10px; color: #aaa;">RBA - Official Studio Track</h4>
+            
+            <div style="margin: 20px 0;">
+                <i class="fas fa-play-circle" id="play-icon" onclick="toggleAudio()"></i>
             </div>
-            <div style="display: flex; justify-content: space-around; font-size: 1.3rem;">
-                <i class="far fa-heart" onclick="this.classList.toggle('fas'); this.style.color='red'"></i>
+            
+            <div style="display: flex; justify-content: space-around; font-size: 1.4rem; padding-top: 15px;">
+                <i class="far fa-heart" id="like-btn" onclick="this.classList.toggle('fas'); this.style.color='red'"></i>
                 <i class="fas fa-share-alt" onclick="shareApp()"></i>
-                <a id="download-link" href="studio.mp3" download style="color: inherit; text-decoration: none;"><i class="fas fa-download"></i></a>
+                <a href="studio.mp3" download style="color: inherit;"><i class="fas fa-download"></i></a>
             </div>
-            <audio id="main-audio" src="studio.mp3" crossOrigin="anonymous"></audio>
+            <audio id="main-audio" src="studio.mp3" crossorigin="anonymous"></audio>
         </div>
     </div>
 
@@ -263,40 +275,50 @@
             history.replaceState({tab: 'home'}, "", "#home");
         };
 
-        // --- 4. REAL BEAT SYNC VISUALIZER ---
+        // --- 4. ADVANCED BEAT-SYNC VISUALIZER ---
         const audio = document.getElementById('main-audio');
         const playIcon = document.getElementById('play-icon');
         const bars = document.querySelectorAll('.bar');
-        let audioCtx, analyser, dataArray, source;
+        
+        let audioCtx, analyser, dataArray;
 
-        function initVisualizer() {
+        function initAudio() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                source = audioCtx.createMediaElementSource(audio);
                 analyser = audioCtx.createAnalyser();
+                const source = audioCtx.createMediaElementSource(audio);
                 source.connect(analyser);
                 analyser.connect(audioCtx.destination);
-                analyser.fftSize = 64;
-                dataArray = new Uint8Array(analyser.frequencyBinCount);
-                draw();
+                
+                // Frequency detail level
+                analyser.fftSize = 64; 
+                analyser.smoothingTimeConstant = 0.8; // Smoothing effect
+                const bufferLength = analyser.frequencyBinCount;
+                dataArray = new Uint8Array(bufferLength);
+                
+                renderFrame();
             }
         }
 
-        function draw() {
-            requestAnimationFrame(draw);
+        function renderFrame() {
+            requestAnimationFrame(renderFrame);
             analyser.getByteFrequencyData(dataArray);
-            bars.forEach((bar, index) => {
-                const val = dataArray[index * 2] / 2;
-                bar.style.height = (val > 4 ? val : 4) + 'px';
+
+            bars.forEach((bar, i) => {
+                // Mapping frequency data to bars (Lower index = Bass)
+                let val = dataArray[i % dataArray.length];
+                let height = (val / 255) * 100; // Scale to percentage
+                bar.style.height = Math.max(height, 5) + 'px';
             });
         }
 
         function toggleAudio() {
-            initVisualizer();
+            initAudio();
             if (audioCtx.state === 'suspended') audioCtx.resume();
+
             if (audio.paused) {
                 audio.play();
-                playIcon.className = "fas fa-pause-circle";
+                playIcon.className = "fas fa-pause-circle playing-icon";
             } else {
                 audio.pause();
                 playIcon.className = "fas fa-play-circle";
