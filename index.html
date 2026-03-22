@@ -43,9 +43,10 @@
             display: flex; align-items: center; padding: 0 20px; z-index: 4000;
             border-bottom: 1px solid rgba(255,255,255,0.1);
         }
+        #back-btn { display: none; margin-right: 15px; cursor: pointer; font-size: 1.2rem; color: var(--p-yellow); }
 
         /* Hero Section */
-        .hero { height: 65vh; width: 100%; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .hero { height: 60vh; width: 100%; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
         .hero-bg {
             position: absolute; top: 0; left: 0; width: 130%; height: 100%;
             background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('bg.jpg');
@@ -54,33 +55,36 @@
         @keyframes slowMove { from { transform: translateX(-15%); } to { transform: translateX(0%); } }
         .logo-main { width: 130px; border-radius: 50%; border: 3px solid var(--p-yellow); box-shadow: 0 0 25px var(--p-yellow); margin-bottom: 15px; }
 
-        /* Tabs & Navigation */
-        .tab-content { display: none; padding: 80px 15px 120px; animation: slideIn 0.4s ease; }
+        /* Tabs & Content - Fixed Scroll Issue */
+        .tab-content { display: none; padding: 80px 15px 160px; min-height: 100vh; animation: slideIn 0.4s ease; }
         .tab-content.active { display: block; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* Bottom Navigation */
         nav { 
             position: fixed; bottom: 15px; left: 5%; width: 90%; 
             background: rgba(15,15,15,0.95); backdrop-filter: blur(20px); 
             display: flex; justify-content: space-around; padding: 12px; 
             border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); z-index: 5000;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
         }
         nav a { color: #666; text-decoration: none; font-size: 0.75rem; text-align: center; flex: 1; }
-        nav a.active { color: var(--p-yellow); font-weight: 600; }
+        nav a.active { color: var(--p-yellow); font-weight: 600; transform: translateY(-3px); }
         nav a i { display: block; font-size: 1.4rem; margin-bottom: 3px; }
 
-        /* Cards & Buttons */
-        .card { background: var(--card-dark); border-radius: 18px; padding: 20px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05); }
+        /* Cards & UI Elements */
+        .card { background: var(--card-dark); border-radius: 18px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
         .btn-action { background: var(--p-green); color: white; border: none; padding: 12px; border-radius: 12px; width: 100%; font-weight: 600; cursor: pointer; margin-top: 10px; }
+        .lang-select { background: #222; color: white; border: 1px solid var(--p-yellow); padding: 10px; border-radius: 8px; width: 100%; margin-top: 10px; }
         
-        .lang-select { background: #222; color: white; border: 1px solid var(--p-yellow); padding: 10px; border-radius: 8px; width: 100%; margin-top: 10px; font-size: 1rem; }
-
         /* Visualizer */
         .viz { display: flex; justify-content: center; gap: 4px; height: 40px; align-items: flex-end; margin: 15px 0; }
         .bar { width: 6px; background: var(--p-yellow); border-radius: 3px; height: 4px; }
         .playing .bar { animation: barDance 0.5s infinite alternate; }
         @keyframes barDance { from { height: 4px; } to { height: 40px; } }
 
+        /* Visitor Counter Style */
+        .counter-box { background: #222; display: inline-block; padding: 5px 15px; border-radius: 10px; border: 1px solid var(--p-yellow); margin-top: 10px; }
     </style>
 </head>
 <body class="dark-mode">
@@ -94,6 +98,7 @@
 
     <!-- Header -->
     <header>
+        <div id="back-btn" onclick="handleBack()"><i class="fas fa-arrow-left"></i></div>
         <div style="font-weight: 700; color: var(--p-yellow); letter-spacing: 1px;">RBA-KALIKOT</div>
         <div style="margin-left: auto; display: flex; gap: 20px;">
             <i class="fas fa-adjust" onclick="toggleTheme()" style="color: var(--p-yellow); font-size: 1.2rem;"></i>
@@ -125,7 +130,9 @@
 
             <div class="card" style="text-align: center;">
                 <h4 id="txt-visitor-title">कुल आगन्तुक (Live)</h4>
-                <img src="https://hitwebcounter.com/counter/counter.php?page=RBA-KALIKOT-OFFICIAL-SITE&style=0006&nbdigits=5&type=page&initCount=0" style="margin-top: 10px;">
+                <div class="counter-box">
+                    <img src="https://counter.secrethelp.io/api/counter?name=rbakalikot&color=fdd835&style=rule" alt="Counter" style="height: 25px; vertical-align: middle;">
+                </div>
             </div>
         </div>
     </div>
@@ -171,7 +178,7 @@
     <div id="settings" class="tab-content">
         <h2 id="txt-settings-title">Settings</h2>
         <div class="card">
-            <h4 id="txt-lang-label">भाषा चयन गर्नुहोस् (Select Language)</h4>
+            <h4 id="txt-lang-label">भाषा चयन गर्नुहोस्</h4>
             <select id="lang-switcher" class="lang-select" onchange="changeLanguage(this.value)">
                 <option value="ne">नेपाली (Nepali)</option>
                 <option value="en">English</option>
@@ -180,10 +187,7 @@
         </div>
         <div class="card">
             <h4 id="txt-theme-label">Theme</h4>
-            <button class="btn-action" onclick="toggleTheme()" id="btn-theme">Switch Theme</button>
-        </div>
-        <div style="text-align: center; font-size: 0.75rem; color: gray; margin-top: 20px;">
-            RBA-Kalikot Official App v3.1
+            <button class="btn-action" onclick="toggleTheme()" id="btn-theme">Switch Light/Dark Mode</button>
         </div>
     </div>
 
@@ -197,48 +201,52 @@
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
+        // --- 1. LANGUAGE & DATA ---
         const translations = {
-            ne: {
-                slogan: "सुरुवात सानो बाट",
-                introTitle: "मेरो परिचय",
-                introDesc: "नमस्कार म राजन बोहरा 'आरक्षक'/RBA-Kalikot",
-                visitor: "कुल आगन्तुक (Live)",
-                studio: "आर्टिस्ट स्टुडियो",
-                music: "युट्युब म्युजिक",
-                spotify: "स्पोटिफाई प्लेलिस्ट",
-                settings: "सेटिङहरू",
-                langLabel: "भाषा चयन गर्नुहोस्",
-                themeLabel: "थिम परिवर्तन",
-                navHome: "होम", navStudio: "स्टुडियो", navMusic: "संगीत", navSettings: "सेटिङ"
-            },
-            en: {
-                slogan: "Starting from Small",
-                introTitle: "Introduction",
-                introDesc: "Namaste, I am Rajan Bohara 'Aarakshak'/RBA-Kalikot",
-                visitor: "Total Visitors (Live)",
-                studio: "Artist Studio",
-                music: "YouTube Music",
-                spotify: "Spotify Playlist",
-                settings: "Settings",
-                langLabel: "Select Language",
-                themeLabel: "Change Theme",
-                navHome: "Home", navStudio: "Studio", navMusic: "Music", navSettings: "Settings"
-            },
-            hi: {
-                slogan: "शुरुआत छोटे से",
-                introTitle: "मेरा परिचय",
-                introDesc: "नमस्ते, मैं राजन बोहरा 'आरक्षक'/RBA-Kalikot हूँ",
-                visitor: "कुल आगंतुक (Live)",
-                studio: "आर्टिस्ट स्टूडियो",
-                music: "यूट्यूब संगीत",
-                spotify: "स्पोटिफाई प्लेलिस्ट",
-                settings: "सेटिंग्स",
-                langLabel: "भाषा चुनें",
-                themeLabel: "थीम बदलें",
-                navHome: "होम", navStudio: "स्टूडियो", navMusic: "संगीत", navSettings: "सेटिंग"
+            ne: { slogan: "सुरुवात सानो बाट", introTitle: "मेरो परिचय", introDesc: "नमस्कार म राजन बोहरा 'आरक्षक'/RBA-Kalikot", visitor: "कुल आगन्तुक (Live)", studio: "आर्टिस्ट स्टुडियो", music: "युट्युब म्युजिक", spotify: "स्पोटिफाई प्लेलिस्ट", settings: "सेटिङहरू", langLabel: "भाषा चयन गर्नुहोस्", themeLabel: "थिम परिवर्तन", navHome: "होम", navStudio: "स्टुडियो", navMusic: "संगीत", navSettings: "सेटिङ" },
+            en: { slogan: "Starting from Small", introTitle: "Introduction", introDesc: "Namaste, I am Rajan Bohara 'Aarakshak'/RBA-Kalikot", visitor: "Total Visitors (Live)", studio: "Artist Studio", music: "YouTube Music", spotify: "Spotify Playlist", settings: "Settings", langLabel: "Select Language", themeLabel: "Change Theme", navHome: "Home", navStudio: "Studio", navMusic: "Music", navSettings: "Settings" },
+            hi: { slogan: "शुरुआत छोटे से", introTitle: "मेरा परिचय", introDesc: "नमस्ते, मैं राजन बोहरा 'आरक्षक'/RBA-Kalikot हूँ", visitor: "कुल आगंतुक (Live)", studio: "आर्टिस्ट स्टूडियो", music: "यूट्यूब संगीत", spotify: "स्पोटिफाई प्लेलिस्ट", settings: "सेटिंग्स", langLabel: "भाषा चुनें", themeLabel: "थीम बदलें", navHome: "होम", navStudio: "स्टूडियो", navMusic: "संगीत", navSettings: "सेटिंग" }
+        };
+
+        // --- 2. NAVIGATION & HISTORY ---
+        let currentTab = 'home';
+        function showTab(id, el, pushState = true) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+            
+            document.getElementById(id).classList.add('active');
+            if(el) el.classList.add('active');
+            else {
+                // If el is null (from back button), manually activate nav link
+                const navLinks = document.querySelectorAll('nav a');
+                const index = ['home', 'studio', 'music', 'settings'].indexOf(id);
+                if(index !== -1) navLinks[index].classList.add('active');
+            }
+
+            document.getElementById('back-btn').style.display = (id === 'home') ? 'none' : 'block';
+            currentTab = id;
+            if(pushState) history.pushState({tab: id}, "", "#" + id);
+            window.scrollTo(0,0);
+        }
+
+        function handleBack() {
+            if (currentTab !== 'home') {
+                showTab('home', document.querySelectorAll('nav a')[0]);
+            } else {
+                history.back();
+            }
+        }
+
+        // System Back Button Support
+        window.onpopstate = function(event) {
+            if (event.state && event.state.tab) {
+                showTab(event.state.tab, null, false);
+            } else {
+                showTab('home', document.querySelectorAll('nav a')[0], false);
             }
         };
 
+        // --- 3. THEME & LANGUAGE ---
         function changeLanguage(lang) {
             const t = translations[lang];
             document.getElementById('splash-slogan').innerText = t.slogan;
@@ -264,18 +272,13 @@
             document.getElementById('lang-switcher').value = savedLang;
             changeLanguage(savedLang);
             setTimeout(() => { document.getElementById('splash').style.display = 'none'; }, 2500);
+            // Initial state for back button
+            history.replaceState({tab: 'home'}, "", "#home");
         };
-
-        function showTab(id, el) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            el.classList.add('active');
-            window.scrollTo(0,0);
-        }
 
         function toggleTheme() { document.body.classList.toggle('light-mode'); }
 
+        // --- 4. PLAYER LOGIC ---
         let player; let isPlaying = false;
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('yt-player', {
@@ -290,7 +293,6 @@
         }
         function togglePlay() { isPlaying ? player.pauseVideo() : player.playVideo(); }
         function shareApp() { navigator.share ? navigator.share({title:'RBA-Kalikot', url:window.location.href}) : alert("Link copied!"); }
-
     </script>
 </body>
 </html>
