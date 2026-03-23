@@ -75,9 +75,13 @@
         .card { background: var(--card-dark); border-radius: 18px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
         .btn-action { background: var(--p-green); color: white; border: none; padding: 12px; border-radius: 12px; width: 100%; font-weight: 600; cursor: pointer; margin-top: 10px; }
         
-        /* --- TIMELINE & VISUALIZER --- */
-        .viz-box { height: 120px; display: flex; align-items: flex-end; justify-content: center; gap: 2px; margin-bottom: 10px; }
-        .bar { width: 6px; background: var(--p-yellow); border-radius: 3px; height: 5px; opacity: 0.6; }
+        /* --- REALISTIC TIMELINE & VISUALIZER --- */
+        .viz-box { height: 120px; display: flex; align-items: flex-end; justify-content: center; gap: 3px; margin-bottom: 15px; }
+        .bar { 
+            width: 7px; background: linear-gradient(to top, var(--p-yellow), #ffffff);
+            border-radius: 5px; height: 5px; opacity: 0.8;
+            transition: height 0.05s ease, box-shadow 0.1s ease;
+        }
         
         .timeline-container { width: 100%; margin: 15px 0; }
         .seek-bar { 
@@ -151,7 +155,7 @@
         <h2 id="txt-studio-title" style="text-align: center; margin-bottom: 20px;">Artist Studio</h2>
         <div class="card" style="text-align: center; padding: 25px 15px;">
             <div class="viz-box" id="viz-container">
-                <!-- 32 bars for high resolution visualizer -->
+                <!-- 32 bars for realistic visualizer -->
                 <script>
                     for(let i=0; i<32; i++) document.write('<div class="bar"></div>');
                 </script>
@@ -159,7 +163,6 @@
 
             <h4 id="song-name">RBA - Studio Session</h4>
             
-            <!-- Seek Bar -->
             <div class="timeline-container">
                 <input type="range" class="seek-bar" id="seek-bar" value="0" step="1">
                 <div class="time-labels">
@@ -222,14 +225,13 @@
     </nav>
 
     <script>
-        // --- 1. LANGUAGE & LIKE SYSTEM ---
         const translations = {
             ne: { slogan: "सुरुवात सानो बाट", introTitle: "मेरो परिचय", introDesc: "नमस्कार म राजन बोहरा 'आरक्षक'/RBA-Kalikot", visitor: "कुल आगन्तुक (Live)", studio: "आर्टिस्ट स्टुडियो", music: "युट्युब म्युजिक", spotify: "स्पोटिफाई प्लेलिस्ट", settings: "सेटिङहरू", langLabel: "भाषा चयन गर्नुहोस्", themeLabel: "थिम परिवर्तन", navHome: "होम", navStudio: "स्टुडियो", navMusic: "संगीत", navSettings: "सेटिङ" },
             en: { slogan: "Starting from Small", introTitle: "Introduction", introDesc: "Namaste, I am Rajan Bohara 'Aarakshak'/RBA-Kalikot", visitor: "Total Visitors (Live)", studio: "Artist Studio", music: "YouTube Music", spotify: "Spotify Playlist", settings: "Settings", langLabel: "Select Language", themeLabel: "Change Theme", navHome: "Home", navStudio: "Studio", navMusic: "Music", navSettings: "Settings" },
             hi: { slogan: "शुरुआत छोटे से", introTitle: "मेरा परिचय", introDesc: "नमस्ते, मैं राजन बोहरा 'आरक्षक'/RBA-Kalikot हूँ", visitor: "कुल आगंतुक (Live)", studio: "आर्टिस्ट स्टूडियो", music: "यूट्यूब संगीत", spotify: "स्पोटिफाई प्लेलिस्ट", settings: "सेटिंग्स", langLabel: "भाषा चुनें", themeLabel: "थीम बदलें", navHome: "होम", navStudio: "स्टूडियो", navMusic: "संगीत", navSettings: "सेटिंग" }
         };
 
-        let likeCount = parseInt(localStorage.getItem('rba_likes')) || 1500; // Default starts high to test K/M
+        let likeCount = parseInt(localStorage.getItem('rba_likes')) || 1200;
         function formatNumber(num) {
             if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
             if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
@@ -251,7 +253,6 @@
             }
         }
 
-        // --- 2. NAVIGATION ---
         let currentTab = 'home';
         function showTab(id, el, pushState = true) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -279,7 +280,6 @@
             else showTab('home', document.querySelectorAll('nav a')[0], false);
         };
 
-        // --- 3. THEME & INIT ---
         function changeLanguage(lang) {
             const t = translations[lang];
             document.getElementById('splash-slogan').innerText = t.slogan;
@@ -311,7 +311,6 @@
             history.replaceState({tab: 'home'}, "", "#home");
         };
 
-        // --- 4. ADVANCED AUDIO & TIMELINE ---
         const audio = document.getElementById('main-audio');
         const playIcon = document.getElementById('play-icon');
         const seekBar = document.getElementById('seek-bar');
@@ -348,20 +347,42 @@
                 const source = audioCtx.createMediaElementSource(audio);
                 source.connect(analyser);
                 analyser.connect(audioCtx.destination);
-                analyser.fftSize = 128; // Increased for more bars
+                analyser.fftSize = 128;
                 dataArray = new Uint8Array(analyser.frequencyBinCount);
                 renderFrame();
             }
         }
 
+        // --- REALISTIC FREQUENCY MAPPING ---
         function renderFrame() {
             requestAnimationFrame(renderFrame);
             analyser.getByteFrequencyData(dataArray);
+            
             bars.forEach((bar, i) => {
-                let val = dataArray[i % dataArray.length];
+                let val = 0;
+                // Bass (Start bars)
+                if (i < 8) { 
+                    val = dataArray[i]; 
+                } 
+                // Drums / Mid (Middle bars) - Boosted for "Drum Focus"
+                else if (i < 24) { 
+                    val = dataArray[i + 5] * 1.4; 
+                } 
+                // Leads / High (End bars)
+                else { 
+                    val = dataArray[i + 15]; 
+                }
+                
                 let height = (val / 255) * 120;
                 bar.style.height = Math.max(height, 5) + 'px';
-                bar.style.opacity = 0.4 + (val / 255); // Beat-sync opacity
+                bar.style.opacity = 0.5 + (val / 255) * 0.5;
+                
+                // Extra Glow on Drum Beats (High Intensity)
+                if (val > 140) {
+                    bar.style.boxShadow = `0 0 15px var(--p-yellow)`;
+                } else {
+                    bar.style.boxShadow = "none";
+                }
             });
         }
 
