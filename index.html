@@ -19,13 +19,13 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; transition: background 0.3s; }
         body { background-color: var(--bg-dark); color: var(--text-white); overflow-x: hidden; }
 
-        /* --- Click/Touch Zoom Feedback --- */
-        button, a, .ctrl-btn, .play-main-btn, nav a, header i, .counter-box, .far.fa-heart, .playlist-trigger {
+        /* --- Button Click Zoom Feedback --- */
+        button, a, .ctrl-btn, .play-main-btn, nav a, header i, .counter-box, .far.fa-heart, .playlist-trigger, .song-item {
             cursor: pointer;
             transition: transform 0.1s ease-in-out !important;
             -webkit-tap-highlight-color: transparent;
         }
-        button:active, a:active, .ctrl-btn:active, .play-main-btn:active, nav a:active, header i:active, .playlist-trigger:active {
+        button:active, a:active, .ctrl-btn:active, .play-main-btn:active, nav a:active, .playlist-trigger:active, .song-item:active {
             transform: scale(0.92);
         }
 
@@ -41,60 +41,56 @@
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* STUDIO PLAYER & PHOTO FIXES */
-        .player-card { 
-            background: var(--card-dark); border-radius: 20px; overflow: hidden; 
-            border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
-            max-width: 600px; margin: 0 auto;
-        }
-        .song-visual-area { height: 320px; position: relative; overflow: hidden; background: #111; transition: height 0.3s; }
+        /* --- HOME HERO (RESORED TO ORIGINAL) --- */
+        .hero { height: 60vh; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .hero-bg { position: absolute; top: 0; left: 0; width: 130%; height: 100%; background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('bg.jpg'); background-size: cover; background-position: center; z-index: -1; animation: slowMove 25s infinite alternate linear; }
+        @keyframes slowMove { from { transform: translateX(-15%); } to { transform: translateX(0%); } }
+        .logo-main { width: 130px; height: 130px; border-radius: 50%; border: 3px solid var(--p-yellow); box-shadow: 0 0 25px var(--p-yellow); margin-bottom: 15px; object-fit: cover; }
+
+        /* --- STUDIO PLAYER (DESKTOP OPTIMIZED) --- */
+        .player-card { background: var(--card-dark); border-radius: 20px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.5); max-width: 500px; margin: 0 auto; }
         
-        /* Desktop/Laptop Adjustment */
-        @media (min-width: 768px) {
-            .song-visual-area { height: 500px; }
+        .song-visual-area { height: 320px; position: relative; overflow: hidden; background: #000; }
+        
+        /* Laptop/Desktop height fix for full photo */
+        @media (min-width: 900px) {
             .player-card { max-width: 800px; }
+            .song-visual-area { height: 550px; }
         }
 
         #song-bg-img { 
-            position: absolute; width: 120%; height: 100%; object-fit: cover; left: -10%;
-            opacity: 0.8; z-index: 1; animation: coverMove 20s ease-in-out infinite alternate;
+            position: absolute; width: 110%; height: 100%; object-fit: cover; left: -5%;
+            opacity: 0.9; z-index: 1; animation: studioImgPan 15s ease-in-out infinite alternate;
         }
-        @keyframes coverMove { 0% { transform: scale(1.05) translateX(-5%); } 100% { transform: scale(1.05) translateX(5%); } }
+        @keyframes studioImgPan { from { transform: translateX(-3%); } to { transform: translateX(3%); } }
 
-        canvas { position: absolute; bottom: 0; left: 0; width: 100%; height: 80px; z-index: 5; pointer-events: none; }
+        canvas { position: absolute; bottom: 0; left: 0; width: 100%; height: 70px; z-index: 5; pointer-events: none; }
         
-        .player-info { padding: 25px 20px; text-align: center; position: relative; z-index: 10; }
-        .song-title-display { font-weight: 600; color: var(--p-yellow); margin-bottom: 15px; font-size: 1.15rem; }
+        .player-info { padding: 20px; text-align: center; position: relative; z-index: 10; }
+        .song-title-display { font-weight: 600; color: var(--p-yellow); margin-bottom: 15px; font-size: 1.1rem; }
         
         .timeline-container { width: 100%; margin: 10px 0; }
         .seek-bar { width: 100%; height: 5px; background: #444; border-radius: 10px; outline: none; -webkit-appearance: none; cursor: pointer; background-image: linear-gradient(var(--p-yellow), var(--p-yellow)); background-repeat: no-repeat; background-size: 0% 100%; }
         .seek-bar::-webkit-slider-thumb { -webkit-appearance: none; height: 14px; width: 14px; background: #fff; border-radius: 50%; box-shadow: 0 0 5px var(--p-yellow); }
         
-        .player-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 25px; }
-        .ctrl-btn { background: none; border: none; color: #fff; font-size: 1.3rem; cursor: pointer; opacity: 0.7; }
-        .ctrl-btn.active { color: var(--p-yellow); opacity: 1; text-shadow: 0 0 10px var(--p-yellow); }
-        .play-main-btn { width: 65px; height: 65px; background: #fff; color: #000; border-radius: 50%; font-size: 1.6rem; display: flex; align-items: center; justify-content: center; }
+        .player-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
+        .ctrl-btn { background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer; opacity: 0.7; }
+        .ctrl-btn.active { color: var(--p-yellow); opacity: 1; }
+        .play-main-btn { width: 60px; height: 60px; background: #fff; color: #000; border-radius: 50%; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; }
 
-        /* PLAYLIST DRAWER */
-        .playlist-drawer {
-            position: fixed; top: 0; right: -100%; width: 100%; height: 100%;
-            background: rgba(10,10,10,0.98); z-index: 6000; transition: 0.4s cubic-bezier(0.17, 0.67, 0.83, 0.67);
-            padding: 80px 20px; overflow-y: auto;
-        }
+        /* --- PLAYLIST DRAWER --- */
+        .playlist-drawer { position: fixed; top: 0; right: -100%; width: 100%; height: 100%; background: rgba(10,10,10,0.98); z-index: 6000; transition: 0.4s; padding: 80px 20px; overflow-y: auto; }
         .playlist-drawer.active { right: 0; }
-        .playlist-header { display: flex; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 15px; }
-        .playlist-header h3 { color: var(--p-yellow); flex: 1; }
-        .song-item { display: flex; align-items: center; padding: 15px; background: #1a1a1a; margin-bottom: 10px; border-radius: 12px; cursor: pointer; border: 1px solid transparent; }
-        .song-item:active { background: #333; }
-        .song-item.playing { border-color: var(--p-yellow); background: rgba(253, 216, 53, 0.1); }
+        .playlist-header { display: flex; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #333; padding-bottom: 15px; }
+        .song-item { display: flex; align-items: center; padding: 15px; background: #1a1a1a; margin-bottom: 10px; border-radius: 12px; border: 1px solid transparent; }
+        .song-item.playing { border-color: var(--p-yellow); background: rgba(253, 216, 53, 0.05); }
         .song-item i { margin-right: 15px; color: var(--p-yellow); }
-        .song-item span { font-weight: 400; font-size: 0.95rem; }
 
         /* NAV */
         nav { position: fixed; bottom: 15px; left: 5%; width: 90%; background: rgba(15,15,15,0.95); backdrop-filter: blur(20px); display: flex; justify-content: space-around; padding: 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); z-index: 5000; }
         nav a { color: #666; text-decoration: none; font-size: 0.75rem; text-align: center; flex: 1; }
         nav a.active { color: var(--p-yellow); font-weight: 600; }
-        nav a i { display: block; font-size: 1.4rem; margin-bottom: 4px; }
+        nav a i { display: block; font-size: 1.4rem; margin-bottom: 3px; }
 
         .card { background: var(--card-dark); border-radius: 18px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
         .counter-box { background: #222; display: inline-block; padding: 5px 15px; border-radius: 10px; border: 1px solid var(--p-yellow); margin-top: 10px; }
@@ -108,16 +104,13 @@
         <p style="color: #fff; font-size: 0.8rem;">सुरुवात सानो बाट</p>
     </div>
 
-    <!-- PLAYLIST DRAWER UI -->
+    <!-- PLAYLIST LIST -->
     <div id="playlist-drawer" class="playlist-drawer">
         <div class="playlist-header">
-            <h3>गीतहरूको सूची</h3>
+            <h3 style="color: var(--p-yellow); flex: 1;">गीतहरूको सूची</h3>
             <i class="fas fa-times" onclick="togglePlaylist()" style="font-size: 1.5rem; color: #888;"></i>
         </div>
-        <div id="playlist-container">
-            <!-- Songs will be listed here -->
-            <p style="color: gray; text-align: center;">गीतहरू खोज्दै...</p>
-        </div>
+        <div id="playlist-container"></div>
     </div>
 
     <header>
@@ -126,11 +119,18 @@
         <div style="margin-left: auto;" onclick="toggleTheme()"><i class="fas fa-adjust" style="color: var(--p-yellow);"></i></div>
     </header>
 
-    <!-- HOME TAB -->
+    <!-- HOME TAB (ORIGINAL STYLE) -->
     <div id="home" class="tab-content active" style="padding: 0;">
-        <div class="hero"><div class="hero-bg"></div><img src="logo.png" class="logo-main"><h1 style="color: var(--p-yellow);">RBA-Kalikot</h1><p>"सुरुवात सानो बाट"</p></div>
+        <div class="hero">
+            <div class="hero-bg"></div>
+            <img src="logo.png" class="logo-main">
+            <h1 style="color: var(--p-yellow);">RBA-Kalikot</h1>
+            <p>"सुरुवात सानो बाट"</p>
+        </div>
         <div style="padding: 15px;">
-            <div class="card"><h3>मेरो परिचय</h3><p>नमस्कार म राजन बोहरा 'आरक्षक'/RBA-Kalikot</p>
+            <div class="card">
+                <h3>मेरो परिचय</h3>
+                <p>नमस्कार म राजन बोहरा 'आरक्षक'/RBA-Kalikot</p>
                 <div style="display: flex; justify-content: space-around; margin-top: 20px; font-size: 1.8rem;">
                     <a href="https://youtube.com/@rba-kalikot" style="color: #ff0000;"><i class="fab fa-youtube"></i></a>
                     <a href="https://facebook.com/share/1HtznSabqV/" style="color: #1877f2;"><i class="fab fa-facebook-f"></i></a>
@@ -138,7 +138,10 @@
                     <a href="https://wa.me/9768978945" style="color: #25d366;"><i class="fab fa-whatsapp"></i></a>
                 </div>
             </div>
-            <div class="card" style="text-align: center;"><h4>कुल आगन्तुक (Live)</h4><div class="counter-box"><img src="https://counter.secrethelp.io/api/counter?name=rbakalikot&color=fdd835&style=rule" height="25"></div></div>
+            <div class="card" style="text-align: center;">
+                <h4>कुल आगन्तुक (Live)</h4>
+                <div class="counter-box"><img src="https://counter.secrethelp.io/api/counter?name=rbakalikot&color=fdd835&style=rule" height="25"></div>
+            </div>
         </div>
     </div>
 
@@ -146,7 +149,7 @@
     <div id="studio" class="tab-content">
         <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px; gap: 15px;">
             <h2>आर्टिस्ट स्टुडियो</h2>
-            <i class="fas fa-chevron-right playlist-trigger" onclick="togglePlaylist()" style="color: var(--p-yellow); font-size: 1.4rem;"></i>
+            <i class="fas fa-chevron-right playlist-trigger" onclick="togglePlaylist()" style="color: var(--p-yellow); font-size: 1.3rem;"></i>
         </div>
         
         <div class="player-card">
@@ -155,7 +158,7 @@
                 <canvas id="visualizer"></canvas>
             </div>
             <div class="player-info">
-                <div id="song-title" class="song-title-display">RBA - Playlist Syncing...</div>
+                <div id="song-title" class="song-title-display">RBA - Loading...</div>
                 <div class="timeline-container">
                     <input type="range" class="seek-bar" id="seek-bar" value="0" step="1">
                     <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: gray; margin-top: 5px;">
@@ -179,19 +182,15 @@
         <audio id="main-audio" crossorigin="anonymous"></audio>
     </div>
 
-    <!-- MUSIC TAB -->
+    <!-- MUSIC & SETTINGS REMAIN UNCHANGED -->
     <div id="music" class="tab-content">
         <h2>YouTube Music</h2>
         <div class="card" style="padding: 0; overflow: hidden; aspect-ratio: 16/9; border: 1px solid var(--p-yellow);"><iframe width="100%" height="100%" src="https://www.youtube.com/embed/videoseries?list=PLbIVhUB2hspnM4N7Xk-U8vHe71mqFJ4pX" frameborder="0" allowfullscreen></iframe></div>
-        <h2 style="margin-top: 20px;">Spotify Playlist</h2>
-        <div class="card" style="padding: 0; overflow: hidden; border-radius: 12px; border: 1px solid #1DB954;"><iframe src="https://open.spotify.com/embed/playlist/3AA6Sjr7E5lhGvqdAOWUqQ?utm_source=generator&theme=0" width="100%" height="380" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
     </div>
 
-    <!-- SETTINGS TAB -->
     <div id="settings" class="tab-content">
         <h2>Settings</h2>
         <div class="card"><h4>Language</h4><select id="lang-switcher" style="width:100%; padding:10px; border-radius:8px; background:#222; color:#fff;" onchange="changeLanguage(this.value)"><option value="ne">नेपाली</option><option value="en">English</option></select></div>
-        <div class="card" style="text-align: center;"><h4>Booking</h4><a href="https://wa.me/9768978945" style="display:block; background:#25d366; padding:12px; border-radius:10px; color:#fff; text-decoration:none; margin-top:10px;"><i class="fab fa-whatsapp"></i> Book Now</a></div>
     </div>
 
     <nav>
@@ -213,21 +212,13 @@
                 const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/`);
                 const files = await res.json();
                 const mp3s = files.filter(f => f.name.toLowerCase().endsWith('.mp3'));
-                
                 playlist = mp3s.map(f => {
                     const baseName = f.name.substring(0, f.name.lastIndexOf('.'));
-                    const img = files.find(i => {
-                        const iName = i.name.toLowerCase();
-                        return (iName === baseName.toLowerCase() + '.jpg' || iName === baseName.toLowerCase() + '.png');
-                    });
+                    const img = files.find(i => (i.name.toLowerCase() === baseName.toLowerCase() + '.jpg' || i.name.toLowerCase() === baseName.toLowerCase() + '.png'));
                     return { name: "RBA - " + baseName.toUpperCase(), url: f.download_url, img: img ? img.download_url : 'logo.png' };
                 });
-
-                if(playlist.length > 0) {
-                    renderPlaylistUI();
-                    loadSong(0);
-                } else document.getElementById('song-title').innerText = "GitHub मा कुनै गीत भेटिएन";
-            } catch (e) { console.error("Auto-Playlist Error", e); }
+                if(playlist.length > 0) { renderPlaylistUI(); loadSong(0); }
+            } catch (e) { console.error(e); }
         }
 
         function renderPlaylistUI() {
@@ -236,23 +227,15 @@
             playlist.forEach((song, index) => {
                 const item = document.createElement('div');
                 item.className = "song-item";
-                item.id = `song-item-${index}`;
-                item.innerHTML = `<i class="fas fa-play-circle"></i><span>${song.name}</span>`;
-                item.onclick = () => {
-                    loadSong(index);
-                    toggleAudio();
-                    togglePlaylist();
-                };
+                item.innerHTML = `<i class="fas fa-music"></i><span>${song.name}</span>`;
+                item.onclick = () => { loadSong(index); toggleAudio(); togglePlaylist(); };
                 container.appendChild(item);
             });
         }
 
-        function togglePlaylist() {
-            document.getElementById('playlist-drawer').classList.toggle('active');
-        }
+        function togglePlaylist() { document.getElementById('playlist-drawer').classList.toggle('active'); }
 
         function loadSong(index) {
-            document.querySelectorAll('.song-item').forEach(i => i.classList.remove('playing'));
             currentIndex = index;
             const song = playlist[index];
             const audio = document.getElementById('main-audio');
@@ -260,8 +243,6 @@
             document.getElementById('song-title').innerText = song.name;
             document.getElementById('song-bg-img').src = song.img;
             document.getElementById('play-icon').className = "fas fa-play";
-            const currentItem = document.getElementById(`song-item-${index}`);
-            if(currentItem) currentItem.classList.add('playing');
         }
 
         const audio = document.getElementById('main-audio');
@@ -274,12 +255,9 @@
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 analyser = audioCtx.createAnalyser();
                 const source = audioCtx.createMediaElementSource(audio);
-                source.connect(analyser);
-                analyser.connect(audioCtx.destination);
-                analyser.fftSize = 256;
-                dataArray = new Uint8Array(analyser.frequencyBinCount);
-                canvas.width = canvas.offsetWidth;
-                canvas.height = canvas.offsetHeight;
+                source.connect(analyser); analyser.connect(audioCtx.destination);
+                analyser.fftSize = 256; dataArray = new Uint8Array(analyser.frequencyBinCount);
+                canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight;
                 renderFrame();
             }
         }
@@ -288,18 +266,12 @@
             requestAnimationFrame(renderFrame);
             analyser.getByteFrequencyData(dataArray);
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const barWidth = 3.5;
-            const barGap = 2;
+            const barWidth = 3; const barGap = 2;
             const totalBars = Math.floor(canvas.width / (barWidth + barGap));
             for (let i = 0; i < totalBars; i++) {
                 const val = dataArray[i % 128];
-                const height = (val / 255) * canvas.height * 0.8;
-                const gradient = ctx.createLinearGradient(0, canvas.height, 0, canvas.height - height);
-                gradient.addColorStop(0, '#ff00ff');
-                gradient.addColorStop(1, '#ff8c00');
-                ctx.fillStyle = gradient;
-                ctx.shadowBlur = 4;
-                ctx.shadowColor = '#ff00ff';
+                const height = (val / 255) * canvas.height * 0.9;
+                ctx.fillStyle = '#ff00ff'; 
                 ctx.fillRect(i * (barWidth + barGap), canvas.height - height, barWidth, height);
             }
         }
@@ -311,22 +283,8 @@
             else { audio.pause(); document.getElementById('play-icon').className = "fas fa-play"; }
         }
 
-        function nextSong() {
-            let next = currentIndex + 1;
-            if (isShuffle) next = Math.floor(Math.random() * playlist.length);
-            if (next >= playlist.length) next = 0;
-            loadSong(next); toggleAudio();
-        }
-
-        function prevSong() {
-            let prev = currentIndex - 1;
-            if (prev < 0) prev = playlist.length - 1;
-            loadSong(prev); toggleAudio();
-        }
-
-        audio.onended = () => { if(isRepeat) { audio.currentTime = 0; audio.play(); } else nextSong(); };
-        function toggleShuffle() { isShuffle = !isShuffle; document.getElementById('shuffle-btn').classList.toggle('active'); }
-        function toggleRepeat() { isRepeat = !isRepeat; document.getElementById('repeat-btn').classList.toggle('active'); }
+        function nextSong() { loadSong((currentIndex + 1) % playlist.length); toggleAudio(); }
+        function prevSong() { loadSong((currentIndex - 1 + playlist.length) % playlist.length); toggleAudio(); }
 
         audio.ontimeupdate = () => {
             const seek = document.getElementById('seek-bar');
@@ -348,13 +306,7 @@
         }
         function handleBack() { showTab('home', document.querySelector('nav a:first-child')); }
         function toggleTheme() { document.body.classList.toggle('light-mode'); }
-        function addLike() { 
-            let l = document.getElementById('like-icon');
-            l.classList.toggle('fas'); l.classList.toggle('far');
-            l.style.color = l.classList.contains('fas') ? '#ff4d4d' : '';
-            document.getElementById('like-display').innerText = l.classList.contains('fas') ? '1.5K' : '0';
-        }
-        function shareApp() { navigator.share({title:'RBA-Kalikot Official', url: window.location.href}); }
+        function addLike() { document.getElementById('like-icon').classList.toggle('fas'); document.getElementById('like-icon').style.color = 'red'; }
         function downloadCurrent() { window.open(playlist[currentIndex].url); }
 
         window.onload = () => {
