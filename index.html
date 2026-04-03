@@ -15,7 +15,8 @@
         :root {
             --p-green: #2e7d32; --p-yellow: #fdd835; --bg-dark: #0a0a0a;
             --card-dark: #121212; --text-white: #ffffff;
-            --inner-shadow: inset 3px 3px 6px rgba(0,0,0,0.6), inset -2px -2px 5px rgba(255,255,255,0.05);
+            --btn-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            --inner-shadow: inset 3px 3px 6px rgba(0,0,0,0.8), inset -2px -2px 5px rgba(255,255,255,0.05);
         }
         .light-mode { --bg-dark: #f4f7f6; --card-dark: #ffffff; --text-white: #121212; }
         
@@ -23,14 +24,13 @@
         body { background-color: var(--bg-dark); color: var(--text-white); overflow-x: hidden; }
 
         /* --- Click/Touch Zoom Feedback --- */
-        .click-effect, i, button, nav a, .song-item {
-            cursor: pointer;
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+        .click-effect, i, button, nav a, .song-item, .tiktok-card {
+            cursor: pointer; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
             -webkit-tap-highlight-color: transparent;
         }
         .click-effect:active, i:active, nav a:active { transform: scale(0.88) !important; }
 
-        /* Splash Screen - Fixed */
+        /* Splash Screen */
         #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: #000; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .splash-logo { width: 100px; border-radius: 50%; border: 2px solid var(--p-yellow); margin-bottom: 20px; animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
@@ -42,42 +42,37 @@
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* HOME DESIGN */
+        /* --- HOME --- */
         .hero { height: 60vh; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
         .hero-bg { position: absolute; top: 0; left: 0; width: 130%; height: 100%; background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('bg.jpg'); background-size: cover; background-position: center; z-index: -1; animation: slowMove 25s infinite alternate linear; }
         @keyframes slowMove { from { transform: translateX(-15%); } to { transform: translateX(0%); } }
         .logo-main { width: 130px; height: 130px; border-radius: 50%; border: 3px solid var(--p-yellow); box-shadow: 0 0 25px var(--p-yellow); margin-bottom: 15px; object-fit: cover; }
 
-        /* STUDIO PLAYER - PERFECT LAYOUT */
-        .player-card { 
-            background: var(--card-dark); border-radius: 28px; overflow: hidden; 
-            border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.6); 
-            max-width: 450px; margin: 0 auto; width: 100%;
-        }
-        @media (min-width: 900px) { .player-card { max-width: 800px; } }
-
-        .song-visual-area { height: 320px; position: relative; overflow: hidden; background: #000; width: 100%; display: flex; align-items: center; justify-content: center; }
-        @media (min-width: 900px) { .song-visual-area { height: 500px; } }
-
-        #song-bg-img { position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0.95; z-index: 1; animation: studioImgPan 20s ease-in-out infinite alternate; }
-        @keyframes studioImgPan { from { transform: scale(1.1) translateX(-3%); } to { transform: scale(1.1) translateX(3%); } }
-
-        canvas { position: absolute; bottom: 0; left: 0; width: 100%; height: 70px; z-index: 5; pointer-events: none; }
+        /* --- STUDIO PLAYER (FIXED) --- */
+        .player-card { background: var(--card-dark); border-radius: 28px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.6); max-width: 500px; margin: 0 auto; width: 100%; }
+        @media (min-width: 900px) { .player-card { max-width: 850px; } }
+        .song-visual-area { height: 320px; position: relative; overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center; }
+        @media (min-width: 900px) { .song-visual-area { height: 550px; } }
+        #song-bg-img { position: absolute; width: 100%; height: 100%; object-fit: contain; opacity: 0.95; z-index: 1; animation: studioImgPan 20s ease-in-out infinite alternate; }
+        @keyframes studioImgPan { from { transform: scale(1.05) translateX(-2%); } to { transform: scale(1.05) translateX(2%); } }
+        canvas { position: absolute; bottom: 0; left: 0; width: 100%; height: 65px; z-index: 5; pointer-events: none; }
         
         .player-info { padding: 25px 20px; text-align: center; position: relative; z-index: 10; background: var(--card-dark); }
         .song-title-display { font-weight: 600; color: var(--p-yellow); margin-bottom: 20px; font-size: 1.1rem; }
-        
         .seek-bar { width: 100%; height: 6px; background: #333; border-radius: 10px; outline: none; -webkit-appearance: none; cursor: pointer; background-image: linear-gradient(var(--p-yellow), var(--p-yellow)); background-repeat: no-repeat; background-size: 0% 100%; }
         .seek-bar::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; background: #fff; border-radius: 50%; box-shadow: 0 0 10px var(--p-yellow); }
         
-        /* PROFESSIONAL BUTTONS */
         .player-controls { display: flex; justify-content: space-around; align-items: center; margin-top: 25px; }
-        .ctrl-btn { font-size: 1.3rem; color: #aaa; padding: 10px; border-radius: 50%; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; }
-        .ctrl-btn.active { color: var(--p-yellow); box-shadow: var(--inner-shadow); background: rgba(253, 216, 53, 0.05); border: 1px solid rgba(253, 216, 53, 0.1); }
-        
-        .play-main-btn { width: 70px; height: 70px; background: #fff; color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
+        .ctrl-btn { font-size: 1.35rem; color: #888; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .ctrl-btn.active { color: var(--p-yellow); box-shadow: var(--inner-shadow); background: rgba(253, 216, 53, 0.05); }
+        .play-main-btn { width: 75px; height: 75px; background: #fff; color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
 
-        /* PLAYLIST & NAV */
+        /* --- MUSIC & TIKTOK --- */
+        .tiktok-card { background: #181818; border-radius: 15px; display: flex; align-items: center; padding: 15px; margin-bottom: 12px; border-left: 4px solid #ff0050; border: 1px solid rgba(255,255,255,0.05); }
+        .tiktok-card i { font-size: 1.5rem; margin-right: 15px; color: #00f2ea; }
+        .tiktok-card span { flex: 1; font-weight: 600; font-size: 0.95rem; }
+
+        /* --- PLAYLIST, NAV & GALLERY --- */
         .playlist-drawer { position: fixed; top: 0; right: -100%; width: 100%; height: 100%; background: rgba(10,10,10,0.98); z-index: 6000; transition: 0.5s; padding: 80px 20px; overflow-y: auto; }
         .playlist-drawer.active { right: 0; }
         .song-item { display: flex; align-items: center; padding: 18px; background: #181818; margin-bottom: 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); }
@@ -90,27 +85,18 @@
 
         .card { background: var(--card-dark); border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
         .counter-box { background: #1a1a1a; display: inline-block; padding: 8px 18px; border-radius: 12px; border: 1px solid var(--p-yellow); margin-top: 10px; }
-        .lang-list { height: 250px; overflow-y: auto; background: #111; border-radius: 12px; margin-top: 10px; }
-        .lang-item { padding: 15px; border-bottom: 1px solid #222; font-weight: 500; }
         .gallery-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
         .gallery-item { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 12px; }
+        .lang-list { height: 250px; overflow-y: auto; background: #111; border-radius: 12px; margin-top: 10px; }
+        .lang-item { padding: 15px; border-bottom: 1px solid #222; cursor: pointer; }
     </style>
 </head>
 <body class="dark-mode">
 
-    <!-- Splash Screen -->
-    <div id="splash">
-        <img src="logo.png" class="splash-logo">
-        <h2 style="color: var(--p-yellow); letter-spacing: 2px;">RBA-KALIKOT</h2>
-        <p id="splash-slogan" style="color: #666; font-size: 0.8rem;">सुरुवात सानो बाट</p>
-    </div>
+    <div id="splash"><img src="logo.png" class="splash-logo"><h2 style="color: var(--p-yellow); letter-spacing: 2px;">RBA-KALIKOT</h2><p style="color: #666; font-size: 0.8rem;">सुरुवात सानो बाट</p></div>
 
-    <!-- Playlist Drawer -->
     <div id="playlist-drawer" class="playlist-drawer">
-        <div style="display: flex; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 15px;">
-            <h3 id="txt-list-title" style="color: var(--p-yellow); flex: 1;">मेरो प्लेलिस्ट</h3>
-            <i class="fas fa-times click-effect" onclick="togglePlaylist()" style="font-size: 2rem; color: #888;"></i>
-        </div>
+        <div style="display: flex; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 15px;"><h3 id="txt-list-title" style="color: var(--p-yellow); flex: 1;">मेरो प्लेलिस्ट</h3><i class="fas fa-times click-effect" onclick="togglePlaylist()" style="font-size: 2rem; color: #888;"></i></div>
         <div id="playlist-container"></div>
     </div>
 
@@ -122,56 +108,38 @@
 
     <!-- 1. HOME -->
     <div id="home" class="tab-content active" style="padding: 0;">
-        <div class="hero">
-            <div class="hero-bg"></div>
-            <img src="logo.png" class="logo-main">
-            <h1 style="color: var(--p-yellow);">RBA-Kalikot</h1>
-            <p id="hero-slogan">"सुरुवात सानो बाट"</p>
-        </div>
+        <div class="hero"><div class="hero-bg"></div><img src="logo.png" class="logo-main"><h1 style="color: var(--p-yellow);">RBA-Kalikot</h1><p id="hero-slogan">"सुरुवात सानो बाट"</p></div>
         <div style="padding: 15px;">
-            <div class="card">
-                <h3 id="txt-intro-title">मेरो परिचय</h3>
-                <p id="txt-intro-desc">नमस्कार म राजन बोहरा 'आरक्षक'/RBA-Kalikot</p>
-                <button id="txt-journey-btn" class="click-effect" onclick="loadJourney()" style="background: var(--p-yellow); border: none; padding: 14px; border-radius: 14px; font-weight: 600; width: 100%; margin-top: 20px; color: #000;">
-                    <i class="fas fa-book-open"></i> मेरो सांगीतिक कथा पढ्नुहोस्
-                </button>
-                <div style="display: flex; justify-content: space-around; margin-top: 30px; font-size: 2rem;">
+            <div class="card"><h3 id="txt-intro-title">मेरो परिचय</h3><p id="txt-intro-desc">नमस्कार म राजन बोहरा 'आरक्षक'/RBA-Kalikot</p>
+                <button id="txt-journey-btn" class="click-effect" onclick="loadJourney()" style="background: var(--p-yellow); border: none; padding: 15px; border-radius: 15px; font-weight: 600; width: 100%; margin-top: 20px; color: #000; box-shadow: 0 4px 15px rgba(253,216,53,0.3);"><i class="fas fa-book-open"></i> मेरो सांगीतिक कथा पढ्नुहोस्</button>
+                <div style="display: flex; justify-content: space-around; margin-top: 30px; font-size: 2.2rem;">
                     <a href="https://youtube.com/@rba-kalikot" class="click-effect" style="color: #ff0000;"><i class="fab fa-youtube"></i></a>
                     <a href="https://facebook.com/share/1HtznSabqV/" class="click-effect" style="color: #1877f2;"><i class="fab fa-facebook-f"></i></a>
                     <a href="https://www.tiktok.com/@rbakalikot" class="click-effect" style="color: var(--text-white);"><i class="fab fa-tiktok"></i></a>
                     <a href="https://wa.me/9768978945" class="click-effect" style="color: #25d366;"><i class="fab fa-whatsapp"></i></a>
                 </div>
             </div>
-            <div class="card" style="text-align: center;">
-                <h4 id="txt-visitor-title">कुल आगन्तुक (Live)</h4>
-                <div class="counter-box"><img src="https://counter.secrethelp.io/api/counter?name=rbakalikot&color=fdd835&style=rule" height="25"></div>
-            </div>
+            <div class="card" style="text-align: center;"><h4 id="txt-visitor-title">कुल आगन्तुक (Live)</h4><div class="counter-box"><img src="https://counter.secrethelp.io/api/counter?name=rbakalikot&color=fdd835&style=rule" height="25"></div></div>
         </div>
     </div>
 
     <!-- 2. STUDIO -->
     <div id="studio" class="tab-content">
-        <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 25px; gap: 15px;">
-            <h2 id="txt-studio-title" style="letter-spacing: 1px;">आर्टिस्ट स्टुडियो</h2>
-            <i class="fas fa-list-ul click-effect" onclick="togglePlaylist()" style="color: var(--p-yellow); font-size: 1.4rem; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px;"></i>
-        </div>
+        <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 25px; gap: 15px;"><h2 id="txt-studio-title">आर्टिस्ट स्टुडियो</h2><i class="fas fa-list-ul click-effect" onclick="togglePlaylist()" style="color: var(--p-yellow); font-size: 1.4rem; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px;"></i></div>
         <div class="player-card">
             <div class="song-visual-area"><img id="song-bg-img" src="logo.png"><canvas id="visualizer"></canvas></div>
             <div class="player-info">
                 <div id="song-title" class="song-title-display">RBA - Loading...</div>
-                <div class="timeline-container">
-                    <input type="range" class="seek-bar" id="seek-bar" value="0" step="1">
-                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #888; margin-top: 8px;"><span id="current-time">0:00</span><span id="total-duration">0:00</span></div>
-                </div>
+                <div class="timeline-container"><input type="range" class="seek-bar" id="seek-bar" value="0" step="1"><div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #888; margin-top: 8px;"><span id="current-time">0:00</span><span id="total-duration">0:00</span></div></div>
                 <div class="player-controls">
                     <i class="fas fa-random ctrl-btn click-effect" id="shuffle-btn" onclick="toggleShuffle()"></i>
-                    <i class="fas fa-step-backward click-effect" style="font-size: 1.4rem;" onclick="prevSong()"></i>
+                    <i class="fas fa-step-backward click-effect" style="font-size: 1.5rem;" onclick="prevSong()"></i>
                     <div class="play-main-btn click-effect" onclick="toggleAudio()"><i id="play-icon" class="fas fa-play"></i></div>
-                    <i class="fas fa-step-forward click-effect" style="font-size: 1.4rem;" onclick="nextSong()"></i>
+                    <i class="fas fa-step-forward click-effect" style="font-size: 1.5rem;" onclick="nextSong()"></i>
                     <i class="fas fa-redo-alt ctrl-btn click-effect" id="repeat-btn" onclick="toggleRepeat()"></i>
                 </div>
-                <div style="display: flex; justify-content: space-around; margin-top: 35px; font-size: 1.4rem;">
-                    <div class="click-effect" onclick="addLike()"><i id="like-icon" class="far fa-heart"></i><span id="like-display" style="margin-left: 8px; font-size: 1rem;">1.2K</span></div>
+                <div style="display: flex; justify-content: space-around; margin-top: 35px; font-size: 1.5rem;">
+                    <div class="click-effect" onclick="addLike()"><i id="like-icon" class="far fa-heart"></i><span id="like-display" style="margin-left: 8px; font-size: 1.1rem;">1.2K</span></div>
                     <i class="fas fa-share-alt click-effect" onclick="shareApp()"></i>
                     <i class="fas fa-download click-effect" onclick="downloadCurrent()"></i>
                 </div>
@@ -180,24 +148,39 @@
         <audio id="main-audio" crossorigin="anonymous"></audio>
     </div>
 
-    <!-- 3. JOURNEY / 4. GALLERY / 5. MUSIC -->
+    <!-- 3. JOURNEY / 4. GALLERY -->
     <div id="journey" class="tab-content"><h2 id="txt-journey-title" style="text-align: center; margin-bottom: 25px;">मेरो सांगीतिक यात्रा</h2><div id="journey-container"></div></div>
     <div id="gallery" class="tab-content"><h2 id="txt-gallery-title" style="text-align: center; margin-bottom: 25px;">ग्यालरी</h2><div id="gallery-container" class="gallery-grid"></div></div>
-    <div id="music" class="tab-content"><h2>YouTube Official</h2><div class="card" style="padding: 0; overflow: hidden; aspect-ratio: 16/9; border: 1px solid var(--p-yellow);"><iframe width="100%" height="100%" src="https://www.youtube.com/embed/videoseries?list=PLbIVhUB2hspnM4N7Xk-U8vHe71mqFJ4pX" frameborder="0" allowfullscreen></iframe></div></div>
+
+    <!-- 5. MUSIC (YouTube, Spotify, TikTok) -->
+    <div id="music" class="tab-content">
+        <h2 id="txt-yt-title">YouTube Official</h2>
+        <div class="card" style="padding: 0; overflow: hidden; aspect-ratio: 16/9; border: 1px solid var(--p-yellow);"><iframe width="100%" height="100%" src="https://www.youtube.com/embed/videoseries?list=PLbIVhUB2hspnM4N7Xk-U8vHe71mqFJ4pX" frameborder="0" allowfullscreen></iframe></div>
+        
+        <h2 id="txt-spot-title" style="margin-top: 25px;">Spotify Playlist</h2>
+        <div class="card" style="padding: 0; overflow: hidden; border-radius: 16px; border: 1px solid #1DB954;"><iframe src="https://open.spotify.com/embed/playlist/3AA6Sjr7E5lhGvqdAOWUqQ?utm_source=generator&theme=0" width="100%" height="380" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+
+        <h2 style="margin-top: 25px;">TikTok Highlights</h2>
+        <div class="tiktok-card click-effect" onclick="window.open('https://vt.tiktok.com/ZSHFssLBJ/')"><i class="fab fa-tiktok"></i><span>Chadani</span></div>
+        <div class="tiktok-card click-effect" onclick="window.open('https://vt.tiktok.com/ZSHFGRhXK/')"><i class="fab fa-tiktok"></i><span>Aadat</span></div>
+        <div class="tiktok-card click-effect" onclick="window.open('https://vt.tiktok.com/ZSHFsvJJf/')"><i class="fab fa-tiktok"></i><span>Lekaali</span></div>
+        <div class="tiktok-card click-effect" onclick="window.open('https://vt.tiktok.com/ZSHFGdUQn/')"><i class="fab fa-tiktok"></i><span>Himalayan Breeze</span></div>
+        <div class="tiktok-card click-effect" onclick="window.open('https://vt.tiktok.com/ZSHFGRToK/')"><i class="fab fa-tiktok"></i><span>Ghatta Music</span></div>
+    </div>
 
     <!-- 6. SETTINGS -->
     <div id="settings" class="tab-content">
         <h2 id="txt-settings-title">Settings</h2>
-        <div class="card">
-            <h4 id="txt-lang-label">भाषा चयन गर्नुहोस्</h4>
+        <div class="card"><h4 id="txt-lang-label">भाषा चयन गर्नुहोस्</h4>
             <input type="text" id="lang-search" style="width:100%; padding:14px; border-radius:12px; background:#1a1a1a; border:1px solid var(--p-yellow); color:white; margin:10px 0;" placeholder="Search language..." onkeyup="searchLang(this.value)">
             <div id="lang-list" class="lang-list">
-                <div class="lang-item click-effect" onclick="changeLanguage('ne')">नेपाली (Nepali)</div>
-                <div class="lang-item click-effect" onclick="changeLanguage('en')">English</div>
-                <div class="lang-item click-effect" onclick="changeLanguage('hi')">हिन्दी (Hindi)</div>
-                <div class="lang-item click-effect" onclick="changeLanguage('or')">Original (Mix)</div>
+                <div class="lang-item" onclick="changeLanguage('ne')">नेपाली (Nepali)</div>
+                <div class="lang-item" onclick="changeLanguage('en')">English</div>
+                <div class="lang-item" onclick="changeLanguage('hi')">हिन्दी (Hindi)</div>
+                <div class="lang-item" onclick="changeLanguage('or')">Original (नेपाली + English)</div>
             </div>
         </div>
+        <div class="card" style="text-align: center;"><h4>Artist Booking</h4><a href="https://wa.me/9768978945" class="click-effect" style="display:block; background:#25d366; padding:15px; border-radius:14px; color:#fff; text-decoration:none; margin-top:10px; font-weight:600;"><i class="fab fa-whatsapp"></i> WhatsApp Booking</a></div>
     </div>
 
     <nav>
@@ -210,17 +193,16 @@
 
     <script>
         const GITHUB_REPO = "rbakalikot/RBA-KALIKOT";
-        let playlist = []; let currentIndex = 0; let isShuffle = false; let isRepeat = false;
-        let tabHistory = ['home'];
-
+        let playlist = []; let currentIndex = 0; let isShuffle = false; let isRepeat = false; let tabHistory = ['home'];
         const audio = document.getElementById('main-audio');
         const playIcon = document.getElementById('play-icon');
         const seek = document.getElementById('seek-bar');
 
         const translations = {
-            ne: { slogan: "सुरुवात सानो बाट", introTitle: "मेरो परिचय", introDesc: "नमस्कार म राजन बोहरा 'आरक्षक'/RBA-Kalikot", journeyBtn: "मेरो सांगीतिक कथा पढ्नुहोस्", visitor: "कुल आगन्तुक (Live)", studio: "आर्टिस्ट स्टुडियो", gallery: "ग्यालरी", settings: "सेटिङहरू", langLabel: "भाषा चयन गर्नुहोस्", navHome: "होम", navStudio: "स्टुडियो", navGallery: "ग्यालरी", navMusic: "संगीत", navSettings: "सेटिङ" },
-            en: { slogan: "Starting from Small", introTitle: "Intro", introDesc: "Namaste, I am Rajan Bohara 'Aarakshak'/RBA-Kalikot", journeyBtn: "Read My Story", visitor: "Live Visitors", studio: "Artist Studio", gallery: "Gallery", settings: "Settings", langLabel: "Select Language", navHome: "Home", navStudio: "Studio", navGallery: "Gallery", navMusic: "Music", navSettings: "Settings" },
-            or: { slogan: "सुरुवात सानो बाट", introTitle: "Intro (मेरो परिचय)", introDesc: "Namaste, म राजन बोहरा 'आरक्षक' (RBA-Kalikot)", journeyBtn: "Read My Story (संगीत कथा)", visitor: "Live Visitors (आगन्तुक)", studio: "Studio (स्टुडियो)", gallery: "Gallery (ग्यालरी)", settings: "Settings (सेटिङ)", langLabel: "Language (भाषा)", navHome: "Home", navStudio: "Studio", navGallery: "Gallery", navMusic: "Music", navSettings: "Settings" }
+            ne: { slogan: "सुरुवात सानो बाट", introTitle: "मेरो परिचय", introDesc: "नमस्कार म राजन बोहरा 'आरक्षक'/RBA-Kalikot", journeyBtn: "मेरो सांगीतिक कथा पढ्नुहोस्", visitor: "कुल आगन्तुक (Live)", studio: "आर्टिस्ट स्टुडियो", gallery: "ग्यालरी", ytTitle: "YouTube Official", spotTitle: "Spotify Playlist", listTitle: "मेरो प्लेलिस्ट", settings: "सेटिङहरू", langLabel: "भाषा चयन गर्नुहोस्", navHome: "होम", navStudio: "स्टुडियो", navGallery: "ग्यालरी", navMusic: "संगीत", navSettings: "सेटिङ" },
+            en: { slogan: "Starting from Small", introTitle: "Intro", introDesc: "Namaste, I am Rajan Bohara 'Aarakshak'/RBA-Kalikot", journeyBtn: "Read My Story", visitor: "Live Visitors", studio: "Artist Studio", gallery: "Gallery", ytTitle: "YouTube Official", spotTitle: "Spotify Playlist", listTitle: "My Playlist", settings: "Settings", langLabel: "Select Language", navHome: "Home", navStudio: "Studio", navGallery: "Gallery", navMusic: "Music", navSettings: "Settings" },
+            hi: { slogan: "शुरुआत छोटे से", introTitle: "मेरा परिचय", introDesc: "नमस्ते, मैं राजन बोहरा 'आरक्षक'/RBA-Kalikot हूँ", journeyBtn: "मेरी कहानी पढ़ें", visitor: "कुल आगंतुक", studio: "स्टूडियो", gallery: "गैलरी", ytTitle: "YouTube", spotTitle: "Spotify", listTitle: "प्लेलिस्ट", settings: "सेटिंग्स", langLabel: "भाषा चुनें", navHome: "होम", navStudio: "स्टूडियो", navGallery: "गैलरी", navMusic: "संगीत", navSettings: "सेटिंग" },
+            or: { slogan: "सुरुवात सानो बाट", introTitle: "Intro (मेरो परिचय)", introDesc: "Namaste, म राजन बोहरा 'आरक्षक' (RBA-Kalikot)", journeyBtn: "Read My Story (संगीत कथा)", visitor: "Live Visitors (आगन्तुक)", studio: "Studio (स्टुडियो)", gallery: "Gallery (ग्यालरी)", ytTitle: "YouTube Official", spotTitle: "Spotify Playlist", listTitle: "Playlist (सूची)", settings: "Settings (सेटिङ)", langLabel: "Language (भाषा)", navHome: "Home", navStudio: "Studio", navGallery: "Gallery", navMusic: "Music", navSettings: "Settings" }
         };
 
         function changeLanguage(lang) {
@@ -230,8 +212,12 @@
             document.getElementById('txt-intro-title').innerText = t.introTitle;
             document.getElementById('txt-intro-desc').innerText = t.introDesc;
             document.getElementById('txt-journey-btn').innerHTML = `<i class="fas fa-book-open"></i> ${t.journeyBtn}`;
+            document.getElementById('txt-visitor-title').innerText = t.visitor;
             document.getElementById('txt-studio-title').innerText = t.studio;
             document.getElementById('txt-gallery-title').innerText = t.gallery;
+            document.getElementById('txt-yt-title').innerText = t.ytTitle;
+            document.getElementById('txt-spot-title').innerText = t.spotTitle;
+            document.getElementById('txt-list-title').innerText = t.listTitle;
             document.getElementById('txt-settings-title').innerText = t.settings;
             document.getElementById('txt-lang-label').innerText = t.langLabel;
             document.getElementById('nav-home').innerText = t.navHome;
@@ -257,10 +243,9 @@
         }
 
         function renderPlaylistUI() {
-            const container = document.getElementById('playlist-container');
-            container.innerHTML = playlist.map((s, i) => `
-                <div class="song-item" onclick="loadSong(${i}); toggleAudio(); togglePlaylist();">
-                    <i class="fas fa-music"></i><span>${s.name}</span>
+            document.getElementById('playlist-container').innerHTML = playlist.map((s, i) => `
+                <div class="song-item click-effect" onclick="loadSong(${i}); toggleAudio(); togglePlaylist();">
+                    <i class="fas fa-play-circle"></i><span>${s.name}</span>
                 </div>
             `).join('');
         }
@@ -332,12 +317,7 @@
         }
 
         function handleBack() {
-            if(tabHistory.length > 1) {
-                tabHistory.pop();
-                const prev = tabHistory[tabHistory.length-1];
-                showTab(prev, document.querySelector(`nav a[onclick*="${prev}"]`));
-                tabHistory.pop();
-            }
+            if(tabHistory.length > 1) { tabHistory.pop(); const prev = tabHistory[tabHistory.length-1]; showTab(prev, document.querySelector(`nav a[onclick*="${prev}"]`)); tabHistory.pop(); }
         }
 
         async function loadJourney() {
