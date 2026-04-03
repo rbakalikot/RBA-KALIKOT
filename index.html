@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="google-site-verification" content="0Q6KK8VAGsLAin3EgVlRrqRnyVQid8w-kJomGIJQeDk" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0a0a0a">
     <title>RBA-Kalikot | Official Artist App</title>
     
     <link rel="manifest" href="manifest.json">
@@ -22,14 +21,13 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; transition: background 0.3s; }
         body { background-color: var(--bg-dark); color: var(--text-white); overflow-x: hidden; }
 
-        /* --- Global Interactive Zoom Feedback --- */
-        .click-effect, i, button, nav a, .song-item, .tiktok-card {
+        /* Button Click Feedback */
+        .click-effect, i, button, nav a, .song-item {
             cursor: pointer; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
             -webkit-tap-highlight-color: transparent;
         }
         .click-effect:active, i:active, nav a:active { transform: scale(0.88) !important; }
 
-        /* Splash Screen */
         #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: #000; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .splash-logo { width: 100px; border-radius: 50%; border: 2px solid var(--p-yellow); margin-bottom: 20px; animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
@@ -41,21 +39,22 @@
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* --- HOME --- */
+        /* HOME DESIGN */
         .hero { height: 60vh; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
         .hero-bg { position: absolute; top: 0; left: 0; width: 130%; height: 100%; background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('bg.jpg'); background-size: cover; background-position: center; z-index: -1; animation: slowMove 25s infinite alternate linear; }
         @keyframes slowMove { from { transform: translateX(-15%); } to { transform: translateX(0%); } }
         .logo-main { width: 130px; height: 130px; border-radius: 50%; border: 3px solid var(--p-yellow); box-shadow: 0 0 25px var(--p-yellow); margin-bottom: 15px; object-fit: cover; }
 
-        /* --- STUDIO PLAYER --- */
-        .player-card { background: var(--card-dark); border-radius: 28px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.6); max-width: 500px; margin: 0 auto; width: 100%; }
-        @media (min-width: 900px) { .player-card { max-width: 850px; } }
+        /* STUDIO PLAYER */
+        .player-card { background: var(--card-dark); border-radius: 28px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.6); max-width: 450px; margin: 0 auto; width: 100%; }
+        @media (min-width: 900px) { .player-card { max-width: 800px; } }
         .song-visual-area { height: 320px; position: relative; overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center; }
         @media (min-width: 900px) { .song-visual-area { height: 500px; } }
         #song-bg-img { position: absolute; width: 100%; height: 100%; object-fit: contain; opacity: 0.95; z-index: 1; animation: studioImgPan 20s ease-in-out infinite alternate; }
         @keyframes studioImgPan { from { transform: scale(1.05) translateX(-2%); } to { transform: scale(1.05) translateX(2%); } }
         canvas { position: absolute; bottom: 0; left: 0; width: 100%; height: 65px; z-index: 5; pointer-events: none; }
         
+        .player-info { padding: 25px 20px; text-align: center; position: relative; z-index: 10; background: var(--card-dark); }
         .song-title-display { font-weight: 600; color: var(--p-yellow); margin-bottom: 20px; font-size: 1.1rem; }
         .seek-bar { width: 100%; height: 6px; background: #333; border-radius: 10px; outline: none; -webkit-appearance: none; cursor: pointer; background-image: linear-gradient(var(--p-yellow), var(--p-yellow)); background-repeat: no-repeat; background-size: 0% 100%; }
         .seek-bar::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; background: #fff; border-radius: 50%; box-shadow: 0 0 10px var(--p-yellow); }
@@ -65,16 +64,16 @@
         .ctrl-btn.active { color: var(--p-yellow); box-shadow: var(--inner-shadow); background: rgba(253, 216, 53, 0.05); }
         .play-main-btn { width: 75px; height: 75px; background: #fff; color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
 
-        /* --- MUSIC SECTION --- */
+        /* PLAYLIST DRAWER */
+        .playlist-drawer { position: fixed; top: 0; right: -100%; width: 100%; height: 100%; background: rgba(10,10,10,0.98); z-index: 6000; transition: 0.5s; padding: 80px 20px; overflow-y: auto; }
+        .playlist-drawer.active { right: 0; }
+        .song-item { display: flex; align-items: center; padding: 18px; background: #181818; margin-bottom: 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); }
+        .song-item.playing { border-color: var(--p-yellow); background: rgba(253, 216, 53, 0.08); }
+
+        /* TIKTOK & OTHERS */
         .tiktok-card { background: #181818; border-radius: 15px; display: flex; align-items: center; padding: 15px; margin-bottom: 12px; border-left: 4px solid #ff0050; border: 1px solid rgba(255,255,255,0.05); }
         .tiktok-card i { font-size: 1.5rem; margin-right: 15px; color: #00f2ea; }
         .tiktok-card span { flex: 1; font-weight: 600; font-size: 0.95rem; }
-
-        /* --- PLAYLIST & NAV --- */
-        .playlist-drawer { position: fixed; top: 0; right: -100%; width: 100%; height: 100%; background: rgba(10,10,10,0.98); z-index: 6000; transition: 0.5s cubic-bezier(0.77, 0, 0.175, 1); padding: 80px 20px; overflow-y: auto; }
-        .playlist-drawer.active { right: 0; }
-        .song-item { display: flex; align-items: center; padding: 18px; background: #181818; margin-bottom: 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); }
-        .song-item.playing { border-color: var(--p-yellow); }
 
         nav { position: fixed; bottom: 15px; left: 5%; width: 90%; background: rgba(15,15,15,0.95); backdrop-filter: blur(20px); display: flex; justify-content: space-around; padding: 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); z-index: 5000; box-shadow: 0 -10px 30px rgba(0,0,0,0.5); }
         nav a { color: #666; text-decoration: none; font-size: 0.75rem; text-align: center; flex: 1; }
@@ -93,8 +92,12 @@
 
     <div id="splash"><img src="logo.png" class="splash-logo"><h2 style="color: var(--p-yellow); letter-spacing: 2px;">RBA-KALIKOT</h2><p style="color: #666; font-size: 0.8rem;">सुरुवात सानो बाट</p></div>
 
+    <!-- Playlist Drawer -->
     <div id="playlist-drawer" class="playlist-drawer">
-        <div style="display: flex; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 15px;"><h3 id="txt-list-title" style="color: var(--p-yellow); flex: 1;">मेरो प्लेलिस्ट</h3><i class="fas fa-times click-effect" onclick="togglePlaylist()" style="font-size: 2rem; color: #888;"></i></div>
+        <div style="display: flex; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 15px;">
+            <h3 id="txt-list-title" style="color: var(--p-yellow); flex: 1;">मे्रो प्लेलिस्ट</h3>
+            <i class="fas fa-times click-effect" onclick="togglePlaylist()" style="font-size: 2rem; color: #888;"></i>
+        </div>
         <div id="playlist-container"></div>
     </div>
 
@@ -150,7 +153,7 @@
     <div id="journey" class="tab-content"><h2 id="txt-journey-title" style="text-align: center; margin-bottom: 25px;">मेरो सांगीतिक यात्रा</h2><div id="journey-container"></div></div>
     <div id="gallery" class="tab-content"><h2 id="txt-gallery-title" style="text-align: center; margin-bottom: 25px;">ग्यालरी</h2><div id="gallery-container" class="gallery-grid"></div></div>
 
-    <!-- 5. MUSIC (All Fixed) -->
+    <!-- 5. MUSIC -->
     <div id="music" class="tab-content">
         <h2 id="txt-yt-title">YouTube Official</h2>
         <div class="card" style="padding: 0; overflow: hidden; aspect-ratio: 16/9; border: 1px solid var(--p-yellow);"><iframe width="100%" height="100%" src="https://www.youtube.com/embed/videoseries?list=PLbIVhUB2hspnM4N7Xk-U8vHe71mqFJ4pX" frameborder="0" allowfullscreen></iframe></div>
@@ -204,18 +207,10 @@
 
         function changeLanguage(lang) {
             const t = translations[lang] || translations['ne'];
-            document.getElementById('splash-slogan').innerText = t.slogan;
             document.getElementById('hero-slogan').innerText = `"${t.slogan}"`;
             document.getElementById('txt-intro-title').innerText = t.introTitle;
             document.getElementById('txt-intro-desc').innerText = t.introDesc;
             document.getElementById('txt-journey-btn').innerHTML = `<i class="fas fa-book-open"></i> ${t.journeyBtn}`;
-            document.getElementById('txt-studio-title').innerText = t.studio;
-            document.getElementById('txt-gallery-title').innerText = t.gallery;
-            document.getElementById('txt-yt-title').innerText = t.ytTitle;
-            document.getElementById('txt-spot-title').innerText = t.spotTitle;
-            document.getElementById('txt-list-title').innerText = t.listTitle;
-            document.getElementById('txt-settings-title').innerText = t.settings;
-            document.getElementById('txt-lang-label').innerText = t.langLabel;
             document.getElementById('nav-home').innerText = t.navHome;
             document.getElementById('nav-studio').innerText = t.navStudio;
             document.getElementById('nav-gallery').innerText = t.navGallery;
@@ -231,21 +226,18 @@
                 const mp3s = files.filter(f => f.name.toLowerCase().endsWith('.mp3'));
                 playlist = mp3s.map(f => {
                     const baseName = f.name.substring(0, f.name.lastIndexOf('.'));
-                    const img = files.find(i => i.name.toLowerCase() === baseName.toLowerCase() + '.jpg');
+                    // Better image matching
+                    const img = files.find(i => i.name.toLowerCase().startsWith(baseName.toLowerCase()) && (i.name.endsWith('.jpg') || i.name.endsWith('.png')));
                     return { name: "RBA - " + baseName.toUpperCase(), url: f.download_url, img: img ? img.download_url : 'logo.png' };
                 });
                 if(playlist.length > 0) { renderPlaylistUI(); loadSong(0); }
-            } catch (e) { console.log("Load Error"); }
+                else { document.getElementById('song-title').innerText = "गीतहरू भेटिएनन्"; }
+            } catch (e) { document.getElementById('song-title').innerText = "लोडिङ एरर"; }
         }
 
         function renderPlaylistUI() {
             const container = document.getElementById('playlist-container');
-            if(!container) return;
-            container.innerHTML = playlist.map((s, i) => `
-                <div class="song-item" onclick="loadSong(${i}); toggleAudio(); togglePlaylist();">
-                    <i class="fas fa-play-circle"></i><span>${s.name}</span>
-                </div>
-            `).join('');
+            container.innerHTML = playlist.map((s, i) => `<div class="song-item click-effect" onclick="loadSong(${i}); audio.play(); togglePlaylist();"><i class="fas fa-play-circle"></i><span>${s.name}</span></div>`).join('');
         }
 
         function loadSong(index) {
@@ -263,8 +255,8 @@
             else { audio.pause(); playIcon.className = "fas fa-play"; }
         }
 
-        function nextSong() { loadSong((currentIndex + 1) % playlist.length); toggleAudio(); }
-        function prevSong() { loadSong((currentIndex - 1 + playlist.length) % playlist.length); toggleAudio(); }
+        function nextSong() { loadSong((currentIndex + 1) % playlist.length); audio.play(); playIcon.className = "fas fa-pause"; }
+        function prevSong() { loadSong((currentIndex - 1 + playlist.length) % playlist.length); audio.play(); playIcon.className = "fas fa-pause"; }
         function toggleShuffle() { isShuffle = !isShuffle; document.getElementById('shuffle-btn').classList.toggle('active'); }
         function toggleRepeat() { isRepeat = !isRepeat; document.getElementById('repeat-btn').classList.toggle('active'); }
 
@@ -343,17 +335,14 @@
         function shareApp() { navigator.share({title:'RBA-Kalikot Official', url: window.location.href}); }
         function addLike() { document.getElementById('like-icon').className = "fas fa-heart"; document.getElementById('like-icon').style.color = "red"; }
 
-        // --- RELIABLE INITIALIZATION ---
         window.onload = () => {
             const splash = document.getElementById('splash');
-            // Hide splash after 2.5 seconds NO MATTER WHAT
-            setTimeout(() => { if(splash) splash.style.display = 'none'; }, 2500);
-
+            setTimeout(() => { if(splash) splash.style.display = 'none'; }, 3000); // 3 sec failsafe
             try {
                 const savedLang = localStorage.getItem('rba_lang') || 'ne';
                 changeLanguage(savedLang);
                 loadPlaylist();
-            } catch (e) { console.log("Init Error"); }
+            } catch (e) {}
         };
     </script>
 </body>
