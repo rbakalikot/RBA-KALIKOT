@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="google-site-verification" content="0Q6KK8VAGsLAin3EgVlRrqRnyVQid8w-kJomGIJQeDk" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0a0a0a">
     <title>RBA-Kalikot | Official Artist App</title>
     
     <link rel="manifest" href="manifest.json">
@@ -14,27 +15,27 @@
         :root {
             --p-green: #2e7d32; --p-yellow: #fdd835; --bg-dark: #0a0a0a;
             --card-dark: #121212; --text-white: #ffffff;
-            --inner-shadow: inset 2px 2px 5px rgba(0,0,0,0.5), inset -2px -2px 5px rgba(255,255,255,0.05);
+            --inner-shadow: inset 3px 3px 6px rgba(0,0,0,0.6), inset -2px -2px 5px rgba(255,255,255,0.05);
         }
         .light-mode { --bg-dark: #f4f7f6; --card-dark: #ffffff; --text-white: #121212; }
         
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background-color: var(--bg-dark); color: var(--text-white); overflow-x: hidden; transition: background 0.3s; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; transition: background 0.3s; }
+        body { background-color: var(--bg-dark); color: var(--text-white); overflow-x: hidden; }
 
-        /* Button Click Feedback */
-        .click-effect, i, button, nav a {
+        /* --- Click/Touch Zoom Feedback --- */
+        .click-effect, i, button, nav a, .song-item {
             cursor: pointer;
             transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
             -webkit-tap-highlight-color: transparent;
         }
-        .click-effect:active, i:active, nav a:active { transform: scale(0.88); }
+        .click-effect:active, i:active, nav a:active { transform: scale(0.88) !important; }
 
-        /* Splash Screen - Fixed Hang Issue */
+        /* Splash Screen - Fixed */
         #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: #000; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .splash-logo { width: 100px; border-radius: 50%; border: 2px solid var(--p-yellow); margin-bottom: 20px; animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
 
-        header { position: fixed; top: 0; width: 100%; height: 60px; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); display: flex; align-items: center; padding: 0 20px; z-index: 4000; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        header { position: fixed; top: 0; width: 100%; height: 60px; background: rgba(0,0,0,0.9); backdrop-filter: blur(15px); display: flex; align-items: center; padding: 0 20px; z-index: 4000; border-bottom: 1px solid rgba(255,255,255,0.1); }
         #back-btn { display: none; margin-right: 15px; color: var(--p-yellow); font-size: 1.2rem; }
 
         .tab-content { display: none; padding: 80px 15px 160px; min-height: 100vh; animation: fadeIn 0.4s ease; }
@@ -47,10 +48,10 @@
         @keyframes slowMove { from { transform: translateX(-15%); } to { transform: translateX(0%); } }
         .logo-main { width: 130px; height: 130px; border-radius: 50%; border: 3px solid var(--p-yellow); box-shadow: 0 0 25px var(--p-yellow); margin-bottom: 15px; object-fit: cover; }
 
-        /* STUDIO PLAYER - FIXED LAYOUT */
+        /* STUDIO PLAYER - PERFECT LAYOUT */
         .player-card { 
             background: var(--card-dark); border-radius: 28px; overflow: hidden; 
-            border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 20px 40px rgba(0,0,0,0.6); 
+            border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.6); 
             max-width: 450px; margin: 0 auto; width: 100%;
         }
         @media (min-width: 900px) { .player-card { max-width: 800px; } }
@@ -58,7 +59,7 @@
         .song-visual-area { height: 320px; position: relative; overflow: hidden; background: #000; width: 100%; display: flex; align-items: center; justify-content: center; }
         @media (min-width: 900px) { .song-visual-area { height: 500px; } }
 
-        #song-bg-img { position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0.9; z-index: 1; animation: studioImgPan 20s ease-in-out infinite alternate; }
+        #song-bg-img { position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0.95; z-index: 1; animation: studioImgPan 20s ease-in-out infinite alternate; }
         @keyframes studioImgPan { from { transform: scale(1.1) translateX(-3%); } to { transform: scale(1.1) translateX(3%); } }
 
         canvas { position: absolute; bottom: 0; left: 0; width: 100%; height: 70px; z-index: 5; pointer-events: none; }
@@ -66,13 +67,13 @@
         .player-info { padding: 25px 20px; text-align: center; position: relative; z-index: 10; background: var(--card-dark); }
         .song-title-display { font-weight: 600; color: var(--p-yellow); margin-bottom: 20px; font-size: 1.1rem; }
         
-        .timeline-container { width: 100%; margin: 10px 0; }
         .seek-bar { width: 100%; height: 6px; background: #333; border-radius: 10px; outline: none; -webkit-appearance: none; cursor: pointer; background-image: linear-gradient(var(--p-yellow), var(--p-yellow)); background-repeat: no-repeat; background-size: 0% 100%; }
         .seek-bar::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; background: #fff; border-radius: 50%; box-shadow: 0 0 10px var(--p-yellow); }
         
+        /* PROFESSIONAL BUTTONS */
         .player-controls { display: flex; justify-content: space-around; align-items: center; margin-top: 25px; }
         .ctrl-btn { font-size: 1.3rem; color: #aaa; padding: 10px; border-radius: 50%; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; }
-        .ctrl-btn.active { color: var(--p-yellow); box-shadow: var(--inner-shadow); background: rgba(253, 216, 53, 0.05); }
+        .ctrl-btn.active { color: var(--p-yellow); box-shadow: var(--inner-shadow); background: rgba(253, 216, 53, 0.05); border: 1px solid rgba(253, 216, 53, 0.1); }
         
         .play-main-btn { width: 70px; height: 70px; background: #fff; color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
 
@@ -80,6 +81,7 @@
         .playlist-drawer { position: fixed; top: 0; right: -100%; width: 100%; height: 100%; background: rgba(10,10,10,0.98); z-index: 6000; transition: 0.5s; padding: 80px 20px; overflow-y: auto; }
         .playlist-drawer.active { right: 0; }
         .song-item { display: flex; align-items: center; padding: 18px; background: #181818; margin-bottom: 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); }
+        .song-item.playing { border-color: var(--p-yellow); }
 
         nav { position: fixed; bottom: 15px; left: 5%; width: 90%; background: rgba(15,15,15,0.95); backdrop-filter: blur(20px); display: flex; justify-content: space-around; padding: 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); z-index: 5000; box-shadow: 0 -10px 30px rgba(0,0,0,0.5); }
         nav a { color: #666; text-decoration: none; font-size: 0.75rem; text-align: center; flex: 1; }
@@ -88,23 +90,25 @@
 
         .card { background: var(--card-dark); border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
         .counter-box { background: #1a1a1a; display: inline-block; padding: 8px 18px; border-radius: 12px; border: 1px solid var(--p-yellow); margin-top: 10px; }
-        
         .lang-list { height: 250px; overflow-y: auto; background: #111; border-radius: 12px; margin-top: 10px; }
-        .lang-item { padding: 15px; border-bottom: 1px solid #222; font-weight: 500; cursor: pointer; }
+        .lang-item { padding: 15px; border-bottom: 1px solid #222; font-weight: 500; }
+        .gallery-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .gallery-item { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 12px; }
     </style>
 </head>
 <body class="dark-mode">
 
+    <!-- Splash Screen -->
     <div id="splash">
         <img src="logo.png" class="splash-logo">
         <h2 style="color: var(--p-yellow); letter-spacing: 2px;">RBA-KALIKOT</h2>
-        <p style="color: #666; font-size: 0.8rem;">सुरुवात सानो बाट</p>
+        <p id="splash-slogan" style="color: #666; font-size: 0.8rem;">सुरुवात सानो बाट</p>
     </div>
 
-    <!-- PLAYLIST DRAWER -->
+    <!-- Playlist Drawer -->
     <div id="playlist-drawer" class="playlist-drawer">
         <div style="display: flex; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 15px;">
-            <h3 style="color: var(--p-yellow); flex: 1;">मेरो प्लेलिस्ट</h3>
+            <h3 id="txt-list-title" style="color: var(--p-yellow); flex: 1;">मेरो प्लेलिस्ट</h3>
             <i class="fas fa-times click-effect" onclick="togglePlaylist()" style="font-size: 2rem; color: #888;"></i>
         </div>
         <div id="playlist-container"></div>
@@ -116,7 +120,7 @@
         <div style="margin-left: auto;" class="click-effect" onclick="toggleTheme()"><i class="fas fa-adjust" style="color: var(--p-yellow);"></i></div>
     </header>
 
-    <!-- 1. HOME TAB -->
+    <!-- 1. HOME -->
     <div id="home" class="tab-content active" style="padding: 0;">
         <div class="hero">
             <div class="hero-bg"></div>
@@ -128,7 +132,7 @@
             <div class="card">
                 <h3 id="txt-intro-title">मेरो परिचय</h3>
                 <p id="txt-intro-desc">नमस्कार म राजन बोहरा 'आरक्षक'/RBA-Kalikot</p>
-                <button id="txt-journey-btn" class="click-effect" onclick="loadJourney()" style="background: var(--p-yellow); border: none; padding: 14px; border-radius: 14px; font-weight: 600; width: 100%; margin-top: 20px; color: #000; box-shadow: 0 4px 15px rgba(253,216,53,0.3);">
+                <button id="txt-journey-btn" class="click-effect" onclick="loadJourney()" style="background: var(--p-yellow); border: none; padding: 14px; border-radius: 14px; font-weight: 600; width: 100%; margin-top: 20px; color: #000;">
                     <i class="fas fa-book-open"></i> मेरो सांगीतिक कथा पढ्नुहोस्
                 </button>
                 <div style="display: flex; justify-content: space-around; margin-top: 30px; font-size: 2rem;">
@@ -145,25 +149,19 @@
         </div>
     </div>
 
-    <!-- 2. STUDIO TAB -->
+    <!-- 2. STUDIO -->
     <div id="studio" class="tab-content">
         <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 25px; gap: 15px;">
             <h2 id="txt-studio-title" style="letter-spacing: 1px;">आर्टिस्ट स्टुडियो</h2>
             <i class="fas fa-list-ul click-effect" onclick="togglePlaylist()" style="color: var(--p-yellow); font-size: 1.4rem; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px;"></i>
         </div>
-        
         <div class="player-card">
-            <div class="song-visual-area">
-                <img id="song-bg-img" src="logo.png">
-                <canvas id="visualizer"></canvas>
-            </div>
+            <div class="song-visual-area"><img id="song-bg-img" src="logo.png"><canvas id="visualizer"></canvas></div>
             <div class="player-info">
                 <div id="song-title" class="song-title-display">RBA - Loading...</div>
                 <div class="timeline-container">
                     <input type="range" class="seek-bar" id="seek-bar" value="0" step="1">
-                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #888; margin-top: 8px;">
-                        <span id="current-time">0:00</span><span id="total-duration">0:00</span>
-                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #888; margin-top: 8px;"><span id="current-time">0:00</span><span id="total-duration">0:00</span></div>
                 </div>
                 <div class="player-controls">
                     <i class="fas fa-random ctrl-btn click-effect" id="shuffle-btn" onclick="toggleShuffle()"></i>
@@ -182,21 +180,22 @@
         <audio id="main-audio" crossorigin="anonymous"></audio>
     </div>
 
-    <!-- 3. JOURNEY / GALLERY / MUSIC / SETTINGS -->
-    <div id="journey" class="tab-content"><h2 style="text-align: center; margin-bottom: 25px;">मेरो सांगीतिक यात्रा</h2><div id="journey-container"></div></div>
-    <div id="gallery" class="tab-content"><h2 style="text-align: center; margin-bottom: 25px;">ग्यालरी</h2><div id="gallery-container" class="gallery-grid"></div></div>
+    <!-- 3. JOURNEY / 4. GALLERY / 5. MUSIC -->
+    <div id="journey" class="tab-content"><h2 id="txt-journey-title" style="text-align: center; margin-bottom: 25px;">मेरो सांगीतिक यात्रा</h2><div id="journey-container"></div></div>
+    <div id="gallery" class="tab-content"><h2 id="txt-gallery-title" style="text-align: center; margin-bottom: 25px;">ग्यालरी</h2><div id="gallery-container" class="gallery-grid"></div></div>
     <div id="music" class="tab-content"><h2>YouTube Official</h2><div class="card" style="padding: 0; overflow: hidden; aspect-ratio: 16/9; border: 1px solid var(--p-yellow);"><iframe width="100%" height="100%" src="https://www.youtube.com/embed/videoseries?list=PLbIVhUB2hspnM4N7Xk-U8vHe71mqFJ4pX" frameborder="0" allowfullscreen></iframe></div></div>
-    
+
+    <!-- 6. SETTINGS -->
     <div id="settings" class="tab-content">
         <h2 id="txt-settings-title">Settings</h2>
         <div class="card">
             <h4 id="txt-lang-label">भाषा चयन गर्नुहोस्</h4>
             <input type="text" id="lang-search" style="width:100%; padding:14px; border-radius:12px; background:#1a1a1a; border:1px solid var(--p-yellow); color:white; margin:10px 0;" placeholder="Search language..." onkeyup="searchLang(this.value)">
             <div id="lang-list" class="lang-list">
-                <div class="lang-item" onclick="changeLanguage('ne')">नेपाली (Nepali)</div>
-                <div class="lang-item" onclick="changeLanguage('en')">English</div>
-                <div class="lang-item" onclick="changeLanguage('hi')">हिन्दी (Hindi)</div>
-                <div class="lang-item" onclick="changeLanguage('or')">Original (Mix)</div>
+                <div class="lang-item click-effect" onclick="changeLanguage('ne')">नेपाली (Nepali)</div>
+                <div class="lang-item click-effect" onclick="changeLanguage('en')">English</div>
+                <div class="lang-item click-effect" onclick="changeLanguage('hi')">हिन्दी (Hindi)</div>
+                <div class="lang-item click-effect" onclick="changeLanguage('or')">Original (Mix)</div>
             </div>
         </div>
     </div>
@@ -219,9 +218,9 @@
         const seek = document.getElementById('seek-bar');
 
         const translations = {
-            ne: { slogan: "सुरुवात सानो बाट", introTitle: "मेरो परिचय", introDesc: "नमस्कार म राजन बोहरा 'आरक्षक'/RBA-Kalikot", journeyBtn: "मेरो सांगीतिक कथा पढ्नुहोस्", visitor: "कुल आगन्तुक (Live)", studio: "आर्टिस्ट स्टुडियो", navHome: "होम", navStudio: "स्टुडियो", navGallery: "ग्यालरी", navMusic: "संगीत", navSettings: "सेटिङ" },
-            en: { slogan: "Starting from Small", introTitle: "Intro", introDesc: "Namaste, I am Rajan Bohara 'Aarakshak'/RBA-Kalikot", journeyBtn: "Read My Story", visitor: "Live Visitors", studio: "Artist Studio", navHome: "Home", navStudio: "Studio", navGallery: "Gallery", navMusic: "Music", navSettings: "Settings" },
-            or: { slogan: "सुरुवात सानो बाट", introTitle: "Intro (मेरो परिचय)", introDesc: "Namaste, म राजन बोहरा 'आरक्षक' (RBA-Kalikot)", journeyBtn: "Read My Story (संगीत कथा)", visitor: "Live Visitors (आगन्तुक)", studio: "Studio (स्टुडियो)", navHome: "Home", navStudio: "Studio", navGallery: "Gallery", navMusic: "Music", navSettings: "Settings" }
+            ne: { slogan: "सुरुवात सानो बाट", introTitle: "मेरो परिचय", introDesc: "नमस्कार म राजन बोहरा 'आरक्षक'/RBA-Kalikot", journeyBtn: "मेरो सांगीतिक कथा पढ्नुहोस्", visitor: "कुल आगन्तुक (Live)", studio: "आर्टिस्ट स्टुडियो", gallery: "ग्यालरी", settings: "सेटिङहरू", langLabel: "भाषा चयन गर्नुहोस्", navHome: "होम", navStudio: "स्टुडियो", navGallery: "ग्यालरी", navMusic: "संगीत", navSettings: "सेटिङ" },
+            en: { slogan: "Starting from Small", introTitle: "Intro", introDesc: "Namaste, I am Rajan Bohara 'Aarakshak'/RBA-Kalikot", journeyBtn: "Read My Story", visitor: "Live Visitors", studio: "Artist Studio", gallery: "Gallery", settings: "Settings", langLabel: "Select Language", navHome: "Home", navStudio: "Studio", navGallery: "Gallery", navMusic: "Music", navSettings: "Settings" },
+            or: { slogan: "सुरुवात सानो बाट", introTitle: "Intro (मेरो परिचय)", introDesc: "Namaste, म राजन बोहरा 'आरक्षक' (RBA-Kalikot)", journeyBtn: "Read My Story (संगीत कथा)", visitor: "Live Visitors (आगन्तुक)", studio: "Studio (स्टुडियो)", gallery: "Gallery (ग्यालरी)", settings: "Settings (सेटिङ)", langLabel: "Language (भाषा)", navHome: "Home", navStudio: "Studio", navGallery: "Gallery", navMusic: "Music", navSettings: "Settings" }
         };
 
         function changeLanguage(lang) {
@@ -231,6 +230,10 @@
             document.getElementById('txt-intro-title').innerText = t.introTitle;
             document.getElementById('txt-intro-desc').innerText = t.introDesc;
             document.getElementById('txt-journey-btn').innerHTML = `<i class="fas fa-book-open"></i> ${t.journeyBtn}`;
+            document.getElementById('txt-studio-title').innerText = t.studio;
+            document.getElementById('txt-gallery-title').innerText = t.gallery;
+            document.getElementById('txt-settings-title').innerText = t.settings;
+            document.getElementById('txt-lang-label').innerText = t.langLabel;
             document.getElementById('nav-home').innerText = t.navHome;
             document.getElementById('nav-studio').innerText = t.navStudio;
             document.getElementById('nav-gallery').innerText = t.navGallery;
@@ -250,15 +253,14 @@
                     return { name: "RBA - " + baseName.toUpperCase(), url: f.download_url, img: img ? img.download_url : 'logo.png' };
                 });
                 if(playlist.length > 0) { renderPlaylistUI(); loadSong(0); }
-            } catch (e) { console.log("Playlist error"); }
+            } catch (e) { console.log("Load Error"); }
         }
 
         function renderPlaylistUI() {
             const container = document.getElementById('playlist-container');
-            if(!container) return;
             container.innerHTML = playlist.map((s, i) => `
-                <div class="song-item click-effect" onclick="loadSong(${i}); toggleAudio(); togglePlaylist();">
-                    <i class="fas fa-play-circle"></i><span>${s.name}</span>
+                <div class="song-item" onclick="loadSong(${i}); toggleAudio(); togglePlaylist();">
+                    <i class="fas fa-music"></i><span>${s.name}</span>
                 </div>
             `).join('');
         }
@@ -271,6 +273,26 @@
             document.getElementById('song-bg-img').src = song.img;
             playIcon.className = "fas fa-play";
         }
+
+        function toggleAudio() {
+            initVisualizer();
+            if (audio.paused) { audio.play(); playIcon.className = "fas fa-pause"; }
+            else { audio.pause(); playIcon.className = "fas fa-play"; }
+        }
+
+        function nextSong() { loadSong((currentIndex + 1) % playlist.length); toggleAudio(); }
+        function prevSong() { loadSong((currentIndex - 1 + playlist.length) % playlist.length); toggleAudio(); }
+        function toggleShuffle() { isShuffle = !isShuffle; document.getElementById('shuffle-btn').classList.toggle('active'); }
+        function toggleRepeat() { isRepeat = !isRepeat; document.getElementById('repeat-btn').classList.toggle('active'); }
+
+        audio.onended = () => { if(isRepeat) { audio.play(); } else { nextSong(); } };
+        audio.ontimeupdate = () => {
+            const val = (audio.currentTime / audio.duration) * 100 || 0;
+            seek.value = val; seek.style.backgroundSize = val + '% 100%';
+            document.getElementById('current-time').innerText = formatTime(audio.currentTime);
+            document.getElementById('total-duration').innerText = formatTime(audio.duration || 0);
+        };
+        seek.oninput = () => { audio.currentTime = (seek.value / 100) * audio.duration; };
 
         // VISUALIZER
         const canvas = document.getElementById('visualizer');
@@ -298,26 +320,6 @@
             }
         }
 
-        function toggleAudio() {
-            initVisualizer();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            if (audio.paused) { audio.play(); playIcon.className = "fas fa-pause"; }
-            else { audio.pause(); playIcon.className = "fas fa-play"; }
-        }
-
-        function nextSong() { loadSong((currentIndex + 1) % playlist.length); toggleAudio(); }
-        function prevSong() { loadSong((currentIndex - 1 + playlist.length) % playlist.length); toggleAudio(); }
-        function toggleShuffle() { isShuffle = !isShuffle; document.getElementById('shuffle-btn').classList.toggle('active'); }
-        function toggleRepeat() { isRepeat = !isRepeat; document.getElementById('repeat-btn').classList.toggle('active'); }
-
-        audio.ontimeupdate = () => {
-            const val = (audio.currentTime / audio.duration) * 100 || 0;
-            seek.value = val; seek.style.backgroundSize = val + '% 100%';
-            document.getElementById('current-time').innerText = formatTime(audio.currentTime);
-            document.getElementById('total-duration').innerText = formatTime(audio.duration || 0);
-        };
-        seek.oninput = () => { audio.currentTime = (seek.value / 100) * audio.duration; };
-
         function showTab(id, el) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
@@ -344,7 +346,7 @@
                 const res = await fetch('story.json');
                 const data = await res.json();
                 document.getElementById('journey-container').innerHTML = data.full_story.map(ch => `<div class="card"><h3 style="color:var(--p-yellow);">${ch.chapter}</h3><p>${ch.content}</p></div>`).join('');
-            } catch(e) {}
+            } catch(e) { document.getElementById('journey-container').innerText = "story.json लोड हुन सकेन।"; }
         }
 
         async function loadGallery() {
@@ -363,16 +365,11 @@
         function shareApp() { navigator.share({title:'RBA-Kalikot Official', url: window.location.href}); }
         function addLike() { document.getElementById('like-icon').className = "fas fa-heart"; document.getElementById('like-icon').style.color = "red"; }
 
-        // --- SAFE INITIALIZATION ---
         window.onload = () => {
             const savedLang = localStorage.getItem('rba_lang') || 'ne';
             changeLanguage(savedLang);
             loadPlaylist();
-            // Failsafe: Remove splash even if something goes wrong
-            setTimeout(() => {
-                const splash = document.getElementById('splash');
-                if(splash) splash.style.display = 'none';
-            }, 2500);
+            setTimeout(() => { document.getElementById('splash').style.display = 'none'; }, 2000);
         };
     </script>
 </body>
