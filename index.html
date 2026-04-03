@@ -15,7 +15,6 @@
         :root {
             --p-green: #2e7d32; --p-yellow: #fdd835; --bg-dark: #0a0a0a;
             --card-dark: #121212; --text-white: #ffffff;
-            --btn-shadow: 0 4px 15px rgba(0,0,0,0.5);
             --inner-shadow: inset 3px 3px 6px rgba(0,0,0,0.8), inset -2px -2px 5px rgba(255,255,255,0.05);
         }
         .light-mode { --bg-dark: #f4f7f6; --card-dark: #ffffff; --text-white: #121212; }
@@ -23,7 +22,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; transition: background 0.3s; }
         body { background-color: var(--bg-dark); color: var(--text-white); overflow-x: hidden; }
 
-        /* --- Click/Touch Zoom Feedback --- */
+        /* --- Global Interactive Zoom Feedback --- */
         .click-effect, i, button, nav a, .song-item, .tiktok-card {
             cursor: pointer; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
             -webkit-tap-highlight-color: transparent;
@@ -48,32 +47,31 @@
         @keyframes slowMove { from { transform: translateX(-15%); } to { transform: translateX(0%); } }
         .logo-main { width: 130px; height: 130px; border-radius: 50%; border: 3px solid var(--p-yellow); box-shadow: 0 0 25px var(--p-yellow); margin-bottom: 15px; object-fit: cover; }
 
-        /* --- STUDIO PLAYER (FIXED) --- */
+        /* --- STUDIO PLAYER --- */
         .player-card { background: var(--card-dark); border-radius: 28px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.6); max-width: 500px; margin: 0 auto; width: 100%; }
         @media (min-width: 900px) { .player-card { max-width: 850px; } }
         .song-visual-area { height: 320px; position: relative; overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center; }
-        @media (min-width: 900px) { .song-visual-area { height: 550px; } }
+        @media (min-width: 900px) { .song-visual-area { height: 500px; } }
         #song-bg-img { position: absolute; width: 100%; height: 100%; object-fit: contain; opacity: 0.95; z-index: 1; animation: studioImgPan 20s ease-in-out infinite alternate; }
         @keyframes studioImgPan { from { transform: scale(1.05) translateX(-2%); } to { transform: scale(1.05) translateX(2%); } }
         canvas { position: absolute; bottom: 0; left: 0; width: 100%; height: 65px; z-index: 5; pointer-events: none; }
         
-        .player-info { padding: 25px 20px; text-align: center; position: relative; z-index: 10; background: var(--card-dark); }
         .song-title-display { font-weight: 600; color: var(--p-yellow); margin-bottom: 20px; font-size: 1.1rem; }
         .seek-bar { width: 100%; height: 6px; background: #333; border-radius: 10px; outline: none; -webkit-appearance: none; cursor: pointer; background-image: linear-gradient(var(--p-yellow), var(--p-yellow)); background-repeat: no-repeat; background-size: 0% 100%; }
         .seek-bar::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; background: #fff; border-radius: 50%; box-shadow: 0 0 10px var(--p-yellow); }
         
-        .player-controls { display: flex; justify-content: space-around; align-items: center; margin-top: 25px; }
+        .player-controls { display: flex; justify-content: space-around; align-items: center; margin-top: 25px; padding: 0 10px; }
         .ctrl-btn { font-size: 1.35rem; color: #888; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         .ctrl-btn.active { color: var(--p-yellow); box-shadow: var(--inner-shadow); background: rgba(253, 216, 53, 0.05); }
         .play-main-btn { width: 75px; height: 75px; background: #fff; color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
 
-        /* --- MUSIC & TIKTOK --- */
+        /* --- MUSIC SECTION --- */
         .tiktok-card { background: #181818; border-radius: 15px; display: flex; align-items: center; padding: 15px; margin-bottom: 12px; border-left: 4px solid #ff0050; border: 1px solid rgba(255,255,255,0.05); }
         .tiktok-card i { font-size: 1.5rem; margin-right: 15px; color: #00f2ea; }
         .tiktok-card span { flex: 1; font-weight: 600; font-size: 0.95rem; }
 
-        /* --- PLAYLIST, NAV & GALLERY --- */
-        .playlist-drawer { position: fixed; top: 0; right: -100%; width: 100%; height: 100%; background: rgba(10,10,10,0.98); z-index: 6000; transition: 0.5s; padding: 80px 20px; overflow-y: auto; }
+        /* --- PLAYLIST & NAV --- */
+        .playlist-drawer { position: fixed; top: 0; right: -100%; width: 100%; height: 100%; background: rgba(10,10,10,0.98); z-index: 6000; transition: 0.5s cubic-bezier(0.77, 0, 0.175, 1); padding: 80px 20px; overflow-y: auto; }
         .playlist-drawer.active { right: 0; }
         .song-item { display: flex; align-items: center; padding: 18px; background: #181818; margin-bottom: 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); }
         .song-item.playing { border-color: var(--p-yellow); }
@@ -152,7 +150,7 @@
     <div id="journey" class="tab-content"><h2 id="txt-journey-title" style="text-align: center; margin-bottom: 25px;">मेरो सांगीतिक यात्रा</h2><div id="journey-container"></div></div>
     <div id="gallery" class="tab-content"><h2 id="txt-gallery-title" style="text-align: center; margin-bottom: 25px;">ग्यालरी</h2><div id="gallery-container" class="gallery-grid"></div></div>
 
-    <!-- 5. MUSIC (YouTube, Spotify, TikTok) -->
+    <!-- 5. MUSIC (All Fixed) -->
     <div id="music" class="tab-content">
         <h2 id="txt-yt-title">YouTube Official</h2>
         <div class="card" style="padding: 0; overflow: hidden; aspect-ratio: 16/9; border: 1px solid var(--p-yellow);"><iframe width="100%" height="100%" src="https://www.youtube.com/embed/videoseries?list=PLbIVhUB2hspnM4N7Xk-U8vHe71mqFJ4pX" frameborder="0" allowfullscreen></iframe></div>
@@ -201,7 +199,6 @@
         const translations = {
             ne: { slogan: "सुरुवात सानो बाट", introTitle: "मेरो परिचय", introDesc: "नमस्कार म राजन बोहरा 'आरक्षक'/RBA-Kalikot", journeyBtn: "मेरो सांगीतिक कथा पढ्नुहोस्", visitor: "कुल आगन्तुक (Live)", studio: "आर्टिस्ट स्टुडियो", gallery: "ग्यालरी", ytTitle: "YouTube Official", spotTitle: "Spotify Playlist", listTitle: "मेरो प्लेलिस्ट", settings: "सेटिङहरू", langLabel: "भाषा चयन गर्नुहोस्", navHome: "होम", navStudio: "स्टुडियो", navGallery: "ग्यालरी", navMusic: "संगीत", navSettings: "सेटिङ" },
             en: { slogan: "Starting from Small", introTitle: "Intro", introDesc: "Namaste, I am Rajan Bohara 'Aarakshak'/RBA-Kalikot", journeyBtn: "Read My Story", visitor: "Live Visitors", studio: "Artist Studio", gallery: "Gallery", ytTitle: "YouTube Official", spotTitle: "Spotify Playlist", listTitle: "My Playlist", settings: "Settings", langLabel: "Select Language", navHome: "Home", navStudio: "Studio", navGallery: "Gallery", navMusic: "Music", navSettings: "Settings" },
-            hi: { slogan: "शुरुआत छोटे से", introTitle: "मेरा परिचय", introDesc: "नमस्ते, मैं राजन बोहरा 'आरक्षक'/RBA-Kalikot हूँ", journeyBtn: "मेरी कहानी पढ़ें", visitor: "कुल आगंतुक", studio: "स्टूडियो", gallery: "गैलरी", ytTitle: "YouTube", spotTitle: "Spotify", listTitle: "प्लेलिस्ट", settings: "सेटिंग्स", langLabel: "भाषा चुनें", navHome: "होम", navStudio: "स्टूडियो", navGallery: "गैलरी", navMusic: "संगीत", navSettings: "सेटिंग" },
             or: { slogan: "सुरुवात सानो बाट", introTitle: "Intro (मेरो परिचय)", introDesc: "Namaste, म राजन बोहरा 'आरक्षक' (RBA-Kalikot)", journeyBtn: "Read My Story (संगीत कथा)", visitor: "Live Visitors (आगन्तुक)", studio: "Studio (स्टुडियो)", gallery: "Gallery (ग्यालरी)", ytTitle: "YouTube Official", spotTitle: "Spotify Playlist", listTitle: "Playlist (सूची)", settings: "Settings (सेटिङ)", langLabel: "Language (भाषा)", navHome: "Home", navStudio: "Studio", navGallery: "Gallery", navMusic: "Music", navSettings: "Settings" }
         };
 
@@ -212,7 +209,6 @@
             document.getElementById('txt-intro-title').innerText = t.introTitle;
             document.getElementById('txt-intro-desc').innerText = t.introDesc;
             document.getElementById('txt-journey-btn').innerHTML = `<i class="fas fa-book-open"></i> ${t.journeyBtn}`;
-            document.getElementById('txt-visitor-title').innerText = t.visitor;
             document.getElementById('txt-studio-title').innerText = t.studio;
             document.getElementById('txt-gallery-title').innerText = t.gallery;
             document.getElementById('txt-yt-title').innerText = t.ytTitle;
@@ -243,8 +239,10 @@
         }
 
         function renderPlaylistUI() {
-            document.getElementById('playlist-container').innerHTML = playlist.map((s, i) => `
-                <div class="song-item click-effect" onclick="loadSong(${i}); toggleAudio(); togglePlaylist();">
+            const container = document.getElementById('playlist-container');
+            if(!container) return;
+            container.innerHTML = playlist.map((s, i) => `
+                <div class="song-item" onclick="loadSong(${i}); toggleAudio(); togglePlaylist();">
                     <i class="fas fa-play-circle"></i><span>${s.name}</span>
                 </div>
             `).join('');
@@ -326,7 +324,7 @@
                 const res = await fetch('story.json');
                 const data = await res.json();
                 document.getElementById('journey-container').innerHTML = data.full_story.map(ch => `<div class="card"><h3 style="color:var(--p-yellow);">${ch.chapter}</h3><p>${ch.content}</p></div>`).join('');
-            } catch(e) { document.getElementById('journey-container').innerText = "story.json लोड हुन सकेन।"; }
+            } catch(e) {}
         }
 
         async function loadGallery() {
@@ -345,11 +343,17 @@
         function shareApp() { navigator.share({title:'RBA-Kalikot Official', url: window.location.href}); }
         function addLike() { document.getElementById('like-icon').className = "fas fa-heart"; document.getElementById('like-icon').style.color = "red"; }
 
+        // --- RELIABLE INITIALIZATION ---
         window.onload = () => {
-            const savedLang = localStorage.getItem('rba_lang') || 'ne';
-            changeLanguage(savedLang);
-            loadPlaylist();
-            setTimeout(() => { document.getElementById('splash').style.display = 'none'; }, 2000);
+            const splash = document.getElementById('splash');
+            // Hide splash after 2.5 seconds NO MATTER WHAT
+            setTimeout(() => { if(splash) splash.style.display = 'none'; }, 2500);
+
+            try {
+                const savedLang = localStorage.getItem('rba_lang') || 'ne';
+                changeLanguage(savedLang);
+                loadPlaylist();
+            } catch (e) { console.log("Init Error"); }
         };
     </script>
 </body>
