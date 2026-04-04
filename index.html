@@ -360,15 +360,30 @@
         function shareApp() { navigator.share({title:'RBA-Kalikot Official', url: window.location.href}); }
         function addLike() { document.getElementById('like-icon').className = "fas fa-heart"; document.getElementById('like-icon').style.color = "red"; }
 
-        window.onload = () => {
-            const splash = document.getElementById('splash');
-            setTimeout(() => { if(splash) splash.style.display = 'none'; }, 3000); // 3 sec failsafe
-            try {
-                const savedLang = localStorage.getItem('rba_lang') || 'ne';
-                changeLanguage(savedLang);
-                loadPlaylist();
-            } catch (e) {}
-        };
+       window.onload = () => {
+    const splash = document.getElementById('splash');
+    // ३ सेकेन्डपछि स्प्ल्याश स्क्रिन हटाउने (Failsafe)
+    setTimeout(() => { if(splash) splash.style.display = 'none'; }, 3000);
+
+    try {
+        // १. पहिलेकै जस्तो भाषा लोड गर्ने
+        const savedLang = localStorage.getItem('rba_lang') || 'ne';
+        changeLanguage(savedLang);
+        loadPlaylist();
+
+        // २. कुन ट्याबमा थियो भनेर पत्ता लगाउने (नयाँ 'Sticky Tab' फिचर)
+        const currentHash = window.location.hash.substring(1); // #studio बाट studio मात्र लिन्छ
+        const validTabs = ['home', 'studio', 'gallery', 'music', 'settings', 'journey'];
+        
+        if (validTabs.includes(currentHash)) {
+            // यदि लिङ्कमा ट्याबको नाम छ भने त्यही खोल्ने
+            showTab(currentHash, document.querySelector(`nav a[onclick*="${currentHash}"]`), false);
+        } else {
+            // नभए होम पेजमै रहने
+            showTab('home', document.querySelector('nav a[onclick*="home"]'), false);
+        }
+    } catch (e) { console.log("Navigation Load Error:", e); }
+};
     </script>
 </body>
 </html>
