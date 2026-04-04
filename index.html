@@ -251,20 +251,30 @@
         <a onclick="showTab('settings', this)"><i class="fas fa-cog"></i><span id="nav-settings">Settings</span></a>
     </nav>
 
-    <script>
-    // १. सुरुवाती सेटिङहरू
+    ainer = document.getElementById('playlist-container');
+        if(!container) return;
+        container.innerHTML = playlist.map((s, i) => `
+            <div class="song-item click-effect ${i === currentIndex ? 'playing' : ''}" 
+                 onclick="loadSong(${i}); audio.play(); togglePlaylist();">
+                <i class="fas fa-music"></i>
+                <span style="flex: 1;">${s.name}</span>
+                ${i === currentIndex ? '<i class="fas fa-volume-up"></i>' : ''}
+            </div>
+        `).join('');
+    }
+  <script>
     const GITHUB_REPO = "rbakalikot/RBA-KALIKOT";
     let playlist = []; 
     let currentIndex = 0; 
     let isShuffle = false; 
     let isRepeat = false; 
-    let tabHistory = ['home']; // यो छुटेको हुनाले अघि एप अड्किएको हो
+    let tabHistory = ['home'];
 
     const audio = document.getElementById('main-audio');
     const playIcon = document.getElementById('play-icon');
     const seek = document.getElementById('seek-bar');
 
-    // २. गीत र प्लेलिस्ट लोड गर्ने फङ्सन
+    // गिटहबबाट गीतको लिस्ट तान्ने फङ्सन
     async function loadPlaylist() {
         try {
             const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/`);
@@ -276,7 +286,7 @@
                 return { name: "RBA - " + baseName.toUpperCase(), url: f.download_url, img: img ? img.download_url : 'logo.png' };
             });
             if(playlist.length > 0) { renderPlaylistUI(); loadSong(0); }
-        } catch (e) { console.log("Playlist error"); }
+        } catch (e) { console.log("Load Error"); }
     }
 
     function renderPlaylistUI() {
@@ -301,8 +311,7 @@
         playIcon.className = "fas fa-play";
         renderPlaylistUI();
     }
-
-    // ३. नेभिगेसन र ब्याक बटन (Smart Logic)
+      // ट्याब फेर्ने र ब्राउजर हिस्ट्री मिलाउने
     function showTab(id, el, pushState = true) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
@@ -335,46 +344,48 @@
         showTab(hash, null, false);
     };
 
-    // ४. प्लेयर कन्ट्रोलहरू
-    function toggleAudio() {
+    function togglePlaylist() { document.getElementById('playlist-drawer').classList.toggle('active'); }
+    function toggleTheme() { document.body.classList.toggle('light-mode'); }
+      function toggleAudio() {
         initVisualizer();
         if (audio.paused) { audio.play(); playIcon.className = "fas fa-pause"; }
         else { audio.pause(); playIcon.className = "fas fa-play"; }
     }
+
     function nextSong() { loadSong((currentIndex + 1) % playlist.length); audio.play(); playIcon.className = "fas fa-pause"; }
     function prevSong() { loadSong((currentIndex - 1 + playlist.length) % playlist.length); audio.play(); playIcon.className = "fas fa-pause"; }
-    function toggleShuffle() { isShuffle = !isShuffle; document.getElementById('shuffle-btn').classList.toggle('active'); }
-    function toggleRepeat() { isRepeat = !isRepeat; document.getElementById('repeat-btn').classList.toggle('active'); }
-
-    // ५. अन्य सुविधाहरू
-    function togglePlaylist() { document.getElementById('playlist-drawer').classList.toggle('active'); }
-    function toggleTheme() { document.body.classList.toggle('light-mode'); }
-    function addLike() { document.getElementById('like-icon').className = "fas fa-heart"; document.getElementById('like-icon').style.color = "red"; }
     
-    function searchPlaylist(query) {
-        const items = document.querySelectorAll('.song-item');
-        items.forEach(item => {
-            item.style.display = item.innerText.toLowerCase().includes(query.toLowerCase()) ? 'flex' : 'none';
-        });
+    function toggleShuffle() { 
+        isShuffle = !isShuffle; 
+        document.getElementById('shuffle-btn').classList.toggle('active'); 
+    }
+    
+    function toggleRepeat() { 
+        isRepeat = !isRepeat; 
+        document.getElementById('repeat-btn').classList.toggle('active'); 
     }
 
-    // ६. एप सुरु हुने मुख्य भाग (Window Onload)
-    window.onload = () => {
-        const splash = document.getElementById('splash');
-        setTimeout(() => { if(splash) splash.style.display = 'none'; }, 3000);
+    audio.onended = () => { if(isRepeat) { audio.play(); } else { nextSong(); } };
 
-        try {
-            history.replaceState({ tabId: 'home' }, "", "#home");
-            const savedLang = localStorage.getItem('rba_lang') || 'ne';
-            if(typeof changeLanguage === 'function') changeLanguage(savedLang);
-            loadPlaylist();
-
-            const currentHash = window.location.hash.substring(1) || 'home';
-            showTab(currentHash, null, false);
-        } catch (e) { console.log("Init error"); }
+    audio.ontimeupdate = () => {
+        const val = (audio.currentTime / audio.duration) * 100 || 0;
+        seek.value = val;
+        seek.style.backgroundSize = val + '% 100%';
+        document.getElementById('current-time').innerText = formatTime(audio.currentTime);
+        document.getElementById('total-duration').innerText = formatTime(audio.duration || 0);
     };
 
-    // Visualizer Code (छोटोमा)
+    seek.oninput = () => { audio.currentTime = (seek.value / 100) * audio.duration; };
+
+    function formatTime(s) { const min = Math.floor(s/60); const sec = Math.floor(s%60); return min+":"+(sec<10?'0':'')+sec; }
+
+    function shareApp() {
+        const name = playlist[currentIndex].name.replace('RBA - ', '');
+        const shareUrl = `${window.location.origin}${window.location.pathname}#${encodeURIComponent(name)}`;
+        if (navigator.share) navigator.share({ title: `RBA - ${name}`, url: shareUrl });
+        else alert("Link: " + shareUrl);
+    }
+    // रंगीन भिजुअलाइजर (Yellow to Red Gradient)
     let audioCtx, analyser, dataArray;
     function initVisualizer() {
         if (!audioCtx) {
@@ -389,16 +400,41 @@
                 requestAnimationFrame(render);
                 analyser.getByteFrequencyData(dataArray);
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const barWidth = (canvas.width / 32) - 2;
                 for (let i = 0; i < 32; i++) {
                     const h = (dataArray[i] / 255) * canvas.height;
-                    ctx.fillStyle = '#ff00ff';
-                    ctx.fillRect(i * (canvas.width/32), canvas.height - h, (canvas.width/32)-2, h);
+                    const gradient = ctx.createLinearGradient(0, canvas.height, 0, canvas.height - h);
+                    gradient.addColorStop(0, '#fdd835'); gradient.addColorStop(1, '#ff1100');
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(i * (barWidth + 2), canvas.height - h, barWidth, h);
                 }
             }
             render();
         }
     }
+
+    async function loadJourney() {
+        showTab('journey');
+        const res = await fetch('story.json'); const data = await res.json();
+        document.getElementById('journey-container').innerHTML = data.full_story.map(ch => `<div class="card"><h3>${ch.chapter}</h3><p>${ch.content}</p></div>`).join('');
+    }
+
+    async function loadGallery() {
+        const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/gallery`);
+        const files = await res.json();
+        document.getElementById('gallery-container').innerHTML = files.filter(f => f.name.match(/\.(jpg|png)$/i)).map(i => `<img class="gallery-item click-effect" src="${i.download_url}">`).join('');
+    }
+
+    window.onload = () => {
+        const splash = document.getElementById('splash');
+        setTimeout(() => { if(splash) splash.style.display = 'none'; }, 2500);
+        history.replaceState({ tabId: 'home' }, "", "#home");
+        const savedLang = localStorage.getItem('rba_lang') || 'ne';
+        if(typeof changeLanguage === 'function') changeLanguage(savedLang);
+        loadPlaylist();
+        const hash = window.location.hash.substring(1) || 'home';
+        showTab(hash, null, false);
+    };
 </script>
-    </script>
 </body>
 </html>
