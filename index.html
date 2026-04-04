@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="google-site-verification" content="0Q6KK8VAGsLAin3EgVlRrqRnyVQid8w-kJomGIJQeDk" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0a0a0a">
     <title>RBA-Kalikot | Official Artist App</title>
     
     <link rel="manifest" href="manifest.json">
@@ -21,7 +22,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; transition: background 0.3s; }
         body { background-color: var(--bg-dark); color: var(--text-white); overflow-x: hidden; }
 
-        /* Button Click Feedback */
+        /* Zoom Feedback on Click */
         .click-effect, i, button, nav a, .song-item {
             cursor: pointer; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
             -webkit-tap-highlight-color: transparent;
@@ -45,39 +46,13 @@
         @keyframes slowMove { from { transform: translateX(-15%); } to { transform: translateX(0%); } }
         .logo-main { width: 130px; height: 130px; border-radius: 50%; border: 3px solid var(--p-yellow); box-shadow: 0 0 25px var(--p-yellow); margin-bottom: 15px; object-fit: cover; }
 
-        /* STUDIO PLAYER */
+        /* STUDIO PLAYER - 16:9 FIXED */
         .player-card { background: var(--card-dark); border-radius: 28px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.6); max-width: 450px; margin: 0 auto; width: 100%; }
-        /* १. प्लेयरको मुख्य एरियालाई पहिलेकै जस्तो (Square/Tall) बनाउने */
-.song-visual-area {
-    width: 100%;
-    height: 380px; /* यसले प्लेयरलाई १६:९ बाट हटाएर पहिलेकै जस्तो अग्लो बनाउँछ */
-    position: relative;
-    overflow: hidden;
-    background: #000;
-    border-radius: 24px 24px 0 0;
-}
-
-/* २. १६:९ को फोटोले पूरै बक्स भर्ने र दायाँ-बायाँ हल्लिने */
-#song-bg-img {
-    position: absolute;
-    height: 100%; /* बक्सको पूरै उचाइ ओगट्ने */
-    width: auto;   /* चौडाइ आफैं एडजस्ट हुने */
-    min-width: 130%; /* बक्स भन्दा अलि ठुलो बनाउने ताकि हल्लिँदा खाली नदेखोस् */
-    object-fit: cover; /* कालो भाग पूर्ण रूपमा हटाउने */
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    opacity: 0.95;
-    z-index: 1;
-    animation: studioImgPan 25s ease-in-out infinite alternate;
-}
-
-/* ३. स्मूथ प्यानिङ एनिमेसन */
-/* ३. फोटोलाई निकै नरम र स्मूथ तरिकाले बायाँ-दायाँ सार्ने एनिमेसन */
-@keyframes studioImgPan {
-    0% { transform: scale(1.02) translateX(-3%); }
-    100% { transform: scale(1.02) translateX(3%); }
-}
+        .song-visual-area { width: 100%; aspect-ratio: 16 / 9; position: relative; overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center; }
+        @media (min-width: 900px) { .song-visual-area { height: 500px; } .player-card { max-width: 800px; } }
+        
+        #song-bg-img { position: absolute; width: 130%; height: 100%; object-fit: cover; left: -15%; opacity: 0.95; z-index: 1; animation: studioImgPan 25s ease-in-out infinite alternate; }
+        @keyframes studioImgPan { from { transform: translateX(-5%); } to { transform: translateX(5%); } }
         canvas { position: absolute; bottom: 0; left: 0; width: 100%; height: 65px; z-index: 5; pointer-events: none; }
         
         .player-info { padding: 25px 20px; text-align: center; position: relative; z-index: 10; background: var(--card-dark); }
@@ -94,12 +69,12 @@
         .playlist-drawer { position: fixed; top: 0; right: -100%; width: 100%; height: 100%; background: rgba(10,10,10,0.98); z-index: 6000; transition: 0.5s; padding: 80px 20px; overflow-y: auto; }
         .playlist-drawer.active { right: 0; }
         .song-item { display: flex; align-items: center; padding: 18px; background: #181818; margin-bottom: 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); }
-        .song-item.playing { border-color: var(--p-yellow); background: rgba(253, 216, 53, 0.08); }
+        .song-item.playing { border-color: var(--p-yellow); background: rgba(253, 216, 53, 0.1); }
+        .song-item i { margin-right: 15px; color: var(--p-yellow); }
 
-        /* TIKTOK & OTHERS */
+        /* TIKTOK CARDS */
         .tiktok-card { background: #181818; border-radius: 15px; display: flex; align-items: center; padding: 15px; margin-bottom: 12px; border-left: 4px solid #ff0050; border: 1px solid rgba(255,255,255,0.05); }
         .tiktok-card i { font-size: 1.5rem; margin-right: 15px; color: #00f2ea; }
-        .tiktok-card span { flex: 1; font-weight: 600; font-size: 0.95rem; }
 
         nav { position: fixed; bottom: 15px; left: 5%; width: 90%; background: rgba(15,15,15,0.95); backdrop-filter: blur(20px); display: flex; justify-content: space-around; padding: 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); z-index: 5000; box-shadow: 0 -10px 30px rgba(0,0,0,0.5); }
         nav a { color: #666; text-decoration: none; font-size: 0.75rem; text-align: center; flex: 1; }
@@ -108,34 +83,21 @@
 
         .card { background: var(--card-dark); border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
         .counter-box { background: #1a1a1a; display: inline-block; padding: 8px 18px; border-radius: 12px; border: 1px solid var(--p-yellow); margin-top: 10px; }
+        .lang-list { height: 250px; overflow-y: auto; background: #111; border-radius: 12px; margin-top: 10px; }
+        .lang-item { padding: 15px; border-bottom: 1px solid #222; }
         .gallery-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
         .gallery-item { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 12px; }
-        .lang-list { height: 250px; overflow-y: auto; background: #111; border-radius: 12px; margin-top: 10px; }
-        .lang-item { padding: 15px; border-bottom: 1px solid #222; cursor: pointer; }
     </style>
 </head>
 <body class="dark-mode">
 
-    <div id="splash"><img src="logo.png" class="splash-logo"><h2 style="color: var(--p-yellow); letter-spacing: 2px;">RBA-KALIKOT</h2><p style="color: #666; font-size: 0.8rem;">सुरुवात सानो बाट</p></div>
+    <div id="splash"><img src="logo.png" class="splash-logo" onerror="this.src='logo.jpg'"><h2 style="color: var(--p-yellow); letter-spacing: 2px;">RBA-KALIKOT</h2><p style="color: #666; font-size: 0.8rem;">सुरुवात सानो बाट</p></div>
 
-    <!-- Playlist Drawer -->
-    <!-- १. प्लेलिस्ट ड्रयर (अपडेट गरिएको) -->
-<div id="playlist-drawer" class="playlist-drawer">
-    <div style="display: flex; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px;">
-        <h3 id="txt-list-title" style="color: var(--p-yellow); flex: 1;">मेरो प्लेलिस्ट</h3>
-        <i class="fas fa-times click-effect" onclick="togglePlaylist()" style="font-size: 2rem; color: #888;"></i>
+    <div id="playlist-drawer" class="playlist-drawer">
+        <div style="display: flex; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #333; padding-bottom: 15px;"><h3 style="color: var(--p-yellow); flex: 1;">मेरो प्लेलिस्ट</h3><i class="fas fa-times click-effect" onclick="togglePlaylist()" style="font-size: 2rem; color: #888;"></i></div>
+        <div style="margin-bottom: 20px;"><input type="text" id="playlist-search-input" style="width: 100%; padding: 12px; border-radius: 12px; background: #1a1a1a; border: 1px solid var(--p-yellow); color: white;" placeholder="गीत खोज्नुहोस्..." onkeyup="searchPlaylist(this.value)"></div>
+        <div id="playlist-container"></div>
     </div>
-
-    <!-- नयाँ सर्च बार यहाँ थपिएको छ -->
-    <div style="margin-bottom: 20px;">
-        <input type="text" id="playlist-search-input" 
-               style="width: 100%; padding: 12px; border-radius: 12px; background: #1a1a1a; border: 1px solid var(--p-yellow); color: white;" 
-               placeholder="गीत खोज्नुहोस् (Search Song...)" 
-               onkeyup="searchPlaylist(this.value)">
-    </div>
-
-    <div id="playlist-container"></div>
-</div>
 
     <header>
         <div id="back-btn" class="click-effect" onclick="handleBack()"><i class="fas fa-arrow-left"></i></div>
@@ -145,10 +107,10 @@
 
     <!-- 1. HOME -->
     <div id="home" class="tab-content active" style="padding: 0;">
-        <div class="hero"><div class="hero-bg"></div><img src="logo.png" class="splash-logo" onerror="this.src='logo.jpg'"><h1 style="color: var(--p-yellow);">RBA-Kalikot</h1><p id="hero-slogan">"सुरुवात सानो बाट"</p></div>
+        <div class="hero"><div class="hero-bg"></div><img src="logo.png" class="logo-main" onerror="this.src='logo.jpg'"><h1 style="color: var(--p-yellow);">RBA-Kalikot</h1><p id="hero-slogan">"सुरुवात सानो बाट"</p></div>
         <div style="padding: 15px;">
-            <div class="card"><h3 id="txt-intro-title">मेरो परिचय</h3><p id="txt-intro-desc">नमस्कार म राजन बोहरा 'आरक्षक'/RBA-Kalikot</p>
-                <button id="txt-journey-btn" class="click-effect" onclick="loadJourney()" style="background: var(--p-yellow); border: none; padding: 15px; border-radius: 15px; font-weight: 600; width: 100%; margin-top: 20px; color: #000; box-shadow: 0 4px 15px rgba(253,216,53,0.3);"><i class="fas fa-book-open"></i> मेरो सांगीतिक कथा पढ्नुहोस्</button>
+            <div class="card"><h3>मेरो परिचय</h3><p>नमस्कार म राजन बोहरा 'आरक्षक'/RBA-Kalikot</p>
+                <button class="click-effect" onclick="loadJourney()" style="background: var(--p-yellow); border: none; padding: 15px; border-radius: 15px; font-weight: 600; width: 100%; margin-top: 20px; color: #000;"><i class="fas fa-book-open"></i> मेरो सांगीतिक कथा पढ्नुहोस्</button>
                 <div style="display: flex; justify-content: space-around; margin-top: 30px; font-size: 2.2rem;">
                     <a href="https://youtube.com/@rba-kalikot" class="click-effect" style="color: #ff0000;"><i class="fab fa-youtube"></i></a>
                     <a href="https://facebook.com/share/1HtznSabqV/" class="click-effect" style="color: #1877f2;"><i class="fab fa-facebook-f"></i></a>
@@ -156,15 +118,15 @@
                     <a href="https://wa.me/9768978945" class="click-effect" style="color: #25d366;"><i class="fab fa-whatsapp"></i></a>
                 </div>
             </div>
-            <div class="card" style="text-align: center;"><h4 id="txt-visitor-title">कुल आगन्तुक (Live)</h4><div class="counter-box"><img src="https://counter.secrethelp.io/api/counter?name=rbakalikot&color=fdd835&style=rule" height="25"></div></div>
+            <div class="card" style="text-align: center;"><h4>कुल आगन्तुक (Live)</h4><div class="counter-box"><img src="https://counter.secrethelp.io/api/counter?name=rbakalikot&color=fdd835&style=rule" height="25"></div></div>
         </div>
     </div>
 
     <!-- 2. STUDIO -->
     <div id="studio" class="tab-content">
-        <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 25px; gap: 15px;"><h2 id="txt-studio-title">आर्टिस्ट स्टुडियो</h2><i class="fas fa-list-ul click-effect" onclick="togglePlaylist()" style="color: var(--p-yellow); font-size: 1.4rem; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px;"></i></div>
+        <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 25px; gap: 15px;"><h2>आर्टिस्ट स्टुडियो</h2><i class="fas fa-list-ul click-effect" onclick="togglePlaylist()" style="color: var(--p-yellow); font-size: 1.4rem; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px;"></i></div>
         <div class="player-card">
-            <div class="song-visual-area"><img id="song-bg-img" src="logo.png"><canvas id="visualizer"></canvas></div>
+            <div class="song-visual-area"><img id="song-bg-img" src="logo.png" onerror="this.src='logo.jpg'"><canvas id="visualizer"></canvas></div>
             <div class="player-info">
                 <div id="song-title" class="song-title-display">RBA - Loading...</div>
                 <div class="timeline-container"><input type="range" class="seek-bar" id="seek-bar" value="0" step="1"><div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #888; margin-top: 8px;"><span id="current-time">0:00</span><span id="total-duration">0:00</span></div></div>
@@ -186,240 +148,189 @@
     </div>
 
     <!-- 3. JOURNEY / 4. GALLERY -->
-    <div id="journey" class="tab-content"><h2 id="txt-journey-title" style="text-align: center; margin-bottom: 25px;">मेरो सांगीतिक यात्रा</h2><div id="journey-container"></div></div>
-    <div id="gallery" class="tab-content"><h2 id="txt-gallery-title" style="text-align: center; margin-bottom: 25px;">ग्यालरी</h2><div id="gallery-container" class="gallery-grid"></div></div>
+    <div id="journey" class="tab-content"><h2 style="text-align: center; margin-bottom: 25px;">मेरो सांगीतिक यात्रा</h2><div id="journey-container"></div></div>
+    <div id="gallery" class="tab-content"><h2 style="text-align: center; margin-bottom: 25px;">ग्यालरी</h2><div id="gallery-container" class="gallery-grid"></div></div>
 
     <!-- 5. MUSIC -->
     <div id="music" class="tab-content">
-        <h2 id="txt-yt-title">YouTube Official</h2>
+        <h2>YouTube Official</h2>
         <div class="card" style="padding: 0; overflow: hidden; aspect-ratio: 16/9; border: 1px solid var(--p-yellow);"><iframe width="100%" height="100%" src="https://www.youtube.com/embed/videoseries?list=PLbIVhUB2hspnM4N7Xk-U8vHe71mqFJ4pX" frameborder="0" allowfullscreen></iframe></div>
-        
-        <h2 id="txt-spot-title" style="margin-top: 25px;">Spotify Playlist</h2>
-        <div class="card" style="padding: 0; overflow: hidden; border-radius: 16px; border: 1px solid #1DB954;"><iframe src="https://open.spotify.com/embed/playlist/3AA6Sjr7E5lhGvqdAOWUqQ?utm_source=generator&theme=0" width="100%" height="380" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
-
+        <h2 style="margin-top: 25px;">Spotify Playlist</h2>
+        <div class="card" style="padding: 0; overflow: hidden; border-radius: 16px; border: 1px solid #1DB954;"><iframe src="https://open.spotify.com/embed/playlist/3AA6Sjr7E5lhGvqdAOWUqQ?utm_source=generator&theme=0" width="100%" height="380" frameBorder="0" allow="autoplay; encrypted-media"></iframe></div>
         <h2 style="margin-top: 25px;">TikTok Highlights</h2>
         <div class="tiktok-card click-effect" onclick="window.open('https://vt.tiktok.com/ZSHFssLBJ/')"><i class="fab fa-tiktok"></i><span>Chadani</span></div>
         <div class="tiktok-card click-effect" onclick="window.open('https://vt.tiktok.com/ZSHFGRhXK/')"><i class="fab fa-tiktok"></i><span>Aadat</span></div>
-        <div class="tiktok-card click-effect" onclick="window.open('https://vt.tiktok.com/ZSHFsvJJf/')"><i class="fab fa-tiktok"></i><span>Lekaali</span></div>
-        <div class="tiktok-card click-effect" onclick="window.open('https://vt.tiktok.com/ZSHFGdUQn/')"><i class="fab fa-tiktok"></i><span>Himalayan Breeze</span></div>
-        <div class="tiktok-card click-effect" onclick="window.open('https://vt.tiktok.com/ZSHFGRToK/')"><i class="fab fa-tiktok"></i><span>Ghatta Music</span></div>
     </div>
 
     <!-- 6. SETTINGS -->
     <div id="settings" class="tab-content">
-    <h2 id="txt-settings-title" style="text-align: center; margin-bottom: 20px;">Settings</h2>
-    
-    <!-- भाषा खोज्ने र छान्ने बक्स -->
-    <div class="card" style="border: 1px solid var(--p-yellow);">
-        <h4 id="txt-lang-label" style="margin-bottom: 15px;">भाषा चयन गर्नुहोस् (Select Language)</h4>
-        
-        <!-- सर्च बार -->
-        <div style="position: relative; margin-bottom: 15px;">
-            <i class="fas fa-search" style="position: absolute; left: 12px; top: 12px; color: #888;"></i>
-            <input type="text" id="lang-search" 
-                   style="width: 100%; padding: 10px 10px 10px 40px; border-radius: 12px; background: #1a1a1a; border: 1px solid #333; color: white;" 
-                   placeholder="Search language (e.g. English, Nepali...)" 
-                   onkeyup="searchLang(this.value)">
+        <h2>Settings</h2>
+        <div class="card"><h4>Language</h4>
+            <input type="text" id="lang-search" style="width:100%; padding:14px; border-radius:12px; background:#1a1a1a; border:1px solid var(--p-yellow); color:white; margin:10px 0;" placeholder="Search language..." onkeyup="searchLang(this.value)">
+            <div id="lang-list" class="lang-list">
+                <div class="lang-item click-effect" onclick="changeLanguage('ne')">🇳🇵 नेपाली (Nepali)</div>
+                <div class="lang-item click-effect" onclick="changeLanguage('en')">🇺🇸 English</div>
+                <div class="lang-item click-effect" onclick="changeLanguage('or')">🎸 Original (Mix)</div>
+            </div>
         </div>
-
-        <!-- भाषाहरूको लिस्ट -->
-        <div id="lang-list" style="max-height: 200px; overflow-y: auto; background: #111; border-radius: 12px;">
-            <div class="lang-item click-effect" style="padding: 12px; border-bottom: 1px solid #222;" onclick="changeLanguage('ne')">🇳🇵 नेपाली (Nepali)</div>
-            <div class="lang-item click-effect" style="padding: 12px; border-bottom: 1px solid #222;" onclick="changeLanguage('en')">🇺🇸 English</div>
-            <div class="lang-item click-effect" style="padding: 12px; border-bottom: 1px solid #222;" onclick="changeLanguage('hi')">🇮🇳 हिन्दी (Hindi)</div>
-            <div class="lang-item click-effect" style="padding: 12px;" onclick="changeLanguage('or')">🎸 Original (Nepali + English)</div>
-        </div>
-    </div>
-
-    <!-- कलाकार बुकिंग -->
-    <div class="card" style="text-align: center;">
-        <h4 id="txt-booking-title">Artist Booking</h4>
-        <p style="font-size: 0.8rem; color: gray; margin-bottom: 10px;">सांगीतिक सहकार्यका लागि सम्पर्क गर्नुहोस्</p>
-        <a href="https://wa.me/9768978945" class="click-effect" style="display:block; background:#25d366; padding:15px; border-radius:14px; color:#fff; text-decoration:none; font-weight:600;">
-            <i class="fab fa-whatsapp"></i> WhatsApp Booking
-        </a>
-    </div>
-</div>
         <div class="card" style="text-align: center;"><h4>Artist Booking</h4><a href="https://wa.me/9768978945" class="click-effect" style="display:block; background:#25d366; padding:15px; border-radius:14px; color:#fff; text-decoration:none; margin-top:10px; font-weight:600;"><i class="fab fa-whatsapp"></i> WhatsApp Booking</a></div>
     </div>
 
     <nav>
-        <a onclick="showTab('home', this)" class="active"><i class="fas fa-home"></i><span id="nav-home">Home</span></a>
-        <a onclick="showTab('studio', this)"><i class="fas fa-headphones"></i><span id="nav-studio">Studio</span></a>
-        <a onclick="showTab('gallery', this)"><i class="fas fa-images"></i><span id="nav-gallery">Gallery</span></a>
-        <a onclick="showTab('music', this)"><i class="fas fa-music"></i><span id="nav-music">Music</span></a>
-        <a onclick="showTab('settings', this)"><i class="fas fa-cog"></i><span id="nav-settings">Settings</span></a>
+        <a onclick="showTab('home', this)" class="active"><i class="fas fa-home"></i>Home</a>
+        <a onclick="showTab('studio', this)"><i class="fas fa-headphones"></i>Studio</a>
+        <a onclick="showTab('gallery', this)"><i class="fas fa-images"></i>Gallery</a>
+        <a onclick="showTab('music', this)"><i class="fas fa-music"></i>Music</a>
+        <a onclick="showTab('settings', this)"><i class="fas fa-cog"></i>Settings</a>
     </nav>
-       
-<script>
-    // १. मुख्य जानकारी र सेटिङ
-    const GITHUB_REPO = "rbakalikot/RBA-KALIKOT";
-    let playlist = []; 
-    let currentIndex = 0; 
-    let isShuffle = false; 
-    let isRepeat = false; 
-    let tabHistory = ['home'];
 
-    const audio = document.getElementById('main-audio');
-    const playIcon = document.getElementById('play-icon');
-    const seek = document.getElementById('seek-bar');
+    <script>
+        const GITHUB_REPO = "rbakalikot/RBA-KALIKOT";
+        let playlist = []; let currentIndex = 0; let isShuffle = false; let isRepeat = false; let tabHistory = ['home'];
+        const audio = document.getElementById('main-audio');
+        const playIcon = document.getElementById('play-icon');
+        const seek = document.getElementById('seek-bar');
 
-    // २. गीत लोड गर्ने र लिस्ट बनाउने (Spotify र TikTok सुरक्षित छ)
-    async function loadPlaylist() {
-        try {
-            const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/`);
-            const files = await res.json();
-            const mp3s = files.filter(f => f.name.toLowerCase().endsWith('.mp3'));
-            playlist = mp3s.map(f => {
-                const baseName = f.name.substring(0, f.name.lastIndexOf('.'));
-                const img = files.find(i => i.name.toLowerCase().startsWith(baseName.toLowerCase()) && (i.name.endsWith('.jpg') || i.name.endsWith('.png')));
-                return { name: "RBA - " + baseName.toUpperCase(), url: f.download_url, img: img ? img.download_url : 'logo.png' };
-            });
-            if(playlist.length > 0) { renderPlaylistUI(); loadSong(0); }
-        } catch (e) { console.log("Load Error"); }
-    }
-
-    function renderPlaylistUI() {
-        const container = document.getElementById('playlist-container');
-        if(!container) return;
-        container.innerHTML = playlist.map((s, i) => `
-            <div class="song-item click-effect ${i === currentIndex ? 'playing' : ''}" 
-                 style="display: flex; align-items: center; padding: 15px; background: #181818; margin-bottom: 10px; border-radius: 12px; border: 1px solid ${i === currentIndex ? 'var(--p-yellow)' : 'rgba(255,255,255,0.05)'};"
-                 onclick="loadSong(${i}); audio.play(); togglePlaylist();">
-                <i class="fas fa-music" style="margin-right: 15px; color: var(--p-yellow);"></i>
-                <span style="flex: 1;">${s.name}</span>
-                ${i === currentIndex ? '<i class="fas fa-volume-up" style="color: var(--p-yellow);"></i>' : ''}
-            </div>
-        `).join('');
-    }
-
-    function loadSong(index) {
-        currentIndex = index;
-        const song = playlist[index];
-        audio.src = song.url;
-        document.getElementById('song-title').innerText = song.name;
-        document.getElementById('song-bg-img').src = song.img;
-        playIcon.className = "fas fa-play";
-        renderPlaylistUI();
-    }
-
-    // ३. नेभिगेसन र ट्याब कन्ट्रोल (Back Button & Refresh Fix)
-    function showTab(id, el, pushState = true) {
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
-        
-        const targetTab = document.getElementById(id);
-        if(targetTab) targetTab.classList.add('active');
-
-        if(el) el.classList.add('active');
-        else {
-            const navIcon = document.querySelector(`nav a[onclick*="${id}"]`);
-            if(navIcon) navIcon.classList.add('active');
+        async function loadPlaylist() {
+            try {
+                const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/`);
+                const files = await res.json();
+                const mp3s = files.filter(f => f.name.toLowerCase().endsWith('.mp3'));
+                playlist = mp3s.map(f => {
+                    const baseName = f.name.substring(0, f.name.lastIndexOf('.'));
+                    const img = files.find(i => i.name.toLowerCase().startsWith(baseName.toLowerCase()) && (i.name.endsWith('.jpg') || i.name.endsWith('.png')));
+                    return { name: "RBA - " + baseName.toUpperCase(), url: f.download_url, img: img ? img.download_url : 'logo.png' };
+                });
+                if(playlist.length > 0) { renderPlaylistUI(); loadSong(0); }
+            } catch (e) { document.getElementById('song-title').innerText = "Load Error"; }
         }
 
-        document.getElementById('back-btn').style.display = (id === 'home') ? 'none' : 'block';
-
-        if(pushState) {
-            window.location.hash = id;
-            if(tabHistory[tabHistory.length-1] !== id) tabHistory.push(id);
+        function renderPlaylistUI() {
+            const container = document.getElementById('playlist-container');
+            container.innerHTML = playlist.map((s, i) => `
+                <div class="song-item click-effect ${i === currentIndex ? 'playing' : ''}" onclick="loadSong(${i}); audio.play(); togglePlaylist();">
+                    <i class="fas fa-music"></i><span>${s.name}</span>
+                </div>
+            `).join('');
         }
-        if(id === 'gallery') loadGallery();
-        window.scrollTo(0,0);
-    }
 
-    function handleBack() { window.history.back(); }
-    window.onpopstate = () => showTab(window.location.hash.substring(1) || 'home', null, false);
+        function loadSong(index) {
+            currentIndex = index;
+            const song = playlist[index];
+            audio.src = song.url;
+            document.getElementById('song-title').innerText = song.name;
+            document.getElementById('song-bg-img').src = song.img;
+            playIcon.className = "fas fa-play";
+            renderPlaylistUI();
+        }
 
-    // ४. प्लेयर कन्ट्रोल (Repeat/Shuffle working 100%)
-    function toggleAudio() {
-        initVisualizer();
-        if (audio.paused) { audio.play(); playIcon.className = "fas fa-pause"; }
-        else { audio.pause(); playIcon.className = "fas fa-play"; }
-    }
-    function nextSong() { loadSong((currentIndex + 1) % playlist.length); audio.play(); playIcon.className = "fas fa-pause"; }
-    function prevSong() { loadSong((currentIndex - 1 + playlist.length) % playlist.length); audio.play(); playIcon.className = "fas fa-pause"; }
-    function toggleShuffle() { isShuffle = !isShuffle; document.getElementById('shuffle-btn').classList.toggle('active'); }
-    function toggleRepeat() { isRepeat = !isRepeat; document.getElementById('repeat-btn').classList.toggle('active'); }
+        function toggleAudio() {
+            initVisualizer();
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+            if (audio.paused) { audio.play(); playIcon.className = "fas fa-pause"; }
+            else { audio.pause(); playIcon.className = "fas fa-play"; }
+        }
 
-    audio.onended = () => { if(isRepeat) { audio.play(); } else { nextSong(); } };
+        function nextSong() { loadSong((currentIndex + 1) % playlist.length); audio.play(); playIcon.className = "fas fa-pause"; }
+        function prevSong() { loadSong((currentIndex - 1 + playlist.length) % playlist.length); audio.play(); playIcon.className = "fas fa-pause"; }
+        function toggleShuffle() { isShuffle = !isShuffle; document.getElementById('shuffle-btn').classList.toggle('active'); }
+        function toggleRepeat() { isRepeat = !isRepeat; document.getElementById('repeat-btn').classList.toggle('active'); }
 
-    // ५. रङ्गीन भिजुअलाइजर (पहेँलो-सुन्तला-रातो)
-    let audioCtx, analyser, dataArray;
-    function initVisualizer() {
-        if (!audioCtx) {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            analyser = audioCtx.createAnalyser();
-            const source = audioCtx.createMediaElementSource(audio);
-            source.connect(analyser); analyser.connect(audioCtx.destination);
-            analyser.fftSize = 64; dataArray = new Uint8Array(analyser.frequencyBinCount);
-            const canvas = document.getElementById('visualizer');
-            const ctx = canvas.getContext('2d');
-            function render() {
-                requestAnimationFrame(render);
-                analyser.getByteFrequencyData(dataArray);
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                const barWidth = (canvas.width / 32) - 2;
-                for (let i = 0; i < 32; i++) {
-                    const h = (dataArray[i] / 255) * canvas.height * 0.9;
-                    const gradient = ctx.createLinearGradient(0, canvas.height, 0, canvas.height - h);
-                    gradient.addColorStop(0, '#fdd835'); gradient.addColorStop(0.5, '#ff8c00'); gradient.addColorStop(1, '#ff1100');
-                    ctx.fillStyle = gradient;
-                    ctx.fillRect(i * (barWidth + 2), canvas.height - h, barWidth, h);
+        audio.onended = () => { if(isRepeat) { audio.play(); } else { nextSong(); } };
+        audio.ontimeupdate = () => {
+            const val = (audio.currentTime / audio.duration) * 100 || 0;
+            seek.value = val; seek.style.backgroundSize = val + '% 100%';
+            document.getElementById('current-time').innerText = formatTime(audio.currentTime);
+            document.getElementById('total-duration').innerText = formatTime(audio.duration || 0);
+        };
+        seek.oninput = () => { audio.currentTime = (seek.value / 100) * audio.duration; };
+
+        let audioCtx, analyser, dataArray;
+        function initVisualizer() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioCtx.createAnalyser();
+                const source = audioCtx.createMediaElementSource(audio);
+                source.connect(analyser); analyser.connect(audioCtx.destination);
+                analyser.fftSize = 64; dataArray = new Uint8Array(analyser.frequencyBinCount);
+                const canvas = document.getElementById('visualizer');
+                const ctx = canvas.getContext('2d');
+                canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight;
+                function render() {
+                    requestAnimationFrame(render);
+                    analyser.getByteFrequencyData(dataArray);
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    const barWidth = (canvas.width / 32) - 2;
+                    for (let i = 0; i < 32; i++) {
+                        const h = (dataArray[i] / 255) * canvas.height * 0.9;
+                        const gradient = ctx.createLinearGradient(0, canvas.height, 0, canvas.height - h);
+                        gradient.addColorStop(0, '#fdd835'); gradient.addColorStop(1, '#ff1100');
+                        ctx.fillStyle = gradient;
+                        ctx.fillRect(i * (barWidth + 2), canvas.height - h, barWidth, h);
+                    }
                 }
+                render();
             }
-            render();
         }
-    }
 
-    // ६. भाषा र अन्य (Original Mix included)
-    const translations = {
-        ne: { slogan: "सुरुवात सानो बाट", introTitle: "मेरो परिचय", introDesc: "नमस्कार म राजन बोहरा 'आरक्षक'/RBA-Kalikot", journeyBtn: "मेरो सांगीतिक कथा पढ्नुहोस्", navHome: "होम", navStudio: "स्टुडियो", navGallery: "ग्यालरी", navMusic: "संगीत", navSettings: "सेटिङ" },
-        en: { slogan: "Starting from Small", introTitle: "Intro", introDesc: "Namaste, I am Rajan Bohara 'Aarakshak'/RBA-Kalikot", journeyBtn: "Read My Story", navHome: "Home", navStudio: "Studio", navGallery: "Gallery", navMusic: "Music", navSettings: "Settings" },
-        or: { slogan: "सुरुवात सानो बाट", introTitle: "Intro (मेरो परिचय)", introDesc: "Namaste, म राजन बोहरा 'आरक्षक' (RBA-Kalikot)", journeyBtn: "Read My Story (संगीत कथा)", navHome: "Home", navStudio: "Studio", navGallery: "Gallery", navMusic: "Music", navSettings: "Settings" }
-    };
+        function showTab(id, el, pushState = true) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+            const target = document.getElementById(id);
+            if(target) target.classList.add('active');
+            if(el) el.classList.add('active');
+            else {
+                const navIcon = document.querySelector(`nav a[onclick*="${id}"]`);
+                if(navIcon) navIcon.classList.add('active');
+            }
+            document.getElementById('back-btn').style.display = (id === 'home') ? 'none' : 'block';
+            if(pushState) { window.location.hash = id; if(tabHistory[tabHistory.length-1] !== id) tabHistory.push(id); }
+            if(id === 'gallery') loadGallery();
+            window.scrollTo(0,0);
+        }
+        function handleBack() { window.history.back(); }
+        window.onpopstate = () => { const h = window.location.hash.substring(1) || 'home'; showTab(h, null, false); };
 
-    function changeLanguage(lang) {
-        const t = translations[lang] || translations['ne'];
-        document.getElementById('hero-slogan').innerText = `"${t.slogan}"`;
-        document.getElementById('txt-intro-title').innerText = t.introTitle;
-        document.getElementById('txt-intro-desc').innerText = t.introDesc;
-        document.getElementById('txt-journey-btn').innerHTML = `<i class="fas fa-book-open"></i> ${t.journeyBtn}`;
-        document.getElementById('nav-home').innerText = t.navHome;
-        document.getElementById('nav-studio').innerText = t.navStudio;
-        document.getElementById('nav-gallery').innerText = t.navGallery;
-        document.getElementById('nav-music').innerText = t.navMusic;
-        document.getElementById('nav-settings').innerText = t.navSettings;
-        localStorage.setItem('rba_lang', lang);
-    }
+        function searchPlaylist(q) {
+            const filter = q.toLowerCase();
+            document.querySelectorAll('.song-item').forEach(item => { item.style.display = item.innerText.toLowerCase().includes(filter) ? 'flex' : 'none'; });
+        }
+        function searchLang(val) {
+            const filter = val.toLowerCase();
+            document.querySelectorAll('.lang-item').forEach(i => i.style.display = i.innerText.toLowerCase().includes(filter) ? 'block' : 'none');
+        }
 
-    function searchPlaylist(q) {
-        const filter = q.toLowerCase();
-        document.querySelectorAll('.song-item').forEach(item => {
-            item.style.display = item.innerText.toLowerCase().includes(filter) ? 'flex' : 'none';
-        });
-    }
+        async function loadJourney() {
+            showTab('journey');
+            const res = await fetch('story.json'); const data = await res.json();
+            document.getElementById('journey-container').innerHTML = data.full_story.map(ch => `<div class="card"><h3>${ch.chapter}</h3><p>${ch.content}</p></div>`).join('');
+        }
 
-    function togglePlaylist() { document.getElementById('playlist-drawer').classList.toggle('active'); }
-    function toggleTheme() { document.body.classList.toggle('light-mode'); }
-    function addLike() { document.getElementById('like-icon').className = "fas fa-heart"; document.getElementById('like-icon').style.color = "red"; }
-    function shareApp() { 
-        const name = playlist[currentIndex].name.replace('RBA - ', '');
-        const url = `${window.location.origin}${window.location.pathname}#${encodeURIComponent(name)}`;
-        navigator.share ? navigator.share({title: 'RBA-Kalikot', url: url}) : alert("Link copied!");
-    }
-    function downloadCurrent() { window.open(playlist[currentIndex].url); }
+        async function loadGallery() {
+            const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/gallery`);
+            const files = await res.json();
+            document.getElementById('gallery-container').innerHTML = files.filter(f => f.name.match(/\.(jpg|png)$/i)).map(i => `<img class="gallery-item" src="${i.download_url}" onclick="window.open(this.src)">`).join('');
+        }
 
-    // ७. सुरुवाती लोड (Initial Load)
-    window.onload = () => {
-        const splash = document.getElementById('splash');
-        setTimeout(() => { if(splash) splash.style.display = 'none'; }, 2500);
-        history.replaceState({ tabId: 'home' }, "", "#home");
-        const savedLang = localStorage.getItem('rba_lang') || 'ne';
-        changeLanguage(savedLang);
-        loadPlaylist();
-        const hash = window.location.hash.substring(1) || 'home';
-        showTab(hash, null, false);
-    };
-</script>
+        function togglePlaylist() { document.getElementById('playlist-drawer').classList.toggle('active'); }
+        function toggleTheme() { document.body.classList.toggle('light-mode'); }
+        function formatTime(s) { const min = Math.floor(s/60); const sec = Math.floor(s%60); return min+":"+(sec<10?'0':'')+sec; }
+        function downloadCurrent() { window.open(playlist[currentIndex].url); }
+        function shareApp() { 
+            const name = playlist[currentIndex].name.replace('RBA - ', '');
+            const url = `${window.location.origin}${window.location.pathname}#${encodeURIComponent(name)}`;
+            if(navigator.share) navigator.share({title: 'RBA-Kalikot', url: url}); else alert("Link copied!");
+        }
+        function addLike() { document.getElementById('like-icon').className = "fas fa-heart"; document.getElementById('like-icon').style.color = "red"; }
+
+        window.onload = () => {
+            const savedLang = localStorage.getItem('rba_lang') || 'ne';
+            if(savedLang) changeLanguage(savedLang);
+            loadPlaylist();
+            setTimeout(() => document.getElementById('splash').style.display = 'none', 2500);
+            const h = window.location.hash.substring(1) || 'home';
+            showTab(h, null, false);
+        };
+    </script>
 </body>
 </html>
