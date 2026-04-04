@@ -294,18 +294,41 @@
         }
 
         function renderPlaylistUI() {
-            const container = document.getElementById('playlist-container');
-            container.innerHTML = playlist.map((s, i) => `<div class="song-item click-effect" onclick="loadSong(${i}); audio.play(); togglePlaylist();"><i class="fas fa-play-circle"></i><span>${s.name}</span></div>`).join('');
-        }
+    const container = document.getElementById('playlist-container');
+    if(!container) return;
+    
+    // नयाँ र आधुनिक लिस्टिङ स्टाइल
+    container.innerHTML = playlist.map((s, i) => `
+        <div class="song-item click-effect ${i === currentIndex ? 'playing' : ''}" 
+             style="display: flex; align-items: center; padding: 18px; background: #181818; margin-bottom: 12px; border-radius: 16px; border: 1px solid ${i === currentIndex ? 'var(--p-yellow)' : 'rgba(255,255,255,0.05)'};"
+             onclick="loadSong(${i}); audio.play(); togglePlaylist();">
+            <i class="fas fa-music" style="margin-right: 15px; color: var(--p-yellow);"></i>
+            <span style="flex: 1; font-weight: ${i === currentIndex ? '600' : '400'};">${s.name}</span>
+            ${i === currentIndex ? '<i class="fas fa-volume-up" style="font-size: 0.8rem; color: var(--p-yellow);"></i>' : ''}
+        </div>
+    `).join('');
+}
 
-        function loadSong(index) {
-            currentIndex = index;
-            const song = playlist[index];
-            audio.src = song.url;
-            document.getElementById('song-title').innerText = song.name;
-            document.getElementById('song-bg-img').src = song.img;
-            playIcon.className = "fas fa-play";
-        }
+        // १. गीत लोड गर्दा सबै कुरा (फोटो, नाम, लिस्ट) अपडेट गर्ने मुख्य फङ्सन
+function loadSong(index) {
+    currentIndex = index;
+    const song = playlist[index];
+    const audio = document.getElementById('main-audio');
+    
+    // गीतको लिङ्क सेट गर्ने
+    if(audio) audio.src = song.url;
+    
+    // गीतको नाम र फोटो अपडेट गर्ने
+    document.getElementById('song-title').innerText = song.name;
+    document.getElementById('song-bg-img').src = song.img;
+    
+    // प्ले बटनलाई रिसेट गर्ने
+    const playIcon = document.getElementById('play-icon');
+    if(playIcon) playIcon.className = "fas fa-play";
+
+    // लिस्टमा एक्टिभ गीतलाई हाइलाइट गर्न फेरि लिस्ट बनाउने
+    renderPlaylistUI();
+}
 
         function toggleAudio() {
             initVisualizer();
