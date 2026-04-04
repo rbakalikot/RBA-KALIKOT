@@ -343,21 +343,24 @@
             }
         }
         function renderFrame() {
-            requestAnimationFrame(renderFrame); analyser.getByteFrequencyData(dataArray);
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const totalBars = Math.floor(canvas.width / 6);
-            for (let i = 0; i < totalBars; i++) {
-                const val = dataArray[i % 64];
-                const height = (val / 255) * canvas.height * 0.95;
-                // १. रङ्गलाई झन् आकर्षक बनाउन 'Gradient' (मिश्रण) तयार गर्ने
+    requestAnimationFrame(renderFrame); 
+    analyser.getByteFrequencyData(dataArray);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const barWidth = (canvas.width / 32) - 2;
+    for (let i = 0; i < 32; i++) {
+        const val = dataArray[i];
+        const height = (val / 255) * canvas.height * 0.9;
+
+        // यहाँ हामीले नयाँ कोड पेस्ट गर्यौं
         const gradient = ctx.createLinearGradient(0, canvas.height, 0, canvas.height - height);
-        gradient.addColorStop(0, '#fdd835'); // फेदमा पहेँलो (Yellow)
-        gradient.addColorStop(0.5, '#ff8c00'); // बीचमा सुन्तला (Orange)
-        gradient.addColorStop(1, '#ff1100'); // टुप्पोमा रातो (Red)
-        
-        ctx.fillStyle = gradient; // तयार भएको रङ्ग लागू गर्ने
-            }
-        }
+        gradient.addColorStop(0, '#fdd835'); 
+        gradient.addColorStop(0.5, '#ff8c00'); 
+        gradient.addColorStop(1, '#ff1100'); 
+        ctx.fillStyle = gradient;
+
+        ctx.fillRect(i * (barWidth + 2), canvas.height - height, barWidth, height);
+    }
+}
 
         function showTab(id, el, pushState = true) {
     // सबै ट्याब र मेनुलाई हटाउने
