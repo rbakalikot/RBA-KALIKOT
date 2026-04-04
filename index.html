@@ -69,13 +69,14 @@
     transform: translate(-50%, -50%);
     opacity: 0.95;
     z-index: 1;
-    animation: studioImgPan 18s ease-in-out infinite alternate;
+    animation: studioImgPan 25s ease-in-out infinite alternate;
 }
 
 /* ३. स्मूथ प्यानिङ एनिमेसन */
+/* ३. फोटोलाई निकै नरम र स्मूथ तरिकाले बायाँ-दायाँ सार्ने एनिमेसन */
 @keyframes studioImgPan {
-    from { transform: translate(-60%, -50%); }
-    to { transform: translate(-40%, -50%); }
+    0% { transform: scale(1.02) translateX(-3%); }
+    100% { transform: scale(1.02) translateX(3%); }
 }
         canvas { position: absolute; bottom: 0; left: 0; width: 100%; height: 65px; z-index: 5; pointer-events: none; }
         
