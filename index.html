@@ -387,21 +387,36 @@ function loadSong(index) {
 }
 
         function showTab(id, el, pushState = true) {
-    // सबै ट्याब र मेनुलाई हटाउने
+    // १. सबै ट्याब र मेनुबाट 'active' क्लास हटाउने
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
     
-    // चाहिएको ट्याबलाई देखाउने
+    // २. चाहिएको ट्याबलाई देखाउने
     const targetTab = document.getElementById(id);
     if(targetTab) targetTab.classList.add('active');
 
-    // मेनु आइकनलाई पहेँलो (Active) बनाउने
+    // ३. नेभिगेसन आइकन मिलाउने
     if(el) {
         el.classList.add('active');
     } else {
         const navIcon = document.querySelector(`nav a[onclick*="${id}"]`);
         if(navIcon) navIcon.classList.add('active');
     }
+
+    // ४. ब्याक बटन (Top-Left) देखाउने वा लुकाउने
+    const backBtn = document.getElementById('back-btn');
+    if(backBtn) backBtn.style.display = (id === 'home') ? 'none' : 'block';
+
+    // ५. मोबाइल ब्याक बटनको लागि इतिहास (History) मा ट्याब सेभ गर्ने
+    if(pushState) {
+        // ब्राउजरको लिङ्क पछाडि #studio जस्तो नाम थप्ने
+        history.pushState({ tabId: id }, "", "#" + id);
+        if(tabHistory[tabHistory.length - 1] !== id) tabHistory.push(id);
+    }
+    
+    if(id === 'gallery') loadGallery();
+    window.scrollTo(0,0);
+}
 
     // ब्याक बटन मिलाउने
     const backBtn = document.getElementById('back-btn');
@@ -419,9 +434,21 @@ function loadSong(index) {
     window.scrollTo(0,0);
 }
 
-        function handleBack() {
-            if(tabHistory.length > 1) { tabHistory.pop(); const prev = tabHistory[tabHistory.length-1]; showTab(prev, document.querySelector(`nav a[onclick*="${prev}"]`)); tabHistory.pop(); }
-        }
+        // माथिको ब्याक बटन थिच्दा ब्राउजरको ब्याक फिचर ट्रिगर गर्ने
+function handleBack() {
+    window.history.back();
+}
+
+// मोबाइलको सिस्टम ब्याक बटन वा स्वाइप ब्याकलाई समात्ने जादु
+window.onpopstate = function(event) {
+    if (event.state && event.state.tabId) {
+        // अघिल्लो ट्याबमा जाने
+        showTab(event.state.tabId, null, false);
+    } else {
+        // केही छैन भने होम पेजमा जाने
+        showTab('home', null, false);
+    }
+};
 
         async function loadJourney() {
             showTab('journey');
@@ -490,16 +517,46 @@ function shareApp() {
         function shareApp() { navigator.share({title:'RBA-Kalikot Official', url: window.location.href}); }
         function addLike() { document.getElementById('like-icon').className = "fas fa-heart"; document.getElementById('like-icon').style.color = "red"; }
 
-       window.onload = () => {
+       // ५. एप लोड हुँदा सबै कुरा मिलाउने मुख्य फङ्सन (अन्तिम भाग)
+window.onload = () => {
     const splash = document.getElementById('splash');
     // ३ सेकेन्डपछि स्प्ल्याश स्क्रिन हटाउने (Failsafe)
     setTimeout(() => { if(splash) splash.style.display = 'none'; }, 3000);
 
     try {
-        // १. पहिलेकै जस्तो भाषा लोड गर्ने
+        // मोबाइल ब्याक बटनको सुरुवाती बिन्दु सेट गर्ने
+        history.replaceState({ tabId: 'home' }, "", "#home");
+
+        // १. पहिलेकै जस्तो भाषा र प्लेलिस्ट लोड गर्ने
         const savedLang = localStorage.getItem('rba_lang') || 'ne';
         changeLanguage(savedLang);
         loadPlaylist();
+
+        // २. कुन ट्याबमा थियो भनेर पत्ता लगाउने (Sticky Tab फिचर)
+        const currentHash = window.location.hash.substring(1); 
+        const validTabs = ['home', 'studio', 'gallery', 'music', 'settings', 'journey'];
+        
+        if (validTabs.includes(currentHash)) {
+            showTab(currentHash, null, false);
+        } else {
+            showTab('home', null, false);
+        }
+
+        // ३. लिङ्कमा भएको गीतको नाम पत्ता लगाएर सिधै बजाउने
+        setTimeout(() => {
+            const hash = decodeURIComponent(window.location.hash.substring(1));
+            if (hash && !validTabs.includes(hash)) {
+                const songIndex = playlist.findIndex(s => s.name.replace('RBA - ', '') === hash);
+                if (songIndex !== -1) {
+                    showTab('studio');
+                    loadSong(songIndex);
+                    toggleAudio(); 
+                }
+            }
+        }, 3500);
+
+    } catch (e) { console.log("Init Error:", e); }
+};
 // ३. लिङ्कमा भएको गीतको नाम पत्ता लगाएर सिधै बजाउने
         setTimeout(() => {
             const hash = decodeURIComponent(window.location.hash.substring(1));
