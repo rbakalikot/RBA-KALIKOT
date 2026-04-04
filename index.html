@@ -118,13 +118,23 @@
     <div id="splash"><img src="logo.png" class="splash-logo"><h2 style="color: var(--p-yellow); letter-spacing: 2px;">RBA-KALIKOT</h2><p style="color: #666; font-size: 0.8rem;">सुरुवात सानो बाट</p></div>
 
     <!-- Playlist Drawer -->
-    <div id="playlist-drawer" class="playlist-drawer">
-        <div style="display: flex; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 15px;">
-            <h3 id="txt-list-title" style="color: var(--p-yellow); flex: 1;">मे्रो प्लेलिस्ट</h3>
-            <i class="fas fa-times click-effect" onclick="togglePlaylist()" style="font-size: 2rem; color: #888;"></i>
-        </div>
-        <div id="playlist-container"></div>
+    <!-- १. प्लेलिस्ट ड्रयर (अपडेट गरिएको) -->
+<div id="playlist-drawer" class="playlist-drawer">
+    <div style="display: flex; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px;">
+        <h3 id="txt-list-title" style="color: var(--p-yellow); flex: 1;">मेरो प्लेलिस्ट</h3>
+        <i class="fas fa-times click-effect" onclick="togglePlaylist()" style="font-size: 2rem; color: #888;"></i>
     </div>
+
+    <!-- नयाँ सर्च बार यहाँ थपिएको छ -->
+    <div style="margin-bottom: 20px;">
+        <input type="text" id="playlist-search-input" 
+               style="width: 100%; padding: 12px; border-radius: 12px; background: #1a1a1a; border: 1px solid var(--p-yellow); color: white;" 
+               placeholder="गीत खोज्नुहोस् (Search Song...)" 
+               onkeyup="searchPlaylist(this.value)">
+    </div>
+
+    <div id="playlist-container"></div>
+</div>
 
     <header>
         <div id="back-btn" class="click-effect" onclick="handleBack()"><i class="fas fa-arrow-left"></i></div>
@@ -417,6 +427,32 @@
     });
 }
         function formatTime(s) { const min = Math.floor(s/60); const sec = Math.floor(s%60); return min+":"+(sec<10?'0':'')+sec; }
+        // १. प्लेलिस्टमा गीत सर्च गर्ने फङ्सन
+function searchPlaylist(query) {
+    const items = document.querySelectorAll('.song-item');
+    const filter = query.toLowerCase();
+    items.forEach(item => {
+        const songName = item.innerText.toLowerCase();
+        item.style.display = songName.includes(filter) ? 'flex' : 'none';
+    });
+}
+
+// २. सिधै गीतको लिङ्क सेयर गर्ने फङ्सन (हामीले पुरानो shareApp लाई यसले बदल्छौँ)
+function shareApp() {
+    const currentSongName = playlist[currentIndex].name.replace('RBA - ', '');
+    // लिङ्कमा गीतको नाम थप्ने (e.g. #AADAT)
+    const shareUrl = `${window.location.origin}${window.location.pathname}#${encodeURIComponent(currentSongName)}`;
+
+    if (navigator.share) {
+        navigator.share({
+            title: `RBA - ${currentSongName}`,
+            text: `यो सुमधुर धुन सुन्नुहोस्: ${currentSongName}`,
+            url: shareUrl
+        });
+    } else {
+        alert("Link copied: " + shareUrl);
+    }
+}
         function downloadCurrent() { window.open(playlist[currentIndex].url); }
         function shareApp() { navigator.share({title:'RBA-Kalikot Official', url: window.location.href}); }
         function addLike() { document.getElementById('like-icon').className = "fas fa-heart"; document.getElementById('like-icon').style.color = "red"; }
@@ -431,7 +467,18 @@
         const savedLang = localStorage.getItem('rba_lang') || 'ne';
         changeLanguage(savedLang);
         loadPlaylist();
-
+// ३. लिङ्कमा भएको गीतको नाम पत्ता लगाएर सिधै बजाउने
+        setTimeout(() => {
+            const hash = decodeURIComponent(window.location.hash.substring(1));
+            if (hash && !['home','studio','gallery','music','settings','journey'].includes(hash)) {
+                const songIndex = playlist.findIndex(s => s.name.replace('RBA - ', '') === hash);
+                if (songIndex !== -1) {
+                    showTab('studio');
+                    loadSong(songIndex);
+                    toggleAudio(); 
+                }
+            }
+        }, 3500);
         // २. कुन ट्याबमा थियो भनेर पत्ता लगाउने (नयाँ 'Sticky Tab' फिचर)
         const currentHash = window.location.hash.substring(1); // #studio बाट studio मात्र लिन्छ
         const validTabs = ['home', 'studio', 'gallery', 'music', 'settings', 'journey'];
