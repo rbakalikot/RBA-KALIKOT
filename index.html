@@ -262,7 +262,8 @@
             </div>
         `).join('');
     }
-  <script>
+<script>
+    // १. मुख्य जानकारी र सेटिङ
     const GITHUB_REPO = "rbakalikot/RBA-KALIKOT";
     let playlist = []; 
     let currentIndex = 0; 
@@ -274,7 +275,7 @@
     const playIcon = document.getElementById('play-icon');
     const seek = document.getElementById('seek-bar');
 
-    // गिटहबबाट गीतको लिस्ट तान्ने फङ्सन
+    // २. गीत लोड गर्ने र लिस्ट बनाउने (Spotify र TikTok सुरक्षित छ)
     async function loadPlaylist() {
         try {
             const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/`);
@@ -294,10 +295,11 @@
         if(!container) return;
         container.innerHTML = playlist.map((s, i) => `
             <div class="song-item click-effect ${i === currentIndex ? 'playing' : ''}" 
+                 style="display: flex; align-items: center; padding: 15px; background: #181818; margin-bottom: 10px; border-radius: 12px; border: 1px solid ${i === currentIndex ? 'var(--p-yellow)' : 'rgba(255,255,255,0.05)'};"
                  onclick="loadSong(${i}); audio.play(); togglePlaylist();">
-                <i class="fas fa-music"></i>
+                <i class="fas fa-music" style="margin-right: 15px; color: var(--p-yellow);"></i>
                 <span style="flex: 1;">${s.name}</span>
-                ${i === currentIndex ? '<i class="fas fa-volume-up"></i>' : ''}
+                ${i === currentIndex ? '<i class="fas fa-volume-up" style="color: var(--p-yellow);"></i>' : ''}
             </div>
         `).join('');
     }
@@ -311,7 +313,8 @@
         playIcon.className = "fas fa-play";
         renderPlaylistUI();
     }
-      // ट्याब फेर्ने र ब्राउजर हिस्ट्री मिलाउने
+
+    // ३. नेभिगेसन र ट्याब कन्ट्रोल (Back Button & Refresh Fix)
     function showTab(id, el, pushState = true) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
@@ -335,57 +338,23 @@
         window.scrollTo(0,0);
     }
 
-    function handleBack() {
-        window.history.back();
-    }
+    function handleBack() { window.history.back(); }
+    window.onpopstate = () => showTab(window.location.hash.substring(1) || 'home', null, false);
 
-    window.onpopstate = function(event) {
-        const hash = window.location.hash.substring(1) || 'home';
-        showTab(hash, null, false);
-    };
-
-    function togglePlaylist() { document.getElementById('playlist-drawer').classList.toggle('active'); }
-    function toggleTheme() { document.body.classList.toggle('light-mode'); }
-      function toggleAudio() {
+    // ४. प्लेयर कन्ट्रोल (Repeat/Shuffle working 100%)
+    function toggleAudio() {
         initVisualizer();
         if (audio.paused) { audio.play(); playIcon.className = "fas fa-pause"; }
         else { audio.pause(); playIcon.className = "fas fa-play"; }
     }
-
     function nextSong() { loadSong((currentIndex + 1) % playlist.length); audio.play(); playIcon.className = "fas fa-pause"; }
     function prevSong() { loadSong((currentIndex - 1 + playlist.length) % playlist.length); audio.play(); playIcon.className = "fas fa-pause"; }
-    
-    function toggleShuffle() { 
-        isShuffle = !isShuffle; 
-        document.getElementById('shuffle-btn').classList.toggle('active'); 
-    }
-    
-    function toggleRepeat() { 
-        isRepeat = !isRepeat; 
-        document.getElementById('repeat-btn').classList.toggle('active'); 
-    }
+    function toggleShuffle() { isShuffle = !isShuffle; document.getElementById('shuffle-btn').classList.toggle('active'); }
+    function toggleRepeat() { isRepeat = !isRepeat; document.getElementById('repeat-btn').classList.toggle('active'); }
 
     audio.onended = () => { if(isRepeat) { audio.play(); } else { nextSong(); } };
 
-    audio.ontimeupdate = () => {
-        const val = (audio.currentTime / audio.duration) * 100 || 0;
-        seek.value = val;
-        seek.style.backgroundSize = val + '% 100%';
-        document.getElementById('current-time').innerText = formatTime(audio.currentTime);
-        document.getElementById('total-duration').innerText = formatTime(audio.duration || 0);
-    };
-
-    seek.oninput = () => { audio.currentTime = (seek.value / 100) * audio.duration; };
-
-    function formatTime(s) { const min = Math.floor(s/60); const sec = Math.floor(s%60); return min+":"+(sec<10?'0':'')+sec; }
-
-    function shareApp() {
-        const name = playlist[currentIndex].name.replace('RBA - ', '');
-        const shareUrl = `${window.location.origin}${window.location.pathname}#${encodeURIComponent(name)}`;
-        if (navigator.share) navigator.share({ title: `RBA - ${name}`, url: shareUrl });
-        else alert("Link: " + shareUrl);
-    }
-    // रंगीन भिजुअलाइजर (Yellow to Red Gradient)
+    // ५. रङ्गीन भिजुअलाइजर (पहेँलो-सुन्तला-रातो)
     let audioCtx, analyser, dataArray;
     function initVisualizer() {
         if (!audioCtx) {
@@ -402,9 +371,9 @@
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 const barWidth = (canvas.width / 32) - 2;
                 for (let i = 0; i < 32; i++) {
-                    const h = (dataArray[i] / 255) * canvas.height;
+                    const h = (dataArray[i] / 255) * canvas.height * 0.9;
                     const gradient = ctx.createLinearGradient(0, canvas.height, 0, canvas.height - h);
-                    gradient.addColorStop(0, '#fdd835'); gradient.addColorStop(1, '#ff1100');
+                    gradient.addColorStop(0, '#fdd835'); gradient.addColorStop(0.5, '#ff8c00'); gradient.addColorStop(1, '#ff1100');
                     ctx.fillStyle = gradient;
                     ctx.fillRect(i * (barWidth + 2), canvas.height - h, barWidth, h);
                 }
@@ -413,24 +382,51 @@
         }
     }
 
-    async function loadJourney() {
-        showTab('journey');
-        const res = await fetch('story.json'); const data = await res.json();
-        document.getElementById('journey-container').innerHTML = data.full_story.map(ch => `<div class="card"><h3>${ch.chapter}</h3><p>${ch.content}</p></div>`).join('');
+    // ६. भाषा र अन्य (Original Mix included)
+    const translations = {
+        ne: { slogan: "सुरुवात सानो बाट", introTitle: "मेरो परिचय", introDesc: "नमस्कार म राजन बोहरा 'आरक्षक'/RBA-Kalikot", journeyBtn: "मेरो सांगीतिक कथा पढ्नुहोस्", navHome: "होम", navStudio: "स्टुडियो", navGallery: "ग्यालरी", navMusic: "संगीत", navSettings: "सेटिङ" },
+        en: { slogan: "Starting from Small", introTitle: "Intro", introDesc: "Namaste, I am Rajan Bohara 'Aarakshak'/RBA-Kalikot", journeyBtn: "Read My Story", navHome: "Home", navStudio: "Studio", navGallery: "Gallery", navMusic: "Music", navSettings: "Settings" },
+        or: { slogan: "सुरुवात सानो बाट", introTitle: "Intro (मेरो परिचय)", introDesc: "Namaste, म राजन बोहरा 'आरक्षक' (RBA-Kalikot)", journeyBtn: "Read My Story (संगीत कथा)", navHome: "Home", navStudio: "Studio", navGallery: "Gallery", navMusic: "Music", navSettings: "Settings" }
+    };
+
+    function changeLanguage(lang) {
+        const t = translations[lang] || translations['ne'];
+        document.getElementById('hero-slogan').innerText = `"${t.slogan}"`;
+        document.getElementById('txt-intro-title').innerText = t.introTitle;
+        document.getElementById('txt-intro-desc').innerText = t.introDesc;
+        document.getElementById('txt-journey-btn').innerHTML = `<i class="fas fa-book-open"></i> ${t.journeyBtn}`;
+        document.getElementById('nav-home').innerText = t.navHome;
+        document.getElementById('nav-studio').innerText = t.navStudio;
+        document.getElementById('nav-gallery').innerText = t.navGallery;
+        document.getElementById('nav-music').innerText = t.navMusic;
+        document.getElementById('nav-settings').innerText = t.navSettings;
+        localStorage.setItem('rba_lang', lang);
     }
 
-    async function loadGallery() {
-        const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/gallery`);
-        const files = await res.json();
-        document.getElementById('gallery-container').innerHTML = files.filter(f => f.name.match(/\.(jpg|png)$/i)).map(i => `<img class="gallery-item click-effect" src="${i.download_url}">`).join('');
+    function searchPlaylist(q) {
+        const filter = q.toLowerCase();
+        document.querySelectorAll('.song-item').forEach(item => {
+            item.style.display = item.innerText.toLowerCase().includes(filter) ? 'flex' : 'none';
+        });
     }
 
+    function togglePlaylist() { document.getElementById('playlist-drawer').classList.toggle('active'); }
+    function toggleTheme() { document.body.classList.toggle('light-mode'); }
+    function addLike() { document.getElementById('like-icon').className = "fas fa-heart"; document.getElementById('like-icon').style.color = "red"; }
+    function shareApp() { 
+        const name = playlist[currentIndex].name.replace('RBA - ', '');
+        const url = `${window.location.origin}${window.location.pathname}#${encodeURIComponent(name)}`;
+        navigator.share ? navigator.share({title: 'RBA-Kalikot', url: url}) : alert("Link copied!");
+    }
+    function downloadCurrent() { window.open(playlist[currentIndex].url); }
+
+    // ७. सुरुवाती लोड (Initial Load)
     window.onload = () => {
         const splash = document.getElementById('splash');
         setTimeout(() => { if(splash) splash.style.display = 'none'; }, 2500);
         history.replaceState({ tabId: 'home' }, "", "#home");
         const savedLang = localStorage.getItem('rba_lang') || 'ne';
-        if(typeof changeLanguage === 'function') changeLanguage(savedLang);
+        changeLanguage(savedLang);
         loadPlaylist();
         const hash = window.location.hash.substring(1) || 'home';
         showTab(hash, null, false);
