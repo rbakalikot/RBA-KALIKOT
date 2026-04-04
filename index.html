@@ -399,7 +399,23 @@
 
         function togglePlaylist() { document.getElementById('playlist-drawer').classList.toggle('active'); }
         function toggleTheme() { document.body.classList.toggle('light-mode'); }
-        function searchLang(val) { document.querySelectorAll('.lang-item').forEach(i => i.style.display = i.innerText.toLowerCase().includes(val.toLowerCase()) ? 'block' : 'none'); }
+        function searchLang(val) {
+    // १. सबै भाषाहरूको सूची समात्ने
+    const items = document.querySelectorAll('.lang-item');
+    const filter = val.toLowerCase();
+    
+    // २. हरेक भाषालाई चेक गर्ने
+    items.forEach(item => {
+        const text = item.innerText.toLowerCase();
+        
+        // ३. यदि सर्च गरेको शब्द मिल्यो भने देखाउने, नत्र लुकाउने
+        if (text.includes(filter)) {
+            item.style.display = "block"; 
+        } else {
+            item.style.display = "none";  
+        }
+    });
+}
         function formatTime(s) { const min = Math.floor(s/60); const sec = Math.floor(s%60); return min+":"+(sec<10?'0':'')+sec; }
         function downloadCurrent() { window.open(playlist[currentIndex].url); }
         function shareApp() { navigator.share({title:'RBA-Kalikot Official', url: window.location.href}); }
