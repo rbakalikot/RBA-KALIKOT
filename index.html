@@ -252,16 +252,7 @@
     </nav>
 
     ainer = document.getElementById('playlist-container');
-        if(!container) return;
-        container.innerHTML = playlist.map((s, i) => `
-            <div class="song-item click-effect ${i === currentIndex ? 'playing' : ''}" 
-                 onclick="loadSong(${i}); audio.play(); togglePlaylist();">
-                <i class="fas fa-music"></i>
-                <span style="flex: 1;">${s.name}</span>
-                ${i === currentIndex ? '<i class="fas fa-volume-up"></i>' : ''}
-            </div>
-        `).join('');
-    }
+       
 <script>
     // १. मुख्य जानकारी र सेटिङ
     const GITHUB_REPO = "rbakalikot/RBA-KALIKOT";
