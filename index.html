@@ -320,16 +320,38 @@
             }
         }
 
-        function showTab(id, el) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            if(el) el.classList.add('active');
-            if(tabHistory[tabHistory.length-1] !== id) tabHistory.push(id);
-            document.getElementById('back-btn').style.display = (id === 'home') ? 'none' : 'block';
-            if(id === 'gallery') loadGallery();
-            window.scrollTo(0,0);
-        }
+        function showTab(id, el, pushState = true) {
+    // सबै ट्याब र मेनुलाई हटाउने
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+    
+    // चाहिएको ट्याबलाई देखाउने
+    const targetTab = document.getElementById(id);
+    if(targetTab) targetTab.classList.add('active');
+
+    // मेनु आइकनलाई पहेँलो (Active) बनाउने
+    if(el) {
+        el.classList.add('active');
+    } else {
+        const navIcon = document.querySelector(`nav a[onclick*="${id}"]`);
+        if(navIcon) navIcon.classList.add('active');
+    }
+
+    // ब्याक बटन मिलाउने
+    const backBtn = document.getElementById('back-btn');
+    if(backBtn) backBtn.style.display = (id === 'home') ? 'none' : 'block';
+
+    // नयाँ फिचर: लिङ्कमा #studio वा #gallery थप्ने (ताकि रिफ्रेस गर्दा नहराओस्)
+    if(pushState) {
+        window.location.hash = id;
+        if(tabHistory[tabHistory.length-1] !== id) tabHistory.push(id);
+    }
+    
+    // ग्यालरी हो भने फोटो लोड गर्ने
+    if(id === 'gallery') loadGallery();
+    
+    window.scrollTo(0,0);
+}
 
         function handleBack() {
             if(tabHistory.length > 1) { tabHistory.pop(); const prev = tabHistory[tabHistory.length-1]; showTab(prev, document.querySelector(`nav a[onclick*="${prev}"]`)); tabHistory.pop(); }
