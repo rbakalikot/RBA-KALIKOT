@@ -196,16 +196,39 @@
 
     <!-- 6. SETTINGS -->
     <div id="settings" class="tab-content">
-        <h2 id="txt-settings-title">Settings</h2>
-        <div class="card"><h4 id="txt-lang-label">भाषा चयन गर्नुहोस्</h4>
-            <input type="text" id="lang-search" style="width:100%; padding:14px; border-radius:12px; background:#1a1a1a; border:1px solid var(--p-yellow); color:white; margin:10px 0;" placeholder="Search language..." onkeyup="searchLang(this.value)">
-            <div id="lang-list" class="lang-list">
-                <div class="lang-item" onclick="changeLanguage('ne')">नेपाली (Nepali)</div>
-                <div class="lang-item" onclick="changeLanguage('en')">English</div>
-                <div class="lang-item" onclick="changeLanguage('hi')">हिन्दी (Hindi)</div>
-                <div class="lang-item" onclick="changeLanguage('or')">Original (नेपाली + English)</div>
-            </div>
+    <h2 id="txt-settings-title" style="text-align: center; margin-bottom: 20px;">Settings</h2>
+    
+    <!-- भाषा खोज्ने र छान्ने बक्स -->
+    <div class="card" style="border: 1px solid var(--p-yellow);">
+        <h4 id="txt-lang-label" style="margin-bottom: 15px;">भाषा चयन गर्नुहोस् (Select Language)</h4>
+        
+        <!-- सर्च बार -->
+        <div style="position: relative; margin-bottom: 15px;">
+            <i class="fas fa-search" style="position: absolute; left: 12px; top: 12px; color: #888;"></i>
+            <input type="text" id="lang-search" 
+                   style="width: 100%; padding: 10px 10px 10px 40px; border-radius: 12px; background: #1a1a1a; border: 1px solid #333; color: white;" 
+                   placeholder="Search language (e.g. English, Nepali...)" 
+                   onkeyup="searchLang(this.value)">
         </div>
+
+        <!-- भाषाहरूको लिस्ट -->
+        <div id="lang-list" style="max-height: 200px; overflow-y: auto; background: #111; border-radius: 12px;">
+            <div class="lang-item click-effect" style="padding: 12px; border-bottom: 1px solid #222;" onclick="changeLanguage('ne')">🇳🇵 नेपाली (Nepali)</div>
+            <div class="lang-item click-effect" style="padding: 12px; border-bottom: 1px solid #222;" onclick="changeLanguage('en')">🇺🇸 English</div>
+            <div class="lang-item click-effect" style="padding: 12px; border-bottom: 1px solid #222;" onclick="changeLanguage('hi')">🇮🇳 हिन्दी (Hindi)</div>
+            <div class="lang-item click-effect" style="padding: 12px;" onclick="changeLanguage('or')">🎸 Original (Nepali + English)</div>
+        </div>
+    </div>
+
+    <!-- कलाकार बुकिंग -->
+    <div class="card" style="text-align: center;">
+        <h4 id="txt-booking-title">Artist Booking</h4>
+        <p style="font-size: 0.8rem; color: gray; margin-bottom: 10px;">सांगीतिक सहकार्यका लागि सम्पर्क गर्नुहोस्</p>
+        <a href="https://wa.me/9768978945" class="click-effect" style="display:block; background:#25d366; padding:15px; border-radius:14px; color:#fff; text-decoration:none; font-weight:600;">
+            <i class="fab fa-whatsapp"></i> WhatsApp Booking
+        </a>
+    </div>
+</div>
         <div class="card" style="text-align: center;"><h4>Artist Booking</h4><a href="https://wa.me/9768978945" class="click-effect" style="display:block; background:#25d366; padding:15px; border-radius:14px; color:#fff; text-decoration:none; margin-top:10px; font-weight:600;"><i class="fab fa-whatsapp"></i> WhatsApp Booking</a></div>
     </div>
 
