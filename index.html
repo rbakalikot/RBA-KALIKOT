@@ -47,27 +47,35 @@
 
         /* STUDIO PLAYER */
         .player-card { background: var(--card-dark); border-radius: 28px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.6); max-width: 450px; margin: 0 auto; width: 100%; }
-        .song-visual-area {
+        /* १. प्लेयरको मुख्य एरियालाई पहिलेकै जस्तो (Square/Tall) बनाउने */
+.song-visual-area {
     width: 100%;
-    aspect-ratio: 16 / 9;
+    height: 380px; /* यसले प्लेयरलाई १६:९ बाट हटाएर पहिलेकै जस्तो अग्लो बनाउँछ */
     position: relative;
     overflow: hidden;
     background: #000;
     border-radius: 24px 24px 0 0;
 }
+
+/* २. १६:९ को फोटोले पूरै बक्स भर्ने र दायाँ-बायाँ हल्लिने */
 #song-bg-img {
     position: absolute;
-    width: 130%;
-    height: 100%;
-    object-fit: cover;
-    left: -15%;
+    height: 100%; /* बक्सको पूरै उचाइ ओगट्ने */
+    width: auto;   /* चौडाइ आफैं एडजस्ट हुने */
+    min-width: 130%; /* बक्स भन्दा अलि ठुलो बनाउने ताकि हल्लिँदा खाली नदेखोस् */
+    object-fit: cover; /* कालो भाग पूर्ण रूपमा हटाउने */
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
     opacity: 0.95;
     z-index: 1;
-    animation: studioImgPan 25s ease-in-out infinite alternate;
+    animation: studioImgPan 18s ease-in-out infinite alternate;
 }
+
+/* ३. स्मूथ प्यानिङ एनिमेसन */
 @keyframes studioImgPan {
-    from { transform: translateX(-5%); }
-    to { transform: translateX(5%); }
+    from { transform: translate(-60%, -50%); }
+    to { transform: translate(-40%, -50%); }
 }
         canvas { position: absolute; bottom: 0; left: 0; width: 100%; height: 65px; z-index: 5; pointer-events: none; }
         
