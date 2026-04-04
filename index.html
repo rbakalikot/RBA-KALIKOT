@@ -349,7 +349,13 @@
             for (let i = 0; i < totalBars; i++) {
                 const val = dataArray[i % 64];
                 const height = (val / 255) * canvas.height * 0.95;
-                ctx.fillStyle = '#ff00ff'; ctx.fillRect(i * 6, canvas.height - height, 4, height);
+                // १. रङ्गलाई झन् आकर्षक बनाउन 'Gradient' (मिश्रण) तयार गर्ने
+        const gradient = ctx.createLinearGradient(0, canvas.height, 0, canvas.height - height);
+        gradient.addColorStop(0, '#fdd835'); // फेदमा पहेँलो (Yellow)
+        gradient.addColorStop(0.5, '#ff8c00'); // बीचमा सुन्तला (Orange)
+        gradient.addColorStop(1, '#ff1100'); // टुप्पोमा रातो (Red)
+        
+        ctx.fillStyle = gradient; // तयार भएको रङ्ग लागू गर्ने
             }
         }
 
