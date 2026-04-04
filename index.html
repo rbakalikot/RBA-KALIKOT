@@ -252,336 +252,153 @@
     </nav>
 
     <script>
-        const GITHUB_REPO = "rbakalikot/RBA-KALIKOT";
-        let playlist = []; let currentIndex = 0; let isShuffle = false; let isRepeat = false; let tabHistory = ['home'];
-        const audio = document.getElementById('main-audio');
-        const playIcon = document.getElementById('play-icon');
-        const seek = document.getElementById('seek-bar');
+    // १. सुरुवाती सेटिङहरू
+    const GITHUB_REPO = "rbakalikot/RBA-KALIKOT";
+    let playlist = []; 
+    let currentIndex = 0; 
+    let isShuffle = false; 
+    let isRepeat = false; 
+    let tabHistory = ['home']; // यो छुटेको हुनाले अघि एप अड्किएको हो
 
-        const translations = {
-            ne: { slogan: "सुरुवात सानो बाट", introTitle: "मेरो परिचय", introDesc: "नमस्कार म राजन बोहरा 'आरक्षक'/RBA-Kalikot", journeyBtn: "मेरो सांगीतिक कथा पढ्नुहोस्", visitor: "कुल आगन्तुक (Live)", studio: "आर्टिस्ट स्टुडियो", gallery: "ग्यालरी", ytTitle: "YouTube Official", spotTitle: "Spotify Playlist", listTitle: "मेरो प्लेलिस्ट", settings: "सेटिङहरू", langLabel: "भाषा चयन गर्नुहोस्", navHome: "होम", navStudio: "स्टुडियो", navGallery: "ग्यालरी", navMusic: "संगीत", navSettings: "सेटिङ" },
-            en: { slogan: "Starting from Small", introTitle: "Intro", introDesc: "Namaste, I am Rajan Bohara 'Aarakshak'/RBA-Kalikot", journeyBtn: "Read My Story", visitor: "Live Visitors", studio: "Artist Studio", gallery: "Gallery", ytTitle: "YouTube Official", spotTitle: "Spotify Playlist", listTitle: "My Playlist", settings: "Settings", langLabel: "Select Language", navHome: "Home", navStudio: "Studio", navGallery: "Gallery", navMusic: "Music", navSettings: "Settings" },
-            or: { slogan: "सुरुवात सानो बाट", introTitle: "Intro (मेरो परिचय)", introDesc: "Namaste, म राजन बोहरा 'आरक्षक' (RBA-Kalikot)", journeyBtn: "Read My Story (संगीत कथा)", visitor: "Live Visitors (आगन्तुक)", studio: "Studio (स्टुडियो)", gallery: "Gallery (ग्यालरी)", ytTitle: "YouTube Official", spotTitle: "Spotify Playlist", listTitle: "Playlist (सूची)", settings: "Settings (सेटिङ)", langLabel: "Language (भाषा)", navHome: "Home", navStudio: "Studio", navGallery: "Gallery", navMusic: "Music", navSettings: "Settings" }
-        };
-
-        function changeLanguage(lang) {
-            const t = translations[lang] || translations['ne'];
-            document.getElementById('hero-slogan').innerText = `"${t.slogan}"`;
-            document.getElementById('txt-intro-title').innerText = t.introTitle;
-            document.getElementById('txt-intro-desc').innerText = t.introDesc;
-            document.getElementById('txt-journey-btn').innerHTML = `<i class="fas fa-book-open"></i> ${t.journeyBtn}`;
-            document.getElementById('nav-home').innerText = t.navHome;
-            document.getElementById('nav-studio').innerText = t.navStudio;
-            document.getElementById('nav-gallery').innerText = t.navGallery;
-            document.getElementById('nav-music').innerText = t.navMusic;
-            document.getElementById('nav-settings').innerText = t.navSettings;
-            localStorage.setItem('rba_lang', lang);
-        }
-
-        async function loadPlaylist() {
-            try {
-                const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/`);
-                const files = await res.json();
-                const mp3s = files.filter(f => f.name.toLowerCase().endsWith('.mp3'));
-                playlist = mp3s.map(f => {
-                    const baseName = f.name.substring(0, f.name.lastIndexOf('.'));
-                    // Better image matching
-                    const img = files.find(i => i.name.toLowerCase().startsWith(baseName.toLowerCase()) && (i.name.endsWith('.jpg') || i.name.endsWith('.png')));
-                    return { name: "RBA - " + baseName.toUpperCase(), url: f.download_url, img: img ? img.download_url : 'logo.png' };
-                });
-                if(playlist.length > 0) { renderPlaylistUI(); loadSong(0); }
-                else { document.getElementById('song-title').innerText = "गीतहरू भेटिएनन्"; }
-            } catch (e) { document.getElementById('song-title').innerText = "लोडिङ एरर"; }
-        }
-
-        function renderPlaylistUI() {
-    const container = document.getElementById('playlist-container');
-    if(!container) return;
-    
-    // नयाँ र आधुनिक लिस्टिङ स्टाइल
-    container.innerHTML = playlist.map((s, i) => `
-        <div class="song-item click-effect ${i === currentIndex ? 'playing' : ''}" 
-             style="display: flex; align-items: center; padding: 18px; background: #181818; margin-bottom: 12px; border-radius: 16px; border: 1px solid ${i === currentIndex ? 'var(--p-yellow)' : 'rgba(255,255,255,0.05)'};"
-             onclick="loadSong(${i}); audio.play(); togglePlaylist();">
-            <i class="fas fa-music" style="margin-right: 15px; color: var(--p-yellow);"></i>
-            <span style="flex: 1; font-weight: ${i === currentIndex ? '600' : '400'};">${s.name}</span>
-            ${i === currentIndex ? '<i class="fas fa-volume-up" style="font-size: 0.8rem; color: var(--p-yellow);"></i>' : ''}
-        </div>
-    `).join('');
-}
-
-        // १. गीत लोड गर्दा सबै कुरा (फोटो, नाम, लिस्ट) अपडेट गर्ने मुख्य फङ्सन
-function loadSong(index) {
-    currentIndex = index;
-    const song = playlist[index];
     const audio = document.getElementById('main-audio');
-    
-    // गीतको लिङ्क सेट गर्ने
-    if(audio) audio.src = song.url;
-    
-    // गीतको नाम र फोटो अपडेट गर्ने
-    document.getElementById('song-title').innerText = song.name;
-    document.getElementById('song-bg-img').src = song.img;
-    
-    // प्ले बटनलाई रिसेट गर्ने
     const playIcon = document.getElementById('play-icon');
-    if(playIcon) playIcon.className = "fas fa-play";
+    const seek = document.getElementById('seek-bar');
 
-    // लिस्टमा एक्टिभ गीतलाई हाइलाइट गर्न फेरि लिस्ट बनाउने
-    renderPlaylistUI();
-}
-
-        function toggleAudio() {
-            initVisualizer();
-            if (audio.paused) { audio.play(); playIcon.className = "fas fa-pause"; }
-            else { audio.pause(); playIcon.className = "fas fa-play"; }
-        }
-
-        function nextSong() { loadSong((currentIndex + 1) % playlist.length); audio.play(); playIcon.className = "fas fa-pause"; }
-        function prevSong() { loadSong((currentIndex - 1 + playlist.length) % playlist.length); audio.play(); playIcon.className = "fas fa-pause"; }
-        function toggleShuffle() { isShuffle = !isShuffle; document.getElementById('shuffle-btn').classList.toggle('active'); }
-        function toggleRepeat() { isRepeat = !isRepeat; document.getElementById('repeat-btn').classList.toggle('active'); }
-
-        audio.onended = () => { if(isRepeat) { audio.play(); } else { nextSong(); } };
-        audio.ontimeupdate = () => {
-            const val = (audio.currentTime / audio.duration) * 100 || 0;
-            seek.value = val; seek.style.backgroundSize = val + '% 100%';
-            document.getElementById('current-time').innerText = formatTime(audio.currentTime);
-            document.getElementById('total-duration').innerText = formatTime(audio.duration || 0);
-        };
-        seek.oninput = () => { audio.currentTime = (seek.value / 100) * audio.duration; };
-
-        // VISUALIZER
-        const canvas = document.getElementById('visualizer');
-        const ctx = canvas.getContext('2d');
-        let audioCtx, analyser, dataArray;
-        function initVisualizer() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                analyser = audioCtx.createAnalyser();
-                const source = audioCtx.createMediaElementSource(audio);
-                source.connect(analyser); analyser.connect(audioCtx.destination);
-                analyser.fftSize = 128; dataArray = new Uint8Array(analyser.frequencyBinCount);
-                canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight;
-                renderFrame();
-            }
-        }
-        function renderFrame() {
-    requestAnimationFrame(renderFrame); 
-    analyser.getByteFrequencyData(dataArray);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const barWidth = (canvas.width / 32) - 2;
-    for (let i = 0; i < 32; i++) {
-        const val = dataArray[i];
-        const height = (val / 255) * canvas.height * 0.9;
-
-        // यहाँ हामीले नयाँ कोड पेस्ट गर्यौं
-        const gradient = ctx.createLinearGradient(0, canvas.height, 0, canvas.height - height);
-        gradient.addColorStop(0, '#fdd835'); 
-        gradient.addColorStop(0.5, '#ff8c00'); 
-        gradient.addColorStop(1, '#ff1100'); 
-        ctx.fillStyle = gradient;
-
-        ctx.fillRect(i * (barWidth + 2), canvas.height - height, barWidth, height);
-    }
-}
-
-        function showTab(id, el, pushState = true) {
-    // १. सबै ट्याब र मेनुबाट 'active' क्लास हटाउने
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
-    
-    // २. चाहिएको ट्याबलाई देखाउने
-    const targetTab = document.getElementById(id);
-    if(targetTab) targetTab.classList.add('active');
-
-    // ३. नेभिगेसन आइकन मिलाउने
-    if(el) {
-        el.classList.add('active');
-    } else {
-        const navIcon = document.querySelector(`nav a[onclick*="${id}"]`);
-        if(navIcon) navIcon.classList.add('active');
+    // २. गीत र प्लेलिस्ट लोड गर्ने फङ्सन
+    async function loadPlaylist() {
+        try {
+            const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/`);
+            const files = await res.json();
+            const mp3s = files.filter(f => f.name.toLowerCase().endsWith('.mp3'));
+            playlist = mp3s.map(f => {
+                const baseName = f.name.substring(0, f.name.lastIndexOf('.'));
+                const img = files.find(i => i.name.toLowerCase().startsWith(baseName.toLowerCase()) && (i.name.endsWith('.jpg') || i.name.endsWith('.png')));
+                return { name: "RBA - " + baseName.toUpperCase(), url: f.download_url, img: img ? img.download_url : 'logo.png' };
+            });
+            if(playlist.length > 0) { renderPlaylistUI(); loadSong(0); }
+        } catch (e) { console.log("Playlist error"); }
     }
 
-    // ४. ब्याक बटन (Top-Left) देखाउने वा लुकाउने
-    const backBtn = document.getElementById('back-btn');
-    if(backBtn) backBtn.style.display = (id === 'home') ? 'none' : 'block';
-
-    // ५. मोबाइल ब्याक बटनको लागि इतिहास (History) मा ट्याब सेभ गर्ने
-    if(pushState) {
-        // ब्राउजरको लिङ्क पछाडि #studio जस्तो नाम थप्ने
-        history.pushState({ tabId: id }, "", "#" + id);
-        if(tabHistory[tabHistory.length - 1] !== id) tabHistory.push(id);
+    function renderPlaylistUI() {
+        const container = document.getElementById('playlist-container');
+        if(!container) return;
+        container.innerHTML = playlist.map((s, i) => `
+            <div class="song-item click-effect ${i === currentIndex ? 'playing' : ''}" 
+                 onclick="loadSong(${i}); audio.play(); togglePlaylist();">
+                <i class="fas fa-music"></i>
+                <span style="flex: 1;">${s.name}</span>
+                ${i === currentIndex ? '<i class="fas fa-volume-up"></i>' : ''}
+            </div>
+        `).join('');
     }
-    
-    if(id === 'gallery') loadGallery();
-    window.scrollTo(0,0);
-}
 
-    // ब्याक बटन मिलाउने
-    const backBtn = document.getElementById('back-btn');
-    if(backBtn) backBtn.style.display = (id === 'home') ? 'none' : 'block';
-
-    // नयाँ फिचर: लिङ्कमा #studio वा #gallery थप्ने (ताकि रिफ्रेस गर्दा नहराओस्)
-    if(pushState) {
-        window.location.hash = id;
-        if(tabHistory[tabHistory.length-1] !== id) tabHistory.push(id);
+    function loadSong(index) {
+        currentIndex = index;
+        const song = playlist[index];
+        audio.src = song.url;
+        document.getElementById('song-title').innerText = song.name;
+        document.getElementById('song-bg-img').src = song.img;
+        playIcon.className = "fas fa-play";
+        renderPlaylistUI();
     }
-    
-    // ग्यालरी हो भने फोटो लोड गर्ने
-    if(id === 'gallery') loadGallery();
-    
-    window.scrollTo(0,0);
-}
 
-        // माथिको ब्याक बटन थिच्दा ब्राउजरको ब्याक फिचर ट्रिगर गर्ने
-function handleBack() {
-    window.history.back();
-}
-
-// मोबाइलको सिस्टम ब्याक बटन वा स्वाइप ब्याकलाई समात्ने जादु
-window.onpopstate = function(event) {
-    if (event.state && event.state.tabId) {
-        // अघिल्लो ट्याबमा जाने
-        showTab(event.state.tabId, null, false);
-    } else {
-        // केही छैन भने होम पेजमा जाने
-        showTab('home', null, false);
-    }
-};
-
-        async function loadJourney() {
-            showTab('journey');
-            try {
-                const res = await fetch('story.json');
-                const data = await res.json();
-                document.getElementById('journey-container').innerHTML = data.full_story.map(ch => `<div class="card"><h3 style="color:var(--p-yellow);">${ch.chapter}</h3><p>${ch.content}</p></div>`).join('');
-            } catch(e) {}
-        }
-
-        async function loadGallery() {
-            try {
-                const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/gallery`);
-                const files = await res.json();
-                document.getElementById('gallery-container').innerHTML = files.filter(f => f.name.match(/\.(jpg|jpeg|png)$/i)).map(i => `<img class="gallery-item" src="${i.download_url}" onclick="window.open(this.src)">`).join('');
-            } catch(e) {}
-        }
-
-        function togglePlaylist() { document.getElementById('playlist-drawer').classList.toggle('active'); }
-        function toggleTheme() { document.body.classList.toggle('light-mode'); }
-        function searchLang(val) {
-    // १. सबै भाषाहरूको सूची समात्ने
-    const items = document.querySelectorAll('.lang-item');
-    const filter = val.toLowerCase();
-    
-    // २. हरेक भाषालाई चेक गर्ने
-    items.forEach(item => {
-        const text = item.innerText.toLowerCase();
+    // ३. नेभिगेसन र ब्याक बटन (Smart Logic)
+    function showTab(id, el, pushState = true) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
         
-        // ३. यदि सर्च गरेको शब्द मिल्यो भने देखाउने, नत्र लुकाउने
-        if (text.includes(filter)) {
-            item.style.display = "block"; 
-        } else {
-            item.style.display = "none";  
+        const targetTab = document.getElementById(id);
+        if(targetTab) targetTab.classList.add('active');
+
+        if(el) el.classList.add('active');
+        else {
+            const navIcon = document.querySelector(`nav a[onclick*="${id}"]`);
+            if(navIcon) navIcon.classList.add('active');
         }
-    });
-}
-        function formatTime(s) { const min = Math.floor(s/60); const sec = Math.floor(s%60); return min+":"+(sec<10?'0':'')+sec; }
-        // १. प्लेलिस्टमा गीत सर्च गर्ने फङ्सन
-function searchPlaylist(query) {
-    const items = document.querySelectorAll('.song-item');
-    const filter = query.toLowerCase();
-    items.forEach(item => {
-        const songName = item.innerText.toLowerCase();
-        item.style.display = songName.includes(filter) ? 'flex' : 'none';
-    });
-}
 
-// २. सिधै गीतको लिङ्क सेयर गर्ने फङ्सन (हामीले पुरानो shareApp लाई यसले बदल्छौँ)
-function shareApp() {
-    const currentSongName = playlist[currentIndex].name.replace('RBA - ', '');
-    // लिङ्कमा गीतको नाम थप्ने (e.g. #AADAT)
-    const shareUrl = `${window.location.origin}${window.location.pathname}#${encodeURIComponent(currentSongName)}`;
+        document.getElementById('back-btn').style.display = (id === 'home') ? 'none' : 'block';
 
-    if (navigator.share) {
-        navigator.share({
-            title: `RBA - ${currentSongName}`,
-            text: `यो सुमधुर धुन सुन्नुहोस्: ${currentSongName}`,
-            url: shareUrl
+        if(pushState) {
+            window.location.hash = id;
+            if(tabHistory[tabHistory.length-1] !== id) tabHistory.push(id);
+        }
+        if(id === 'gallery') loadGallery();
+        window.scrollTo(0,0);
+    }
+
+    function handleBack() {
+        window.history.back();
+    }
+
+    window.onpopstate = function(event) {
+        const hash = window.location.hash.substring(1) || 'home';
+        showTab(hash, null, false);
+    };
+
+    // ४. प्लेयर कन्ट्रोलहरू
+    function toggleAudio() {
+        initVisualizer();
+        if (audio.paused) { audio.play(); playIcon.className = "fas fa-pause"; }
+        else { audio.pause(); playIcon.className = "fas fa-play"; }
+    }
+    function nextSong() { loadSong((currentIndex + 1) % playlist.length); audio.play(); playIcon.className = "fas fa-pause"; }
+    function prevSong() { loadSong((currentIndex - 1 + playlist.length) % playlist.length); audio.play(); playIcon.className = "fas fa-pause"; }
+    function toggleShuffle() { isShuffle = !isShuffle; document.getElementById('shuffle-btn').classList.toggle('active'); }
+    function toggleRepeat() { isRepeat = !isRepeat; document.getElementById('repeat-btn').classList.toggle('active'); }
+
+    // ५. अन्य सुविधाहरू
+    function togglePlaylist() { document.getElementById('playlist-drawer').classList.toggle('active'); }
+    function toggleTheme() { document.body.classList.toggle('light-mode'); }
+    function addLike() { document.getElementById('like-icon').className = "fas fa-heart"; document.getElementById('like-icon').style.color = "red"; }
+    
+    function searchPlaylist(query) {
+        const items = document.querySelectorAll('.song-item');
+        items.forEach(item => {
+            item.style.display = item.innerText.toLowerCase().includes(query.toLowerCase()) ? 'flex' : 'none';
         });
-    } else {
-        alert("Link copied: " + shareUrl);
     }
-}
-        function downloadCurrent() { window.open(playlist[currentIndex].url); }
-        function shareApp() { navigator.share({title:'RBA-Kalikot Official', url: window.location.href}); }
-        function addLike() { document.getElementById('like-icon').className = "fas fa-heart"; document.getElementById('like-icon').style.color = "red"; }
 
-       // ५. एप लोड हुँदा सबै कुरा मिलाउने मुख्य फङ्सन (अन्तिम भाग)
-window.onload = () => {
-    const splash = document.getElementById('splash');
-    // ३ सेकेन्डपछि स्प्ल्याश स्क्रिन हटाउने (Failsafe)
-    setTimeout(() => { if(splash) splash.style.display = 'none'; }, 3000);
+    // ६. एप सुरु हुने मुख्य भाग (Window Onload)
+    window.onload = () => {
+        const splash = document.getElementById('splash');
+        setTimeout(() => { if(splash) splash.style.display = 'none'; }, 3000);
 
-    try {
-        // मोबाइल ब्याक बटनको सुरुवाती बिन्दु सेट गर्ने
-        history.replaceState({ tabId: 'home' }, "", "#home");
+        try {
+            history.replaceState({ tabId: 'home' }, "", "#home");
+            const savedLang = localStorage.getItem('rba_lang') || 'ne';
+            if(typeof changeLanguage === 'function') changeLanguage(savedLang);
+            loadPlaylist();
 
-        // १. पहिलेकै जस्तो भाषा र प्लेलिस्ट लोड गर्ने
-        const savedLang = localStorage.getItem('rba_lang') || 'ne';
-        changeLanguage(savedLang);
-        loadPlaylist();
-
-        // २. कुन ट्याबमा थियो भनेर पत्ता लगाउने (Sticky Tab फिचर)
-        const currentHash = window.location.hash.substring(1); 
-        const validTabs = ['home', 'studio', 'gallery', 'music', 'settings', 'journey'];
-        
-        if (validTabs.includes(currentHash)) {
+            const currentHash = window.location.hash.substring(1) || 'home';
             showTab(currentHash, null, false);
-        } else {
-            showTab('home', null, false);
-        }
+        } catch (e) { console.log("Init error"); }
+    };
 
-        // ३. लिङ्कमा भएको गीतको नाम पत्ता लगाएर सिधै बजाउने
-        setTimeout(() => {
-            const hash = decodeURIComponent(window.location.hash.substring(1));
-            if (hash && !validTabs.includes(hash)) {
-                const songIndex = playlist.findIndex(s => s.name.replace('RBA - ', '') === hash);
-                if (songIndex !== -1) {
-                    showTab('studio');
-                    loadSong(songIndex);
-                    toggleAudio(); 
+    // Visualizer Code (छोटोमा)
+    let audioCtx, analyser, dataArray;
+    function initVisualizer() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioCtx.createAnalyser();
+            const source = audioCtx.createMediaElementSource(audio);
+            source.connect(analyser); analyser.connect(audioCtx.destination);
+            analyser.fftSize = 64; dataArray = new Uint8Array(analyser.frequencyBinCount);
+            const canvas = document.getElementById('visualizer');
+            const ctx = canvas.getContext('2d');
+            function render() {
+                requestAnimationFrame(render);
+                analyser.getByteFrequencyData(dataArray);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                for (let i = 0; i < 32; i++) {
+                    const h = (dataArray[i] / 255) * canvas.height;
+                    ctx.fillStyle = '#ff00ff';
+                    ctx.fillRect(i * (canvas.width/32), canvas.height - h, (canvas.width/32)-2, h);
                 }
             }
-        }, 3500);
-
-    } catch (e) { console.log("Init Error:", e); }
-};
-// ३. लिङ्कमा भएको गीतको नाम पत्ता लगाएर सिधै बजाउने
-        setTimeout(() => {
-            const hash = decodeURIComponent(window.location.hash.substring(1));
-            if (hash && !['home','studio','gallery','music','settings','journey'].includes(hash)) {
-                const songIndex = playlist.findIndex(s => s.name.replace('RBA - ', '') === hash);
-                if (songIndex !== -1) {
-                    showTab('studio');
-                    loadSong(songIndex);
-                    toggleAudio(); 
-                }
-            }
-        }, 3500);
-        // २. कुन ट्याबमा थियो भनेर पत्ता लगाउने (नयाँ 'Sticky Tab' फिचर)
-        const currentHash = window.location.hash.substring(1); // #studio बाट studio मात्र लिन्छ
-        const validTabs = ['home', 'studio', 'gallery', 'music', 'settings', 'journey'];
-        
-        if (validTabs.includes(currentHash)) {
-            // यदि लिङ्कमा ट्याबको नाम छ भने त्यही खोल्ने
-            showTab(currentHash, document.querySelector(`nav a[onclick*="${currentHash}"]`), false);
-        } else {
-            // नभए होम पेजमै रहने
-            showTab('home', document.querySelector('nav a[onclick*="home"]'), false);
+            render();
         }
-    } catch (e) { console.log("Navigation Load Error:", e); }
-};
+    }
+</script>
     </script>
 </body>
 </html>
