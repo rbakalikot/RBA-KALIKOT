@@ -245,6 +245,14 @@
                 <div class="lang-item click-effect" onclick="changeLanguage('or')">🎸 Original (Mix)</div>
             </div>
         </div>
+
+        <!-- नयाँ थपिएको Guestbook कार्ड -->
+        <div class="card">
+            <h4>Guestbook (सन्देश छोड्नुहोस्)</h4>
+            <p style="font-size: 0.8rem; color: gray; margin-bottom: 10px;">तपाईंलाई मेरो संगीत कस्तो लाग्यो?</p>
+            <textarea id="guest-msg" style="width:100%; height:80px; border-radius:10px; background:#1a1a1a; border:1px solid var(--p-yellow); color:white; padding:10px; outline:none;" placeholder="तपाईंको सन्देश लेख्नुहोस्..."></textarea>
+            <button class="click-effect" onclick="sendGuestbook()" style="background: var(--p-green); border: none; padding: 10px; border-radius: 8px; color: white; width: 100%; margin-top: 10px; font-weight: 600;">सन्देश पठाउनुहोस्</button>
+        </div>
         
         <div class="card" style="text-align: center;">
             <h4>Artist Booking</h4>
@@ -261,6 +269,10 @@
         <a onclick="showTab('music', this)"><i class="fas fa-music"></i><span id="nav-music">Music</span></a>
         <a onclick="showTab('settings', this)"><i class="fas fa-cog"></i><span id="nav-settings">Settings</span></a>
     </nav>
+
+    <!-- Google Firebase Database Engine (नयाँ थपिएको) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
         // --- 1. CONFIGURATION & STATE ---
@@ -629,13 +641,59 @@
             }
         }
         
+        // --- FIREBASE DATABASE SETUP (नयाँ थपिएको) ---
+        const firebaseConfig = {
+            apiKey: "API_KEY_हाल्न_बाँकी_छ",
+            authDomain: "तपाईंको-PROJECT.firebaseapp.com",
+            databaseURL: "https://तपाईंको-PROJECT.firebaseio.com",
+            projectId: "तपाईंको-PROJECT"
+        };
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const database = firebase.database();
+
+        // 1. Guestbook Message पठाउने फङ्सन
+        function sendGuestbook() {
+            const msgInput = document.getElementById('guest-msg');
+            const message = msgInput.value.trim();
+            
+            if(message !== "") {
+                // डाटाबेसमा 'messages' भन्ने फोल्डर बनाएर सेभ गर्ने
+                database.ref('messages').push({
+                    text: message,
+                    time: new Date().toLocaleString()
+                });
+                alert("तपाईंको सन्देश सफलतापुर्वक पठाइयो! धन्यवाद!");
+                msgInput.value = ""; // पठाएपछि बक्स खाली गर्ने
+            } else {
+                alert("कृपया सन्देश लेख्नुहोस्!");
+            }
+        }
+
+        // 2. Like थिच्दा Database मा जोड्ने फङ्सन
         function addLike() { 
             const icon = document.getElementById('like-icon');
             icon.className = "fas fa-heart"; 
             icon.style.color = "#ff0050"; 
             icon.style.transform = "scale(1.2)";
             setTimeout(() => icon.style.transform = "scale(1)", 200);
+
+            // डाटाबेसमा भएको 'total_likes' मा १ जोड्ने
+            const likeRef = database.ref('total_likes');
+            likeRef.set(firebase.database.ServerValue.increment(1));
         }
+
+        // 3. लाइभ Like कति पुग्यो भनेर हेर्ने फङ्सन (सधैं चलिरहन्छ)
+        database.ref('total_likes').on('value', (snapshot) => {
+            let currentLikes = snapshot.val() || 0;
+            // लाइकलाई 1.2K जस्तो देखाउने लजिक
+            let displayLikes = currentLikes;
+            if(currentLikes >= 1000) displayLikes = (currentLikes / 1000).toFixed(1) + 'K';
+            
+            document.getElementById('like-display').innerText = displayLikes;
+        });
 
         // --- 8. INITIALIZATION ---
         window.onload = () => {
@@ -657,6 +715,7 @@
                 setTimeout(() => splash.style.display = 'none', 500); // fade out effect
             }, 2500);
         };
+        
     </script>
 </body>
 </html>
