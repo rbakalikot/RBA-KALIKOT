@@ -323,40 +323,23 @@
         }
 
         // --- 3. GITHUB API - DYNAMIC DATA FETCHING ---
+        // --- 3. FAST JSON FETCHING (नयाँ थपिएको) ---
         async function loadPlaylist() {
             try {
-                const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/`);
-                if (!res.ok) throw new Error("API Limit Reached or Repo Not Found");
+                const res = await fetch('songs.json');
+                if (!res.ok) throw new Error("songs.json file not found");
                 
-                const files = await res.json();
-                const mp3s = files.filter(f => f.name.toLowerCase().endsWith('.mp3'));
-                
-                playlist = mp3s.map(f => {
-                    // Match image: remove .mp3, look for exact name with .jpg or .png
-                    const baseName = f.name.substring(0, f.name.lastIndexOf('.')).toLowerCase();
-                    const img = files.find(i => {
-                        const iName = i.name.toLowerCase();
-                        return (iName === baseName + '.jpg' || iName === baseName + '.png');
-                    });
-                    
-                    return { 
-                        name: "RBA - " + baseName.toUpperCase(), 
-                        url: f.download_url, 
-                        img: img ? img.download_url : 'logo.png' 
-                    };
-                });
+                playlist = await res.json();
                 
                 if(playlist.length > 0) { 
                     renderPlaylistUI(); 
                     loadSong(0, false); 
                 } else {
                     document.getElementById('song-title').innerText = "No Songs Found";
-                    document.getElementById('playlist-container').innerHTML = "<p style='text-align:center;color:gray;'>Upload .mp3 files to GitHub.</p>";
                 }
             } catch (e) { 
                 console.error(e);
-                document.getElementById('song-title').innerText = "Failed to load API";
-                document.getElementById('playlist-container').innerHTML = "<p style='text-align:center;color:red;'>Failed to load songs. Try again later.</p>";
+                document.getElementById('song-title').innerText = "Failed to load songs";
             }
         }
 
