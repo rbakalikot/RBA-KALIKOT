@@ -400,7 +400,25 @@
             audio.src = song.url;
             document.getElementById('song-title').innerText = song.name;
             document.getElementById('song-bg-img').src = song.img;
-            
+
+            // --- LOCK SCREEN PLAYER (नयाँ थपिएको) ---
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: song.name.replace('RBA - ', ''), // 'RBA -' हटाएर गीतको नाम मात्र देखाउने
+                    artist: 'RBA-Kalikot',
+                    album: 'Instrumental Music',
+                    artwork: [
+                        { src: song.img, sizes: '512x512', type: 'image/jpeg' },
+                        { src: song.img, sizes: '256x256', type: 'image/jpeg' }
+                    ]
+                });
+
+                navigator.mediaSession.setActionHandler('play', toggleAudio);
+                navigator.mediaSession.setActionHandler('pause', toggleAudio);
+                navigator.mediaSession.setActionHandler('previoustrack', prevSong);
+                navigator.mediaSession.setActionHandler('nexttrack', nextSong);
+            }
+            // ----------------------------------------
             renderPlaylistUI(); // Update highlighting
             
             if (autoPlay) {
