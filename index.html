@@ -192,6 +192,7 @@
                     <div class="click-effect" onclick="addLike()"><i id="like-icon" class="far fa-heart"></i><span id="like-display" style="margin-left: 6px; font-size: 1rem;">1.2K</span></div>
                     <i class="fas fa-share-alt click-effect" onclick="shareApp()"></i>
                     <i class="fas fa-download click-effect" onclick="downloadCurrent()"></i>
+                    <i id="sleep-icon" class="fas fa-moon click-effect" onclick="toggleSleepTimer()" title="Sleep Timer"></i>
                 </div>
             </div>
         </div>
@@ -716,6 +717,40 @@
             }).catch(err => {
                 alert("नम्बर: 9768978945");
             });
+        }
+
+        // --- SLEEP TIMER (नयाँ थपिएको) ---
+        let sleepTimer;
+        let sleepMinutes = 0;
+
+        function toggleSleepTimer() {
+            const icon = document.getElementById('sleep-icon');
+            
+            // बटन थिच्दा समय बढ्दै जाने (0 -> 15 -> 30 -> 60 -> 0)
+            if (sleepMinutes === 0) {
+                sleepMinutes = 15;
+                icon.style.color = "var(--p-yellow)"; // टाइमर अन हुँदा पहेँलो बल्छ
+            } else if (sleepMinutes === 15) {
+                sleepMinutes = 30;
+            } else if (sleepMinutes === 30) {
+                sleepMinutes = 60;
+            } else {
+                sleepMinutes = 0;
+                icon.style.color = "#aaa"; // टाइमर अफ हुँदा पुरानै रङ
+                clearTimeout(sleepTimer);
+                alert("स्लिप टाइमर बन्द भयो ☀️");
+                return;
+            }
+
+            clearTimeout(sleepTimer);
+            alert(sleepMinutes + " मिनेटपछि गीत आफैं बन्द हुनेछ 🌙");
+            
+            // सेट गरेको समयपछि गीत पज (Pause) गर्ने
+            sleepTimer = setTimeout(() => {
+                if(!audio.paused) toggleAudio(); // गीत बन्द गर्ने फङ्सन
+                sleepMinutes = 0;
+                icon.style.color = "#aaa";
+            }, sleepMinutes * 60000); // 1 minute = 60000 ms
         }
 
         // 3. लाइभ Like कति पुग्यो भनेर हेर्ने फङ्सन (सधैं चलिरहन्छ)
