@@ -282,6 +282,11 @@
 
     <!-- Bottom Navigation -->
     <nav>
+        <a onclick="showTab('home', this)" class="active"><i class="fas fa-home"></i><span id="nav-home">Home</span></a>
+        <a onclick="showTab('studio', this)"><i class="fas fa-headphones"></i><span id="nav-studio">Studio</span></a>
+        <a onclick="showTab('gallery', this)"><i class="fas fa-images"></i><span id="nav-gallery">Gallery</span></a>
+        <a onclick="showTab('music', this)"><i class="fas fa-music"></i><span id="nav-music">Music</span></a>
+        <a onclick="showTab('settings', this)"><i class="fas fa-cog"></i><span id="nav-settings">Settings</span></a>
         <!-- --- POPUP MODAL (Sleep Timer & Download Menu) --- -->
     <div id="popup-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100vh; background:rgba(0,0,0,0.85); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(5px);">
         
@@ -311,11 +316,6 @@
         </div>
     </div>
     <!-- ------------------------------------------------ -->
-        <a onclick="showTab('home', this)" class="active"><i class="fas fa-home"></i><span id="nav-home">Home</span></a>
-        <a onclick="showTab('studio', this)"><i class="fas fa-headphones"></i><span id="nav-studio">Studio</span></a>
-        <a onclick="showTab('gallery', this)"><i class="fas fa-images"></i><span id="nav-gallery">Gallery</span></a>
-        <a onclick="showTab('music', this)"><i class="fas fa-music"></i><span id="nav-music">Music</span></a>
-        <a onclick="showTab('settings', this)"><i class="fas fa-cog"></i><span id="nav-settings">Settings</span></a>
     </nav>
 
     <!-- Google Firebase Database Engine (नयाँ थपिएको) -->
@@ -763,11 +763,7 @@
             document.getElementById('popup-overlay').style.display = 'flex';
         }
 
-        function executeDownload() {
-            closePopup();
-            window.open(playlist[currentIndex].url, '_blank');
-        }
-
+        
         // --- Sleep Timer Logic ---
         function showSleepMenu() {
             document.getElementById('download-menu-box').style.display = 'none';
