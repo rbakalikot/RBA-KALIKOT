@@ -191,8 +191,8 @@
                 <div style="display: flex; justify-content: space-around; margin-top: 30px; font-size: 1.4rem; color: #aaa;">
                     <div class="click-effect" onclick="addLike()"><i id="like-icon" class="far fa-heart"></i><span id="like-display" style="margin-left: 6px; font-size: 1rem;">1.2K</span></div>
                     <i class="fas fa-share-alt click-effect" onclick="shareApp()"></i>
-                    <i class="fas fa-download click-effect" onclick="downloadCurrent()"></i>
-                    <i id="sleep-icon" class="fas fa-moon click-effect" onclick="toggleSleepTimer()" title="Sleep Timer"></i>
+                    <i class="fas fa-download click-effect" onclick="showDownloadMenu()"></i>
+                    <i id="sleep-icon" class="fas fa-moon click-effect" onclick="showSleepMenu()" title="Sleep Timer"></i>
                 </div>
             </div>
         </div>
@@ -282,6 +282,35 @@
 
     <!-- Bottom Navigation -->
     <nav>
+        <!-- --- POPUP MODAL (Sleep Timer & Download Menu) --- -->
+    <div id="popup-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100vh; background:rgba(0,0,0,0.85); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(5px);">
+        
+        <!-- Sleep Timer Box -->
+        <div id="sleep-menu-box" class="card" style="display:none; width:90%; max-width:320px; text-align:center; padding:25px; margin:0;">
+            <h3 style="color:var(--p-yellow); margin-bottom:20px;"><i class="fas fa-moon"></i> Sleep Timer</h3>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:20px;">
+                <button onclick="setSleepTimer(15)" style="background:#222; border:1px solid #444; color:white; padding:12px; border-radius:10px;">15 Min</button>
+                <button onclick="setSleepTimer(30)" style="background:#222; border:1px solid #444; color:white; padding:12px; border-radius:10px;">30 Min</button>
+                <button onclick="setSleepTimer(45)" style="background:#222; border:1px solid #444; color:white; padding:12px; border-radius:10px;">45 Min</button>
+                <button onclick="setSleepTimer(60)" style="background:#222; border:1px solid #444; color:white; padding:12px; border-radius:10px;">1 Hour</button>
+                <button onclick="setSleepTimer(120)" style="background:#222; border:1px solid #444; color:white; padding:12px; border-radius:10px;">2 Hours</button>
+                <button onclick="setSleepTimer('custom')" style="background:#222; border:1px dashed var(--p-yellow); color:var(--p-yellow); padding:12px; border-radius:10px;">Custom</button>
+            </div>
+            <button onclick="setSleepTimer(0)" style="background:#ff0050; border:none; color:white; padding:12px; border-radius:10px; width:100%; margin-bottom:10px; font-weight:600;">Turn Off Timer</button>
+            <button onclick="closePopup()" style="background:transparent; border:1px solid gray; color:gray; padding:10px; border-radius:10px; width:100%;">Cancel</button>
+        </div>
+
+        <!-- Download Confirm Box -->
+        <div id="download-menu-box" class="card" style="display:none; width:90%; max-width:320px; text-align:center; padding:25px; margin:0;">
+            <h3 style="color:#60bb46; margin-bottom:15px;"><i class="fas fa-download"></i> Confirm Download?</h3>
+            <p id="dl-song-name" style="color:#ccc; font-size:0.9rem; margin-bottom:25px;">Song Name</p>
+            <div style="display:flex; gap:15px;">
+                <button onclick="closePopup()" style="flex:1; background:transparent; border:1px solid gray; color:gray; padding:12px; border-radius:10px;">Cancel</button>
+                <button onclick="executeDownload()" style="flex:1; background:#60bb46; border:none; color:white; padding:12px; border-radius:10px; font-weight:600;">Continue</button>
+            </div>
+        </div>
+    </div>
+    <!-- ------------------------------------------------ -->
         <a onclick="showTab('home', this)" class="active"><i class="fas fa-home"></i><span id="nav-home">Home</span></a>
         <a onclick="showTab('studio', this)"><i class="fas fa-headphones"></i><span id="nav-studio">Studio</span></a>
         <a onclick="showTab('gallery', this)"><i class="fas fa-images"></i><span id="nav-gallery">Gallery</span></a>
@@ -646,9 +675,7 @@
             });
         }
 
-        function downloadCurrent() { 
-            if(playlist.length > 0) window.open(playlist[currentIndex].url, '_blank'); 
-        }
+        
         
         function shareApp() { 
             if(playlist.length === 0) return;
@@ -719,38 +746,65 @@
             });
         }
 
-        // --- SLEEP TIMER (नयाँ थपिएको) ---
+        // --- ADVANCED POPUP LOGIC (Download & Sleep) ---
         let sleepTimer;
         let sleepMinutes = 0;
 
-        function toggleSleepTimer() {
+        function closePopup() {
+            document.getElementById('popup-overlay').style.display = 'none';
+        }
+
+        // --- Download Logic ---
+        function showDownloadMenu() {
+            if(playlist.length === 0) return;
+            document.getElementById('dl-song-name').innerText = playlist[currentIndex].name;
+            document.getElementById('sleep-menu-box').style.display = 'none';
+            document.getElementById('download-menu-box').style.display = 'block';
+            document.getElementById('popup-overlay').style.display = 'flex';
+        }
+
+        function executeDownload() {
+            closePopup();
+            window.open(playlist[currentIndex].url, '_blank');
+        }
+
+        // --- Sleep Timer Logic ---
+        function showSleepMenu() {
+            document.getElementById('download-menu-box').style.display = 'none';
+            document.getElementById('sleep-menu-box').style.display = 'block';
+            document.getElementById('popup-overlay').style.display = 'flex';
+        }
+
+        function setSleepTimer(mins) {
             const icon = document.getElementById('sleep-icon');
-            
-            // बटन थिच्दा समय बढ्दै जाने (0 -> 15 -> 30 -> 60 -> 0)
-            if (sleepMinutes === 0) {
-                sleepMinutes = 15;
-                icon.style.color = "var(--p-yellow)"; // टाइमर अन हुँदा पहेँलो बल्छ
-            } else if (sleepMinutes === 15) {
-                sleepMinutes = 30;
-            } else if (sleepMinutes === 30) {
-                sleepMinutes = 60;
-            } else {
+            clearTimeout(sleepTimer); // पुरानो टाइमर क्यान्सिल गर्ने
+            closePopup(); // बक्स बन्द गर्ने
+
+            if (mins === 0) {
                 sleepMinutes = 0;
-                icon.style.color = "#aaa"; // टाइमर अफ हुँदा पुरानै रङ
-                clearTimeout(sleepTimer);
+                icon.style.color = "#aaa";
                 alert("स्लिप टाइमर बन्द भयो ☀️");
                 return;
             }
 
-            clearTimeout(sleepTimer);
+            if (mins === 'custom') {
+                let customInput = prompt("कति मिनेट पछि बन्द गर्ने? (नम्बर मात्र लेख्नुहोस्, जस्तै: 10)");
+                mins = parseInt(customInput);
+                if (isNaN(mins) || mins <= 0) {
+                    alert("कृपया सही नम्बर राख्नुहोस्!");
+                    return;
+                }
+            }
+
+            sleepMinutes = mins;
+            icon.style.color = "var(--p-yellow)"; // टाइमर अन हुँदा चन्द्रमा पहेँलो बल्छ
             alert(sleepMinutes + " मिनेटपछि गीत आफैं बन्द हुनेछ 🌙");
             
-            // सेट गरेको समयपछि गीत पज (Pause) गर्ने
             sleepTimer = setTimeout(() => {
-                if(!audio.paused) toggleAudio(); // गीत बन्द गर्ने फङ्सन
+                if(!audio.paused) toggleAudio();
                 sleepMinutes = 0;
                 icon.style.color = "#aaa";
-            }, sleepMinutes * 60000); // 1 minute = 60000 ms
+            }, sleepMinutes * 60000); // मिनेटलाई मिलिसेकेन्डमा लगेको
         }
 
         // 3. लाइभ Like कति पुग्यो भनेर हेर्ने फङ्सन (सधैं चलिरहन्छ)
