@@ -764,6 +764,15 @@
             document.getElementById('popup-overlay').style.display = 'flex';
         }
 
+        function executeDownload() {
+            const song = playlist[currentIndex];
+            const link = document.createElement('a');
+            link.href = song.url;
+            link.download = song.name;
+            link.click();
+            closePopup();
+        }
+
         
         // --- Sleep Timer Logic ---
         function showSleepMenu() {
