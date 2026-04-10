@@ -1,4 +1,4 @@
-const cacheName = 'rba-music-v8.0.1';
+const cacheName = 'rba-music-v8.0.2';
 
 // सुरुमै मोबाइलमा सेभ हुने कुराहरू (तपाईंको लोगो, डिजाइन र कथा)
 const assets = [
