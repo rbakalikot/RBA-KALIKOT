@@ -272,6 +272,32 @@
                     <i class="fas fa-redo-alt ctrl-btn click-effect" id="repeat-btn" onclick="toggleRepeat()"></i>
                 </div>
             </div>
+            
+            <!-- --- PLAYER SETTINGS BOTTOM SHEET --- -->
+            <div id="sheet-overlay" onclick="closePlayerSettings()"></div>
+    <div id="player-settings-sheet" class="bottom-sheet">
+        <div class="sheet-header">
+            <span><i class="fas fa-sliders-h" style="color:var(--p-yellow); margin-right:10px;"></i> Audio Settings</span>
+            <i class="fas fa-times click-effect" onclick="closePlayerSettings()" style="color: gray; font-size: 1.5rem;"></i>
+        </div>
+        <div class="sheet-options">
+            <div class="sheet-item click-effect" onclick="closePlayerSettings(); showSleepMenu();">
+                <i class="fas fa-moon"></i> <span>Sleep Timer</span> <i class="fas fa-chevron-right" style="color:#444; font-size:0.9rem;"></i>
+            </div>
+            <div class="sheet-item click-effect" onclick="cycleSpeed()">
+                <i class="fas fa-tachometer-alt"></i> <span>Playback Speed</span> <b id="speed-display">1x</b>
+            </div>
+            <div class="sheet-item click-effect" onclick="toggleBass()">
+                <i class="fas fa-headphones-alt"></i> <span>Extra Bass (Boost)</span> <b id="bass-display" style="color:gray">OFF</b>
+            </div>
+            <div class="sheet-item click-effect" onclick="toggleVisualizer()">
+                <i class="fas fa-chart-bar"></i> <span>Visualizer Effect</span> <b id="vis-display" style="color:var(--p-yellow)">ON</b>
+            </div>
+            <div class="sheet-item click-effect" onclick="alert('तपाईंको सबै गीतहरू High Quality (HQ) मा बजिरहेका छन्।')">
+                <i class="fas fa-gem"></i> <span>Audio Quality</span> <b style="color:#00f2ea">High (HQ)</b>
+            </div>
+        </div>
+    </div>
         </div>
         <audio id="main-audio" crossorigin="anonymous"></audio>
     </div>
@@ -396,31 +422,7 @@
     </div>
     <!-- ------------------------------------------------ -->
 
-    <!-- --- PLAYER SETTINGS BOTTOM SHEET --- -->
-    <div id="sheet-overlay" onclick="closePlayerSettings()"></div>
-    <div id="player-settings-sheet" class="bottom-sheet">
-        <div class="sheet-header">
-            <span><i class="fas fa-sliders-h" style="color:var(--p-yellow); margin-right:10px;"></i> Audio Settings</span>
-            <i class="fas fa-times click-effect" onclick="closePlayerSettings()" style="color: gray; font-size: 1.5rem;"></i>
-        </div>
-        <div class="sheet-options">
-            <div class="sheet-item click-effect" onclick="closePlayerSettings(); showSleepMenu();">
-                <i class="fas fa-moon"></i> <span>Sleep Timer</span> <i class="fas fa-chevron-right" style="color:#444; font-size:0.9rem;"></i>
-            </div>
-            <div class="sheet-item click-effect" onclick="cycleSpeed()">
-                <i class="fas fa-tachometer-alt"></i> <span>Playback Speed</span> <b id="speed-display">1x</b>
-            </div>
-            <div class="sheet-item click-effect" onclick="toggleBass()">
-                <i class="fas fa-headphones-alt"></i> <span>Extra Bass (Boost)</span> <b id="bass-display" style="color:gray">OFF</b>
-            </div>
-            <div class="sheet-item click-effect" onclick="toggleVisualizer()">
-                <i class="fas fa-chart-bar"></i> <span>Visualizer Effect</span> <b id="vis-display" style="color:var(--p-yellow)">ON</b>
-            </div>
-            <div class="sheet-item click-effect" onclick="alert('तपाईंको सबै गीतहरू High Quality (HQ) मा बजिरहेका छन्।')">
-                <i class="fas fa-gem"></i> <span>Audio Quality</span> <b style="color:#00f2ea">High (HQ)</b>
-            </div>
-        </div>
-    </div>
+    
     
     <!-- Google Firebase Database Engine (नयाँ थपिएको) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
