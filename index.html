@@ -121,6 +121,15 @@
         nav a { color: #666; text-decoration: none; font-size: 0.7rem; text-align: center; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         nav a.active { color: var(--p-yellow); font-weight: 600; }
         nav a i { font-size: 1.3rem; margin-bottom: 4px; }
+
+        /* --- PLAYER SETTINGS BOTTOM SHEET --- */
+#sheet-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.6); z-index: 9998; display: none; backdrop-filter: blur(3px); }
+.bottom-sheet { position: fixed; bottom: -100%; left: 0; width: 100%; background: #1a1a1a; border-radius: 24px 24px 0 0; z-index: 9999; padding: 25px 20px; transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-top: 1px solid rgba(255,255,255,0.1); box-shadow: 0 -10px 30px rgba(0,0,0,0.8); }
+.bottom-sheet.active { bottom: 0; }
+.sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; color: var(--text-white); font-size: 1.2rem; font-weight: 600; border-bottom: 1px solid #333; padding-bottom: 15px;}
+.sheet-item { display: flex; align-items: center; padding: 16px 0; color: #ccc; font-size: 1.05rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.sheet-item i { width: 40px; color: var(--p-yellow); font-size: 1.3rem; }
+.sheet-item span { flex: 1; }
     </style>
 </head>
 <body class="dark-mode">
@@ -208,7 +217,7 @@
                     <div class="top-controls">
                         <div class="action-icon" id="lock-btn" onclick="toggleLock(event)"><i class="fas fa-unlock"></i></div>
                         <div id="overlay-title" style="font-size: 1rem; font-weight: 600; text-shadow: 1px 1px 3px black;">RBA-Kalikot</div>
-                        <div class="action-icon" onclick="showTab('settings'); event.stopPropagation();"><i class="fas fa-cog"></i></div>
+                        <div class="action-icon click-effect" onclick="openPlayerSettings(event)"><i class="fas fa-cog"></i></div>
                     </div>
 
                     <!-- बीचको भाग (Play/Pause, 10s Skip) -->
@@ -378,6 +387,32 @@
         </div>
     </div>
     <!-- ------------------------------------------------ -->
+
+    <!-- --- PLAYER SETTINGS BOTTOM SHEET --- -->
+    <div id="sheet-overlay" onclick="closePlayerSettings()"></div>
+    <div id="player-settings-sheet" class="bottom-sheet">
+        <div class="sheet-header">
+            <span><i class="fas fa-sliders-h" style="color:var(--p-yellow); margin-right:10px;"></i> Audio Settings</span>
+            <i class="fas fa-times click-effect" onclick="closePlayerSettings()" style="color: gray; font-size: 1.5rem;"></i>
+        </div>
+        <div class="sheet-options">
+            <div class="sheet-item click-effect" onclick="closePlayerSettings(); showSleepMenu();">
+                <i class="fas fa-moon"></i> <span>Sleep Timer</span> <i class="fas fa-chevron-right" style="color:#444; font-size:0.9rem;"></i>
+            </div>
+            <div class="sheet-item click-effect" onclick="cycleSpeed()">
+                <i class="fas fa-tachometer-alt"></i> <span>Playback Speed</span> <b id="speed-display">1x</b>
+            </div>
+            <div class="sheet-item click-effect" onclick="toggleBass()">
+                <i class="fas fa-headphones-alt"></i> <span>Extra Bass (Boost)</span> <b id="bass-display" style="color:gray">OFF</b>
+            </div>
+            <div class="sheet-item click-effect" onclick="toggleVisualizer()">
+                <i class="fas fa-chart-bar"></i> <span>Visualizer Effect</span> <b id="vis-display" style="color:var(--p-yellow)">ON</b>
+            </div>
+            <div class="sheet-item click-effect" onclick="alert('तपाईंको सबै गीतहरू High Quality (HQ) मा बजिरहेका छन्।')">
+                <i class="fas fa-gem"></i> <span>Audio Quality</span> <b style="color:#00f2ea">High (HQ)</b>
+            </div>
+        </div>
+    </div>
     
     <!-- Google Firebase Database Engine (नयाँ थपिएको) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -612,27 +647,35 @@
 
         // --- 5. AUDIO VISUALIZER (Red -> Yellow -> Pink) ---
         let audioCtx, analyser, dataArray, canvas, ctx;
+
+        // --- 5. AUDIO VISUALIZER & BASS BOOST ---
+        let audioCtx, analyser, dataArray, canvas, ctx, bassFilter;
         function initVisualizer() {
-            if (audioCtx) return; // Only init once
-            
+            if (audioCtx) return; 
             try {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 analyser = audioCtx.createAnalyser();
+                
+                // Bass Boost को लागि फिल्टर बनाउने
+                bassFilter = audioCtx.createBiquadFilter();
+                bassFilter.type = "lowshelf";
+                bassFilter.frequency.value = 150; // बेसको साउन्ड फ्रिक्वेन्सी
+                bassFilter.gain.value = 0; // सुरुमा बेस अफ हुन्छ
+                
                 const source = audioCtx.createMediaElementSource(audio);
-                source.connect(analyser); 
-                analyser.connect(audioCtx.destination);
+                source.connect(bassFilter); // साउन्डलाई बेस फिल्टरमा पठाउने
+                bassFilter.connect(analyser); // बेसलाई भिजुअलाइजरमा पठाउने
+                analyser.connect(audioCtx.destination); // अनि स्पिकरमा पठाउने
+                
                 analyser.fftSize = 64; 
                 dataArray = new Uint8Array(analyser.frequencyBinCount);
-                
                 canvas = document.getElementById('visualizer');
                 ctx = canvas.getContext('2d');
                 
                 function renderFrame() {
                     requestAnimationFrame(renderFrame);
-                    // Ensure canvas matches display size dynamically
                     canvas.width = canvas.offsetWidth; 
                     canvas.height = canvas.offsetHeight;
-                    
                     analyser.getByteFrequencyData(dataArray);
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                     
@@ -640,23 +683,18 @@
                     const barWidth = (canvas.width / barCount) - 2;
                     
                     for (let i = 0; i < barCount; i++) {
-                        // Smooth out high frequencies slightly
                         const value = dataArray[i]; 
                         const height = (value / 255) * canvas.height * 0.95;
-                        
-                        // Premium Gradient: Red -> Yellow -> Pink
                         const gradient = ctx.createLinearGradient(0, canvas.height, 0, canvas.height - height);
-                        gradient.addColorStop(0, '#ff0050'); // TikTok Red/Pink base
-                        gradient.addColorStop(0.5, '#fdd835'); // RBA Yellow
-                        gradient.addColorStop(1, '#ff00ff'); // Magenta tip
-                        
+                        gradient.addColorStop(0, '#ff0050'); 
+                        gradient.addColorStop(0.5, '#fdd835'); 
+                        gradient.addColorStop(1, '#ff00ff'); 
                         ctx.fillStyle = gradient;
-                        // Draw from bottom up
                         ctx.fillRect(i * (barWidth + 2), canvas.height - height, barWidth, height);
                     }
                 }
                 renderFrame();
-            } catch (e) { console.log("Web Audio API not supported or blocked."); }
+            } catch (e) { console.log("Web Audio API not supported."); }
         }
 
         // --- 6. NAVIGATION & UI LOGIC ---
@@ -1056,6 +1094,51 @@
             const centerIcon = document.getElementById('play-icon-center');
             if(audio.paused) { centerIcon.className = "fas fa-play"; centerIcon.style.marginLeft = "4px"; }
             else { centerIcon.className = "fas fa-pause"; centerIcon.style.marginLeft = "0px"; }
+        }
+
+        // --- PLAYER SETTINGS LOGIC ---
+        function openPlayerSettings(event) {
+            if(event) event.stopPropagation();
+            document.getElementById('sheet-overlay').style.display = 'block';
+            setTimeout(() => document.getElementById('player-settings-sheet').classList.add('active'), 10);
+            if(document.getElementById('player-ui')) document.getElementById('player-ui').classList.add('hidden'); // पपअप खुल्दा भिडियोको अपन लुकाउने
+        }
+
+        function closePlayerSettings() {
+            document.getElementById('player-settings-sheet').classList.remove('active');
+            setTimeout(() => document.getElementById('sheet-overlay').style.display = 'none', 300);
+        }
+
+        // १. Playback Speed (0.75x, 1x, 1.25x)
+        let currentSpeedIdx = 1; // 1x is default
+        const speeds = [0.75, 1, 1.25, 1.5];
+        function cycleSpeed() {
+            currentSpeedIdx = (currentSpeedIdx + 1) % speeds.length;
+            audio.playbackRate = speeds[currentSpeedIdx];
+            document.getElementById('speed-display').innerText = speeds[currentSpeedIdx] + 'x';
+            document.getElementById('speed-display').style.color = speeds[currentSpeedIdx] !== 1 ? 'var(--p-yellow)' : 'white';
+        }
+
+        // २. Extra Bass Boost (On/Off)
+        let isBassOn = false;
+        function toggleBass() {
+            isBassOn = !isBassOn;
+            if(bassFilter) {
+                bassFilter.gain.value = isBassOn ? 15 : 0; // 15dB बेस बढाउने
+            }
+            const display = document.getElementById('bass-display');
+            display.innerText = isBassOn ? 'ON' : 'OFF';
+            display.style.color = isBassOn ? '#ff0050' : 'gray';
+        }
+
+        // ३. Visualizer (On/Off)
+        let isVisOn = true;
+        function toggleVisualizer() {
+            isVisOn = !isVisOn;
+            document.getElementById('visualizer').style.visibility = isVisOn ? 'visible' : 'hidden';
+            const display = document.getElementById('vis-display');
+            display.innerText = isVisOn ? 'ON' : 'OFF';
+            display.style.color = isVisOn ? 'var(--p-yellow)' : 'gray';
         }
     </script>
 </body>
