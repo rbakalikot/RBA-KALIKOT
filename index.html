@@ -166,6 +166,7 @@
     <div id="home" class="tab-content active">
         <div class="hero">
             <div class="hero-bg"></div>
+            <canvas id="season-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.8;"></canvas>
             <img src="logo.png" class="logo-main" onerror="this.src='https://via.placeholder.com/150/000000/fdd835?text=RBA'">
             <h1 style="color: var(--p-yellow); text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">RBA-Kalikot</h1>
             <p id="hero-slogan" style="text-shadow: 1px 1px 3px rgba(0,0,0,0.8);">"सुरुवात सानो बाट"</p>
@@ -1140,6 +1141,85 @@
             display.innerText = isVisOn ? 'ON' : 'OFF';
             display.style.color = isVisOn ? 'var(--p-yellow)' : 'gray';
         }
+
+        // --- SMART SEASON ENGINE (Mausam Anusar Effect) ---
+        function initSeasonEffect() {
+            const canvas = document.getElementById('season-canvas');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            let w, h;
+
+            function resize() {
+                w = canvas.width = canvas.offsetWidth;
+                h = canvas.height = canvas.offsetHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            // हालको महिना पत्ता लगाउने (1 = Jan, 12 = Dec)
+            const month = new Date().getMonth() + 1; 
+            let season = 'spring'; 
+            
+            if (month >= 12 || month <= 2) season = 'winter'; // पुस, माघ, फागुन (Snow)
+            else if (month >= 6 && month <= 8) season = 'monsoon'; // असार, साउन, भदौ (Rain)
+            else if (month >= 9 && month <= 11) season = 'autumn'; // असोज, कार्तिक, मंसिर (Yellow Leaves)
+            else season = 'spring'; // चैत, बैशाख, जेठ (Green/Pink Petals)
+
+            const maxParticles = season === 'monsoon' ? 120 : 60; // पानी पर्दा धेरै थोपा, अरु बेलािक्कै
+
+            for (let i = 0; i < maxParticles; i++) {
+                particles.push({
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    r: Math.random() * 4 + 1, // साइज
+                    d: Math.random() * maxParticles, // हावामा हल्लिने दिशा (Sway)
+                    // मौसम अनुसार स्पिड
+                    speedY: season === 'monsoon' ? Math.random() * 15 + 15 : Math.random() * 2 + 1,
+                    speedX: season === 'monsoon' ? 0 : Math.random() * 2 - 1, 
+                    // मौसम अनुसार कलर
+                    color: season === 'spring' ? (Math.random() > 0.5 ? '#ffb7c5' : '#a8e6cf') : // गुलाबी र हरियो पालुवा
+                           (season === 'autumn' ? (Math.random() > 0.5 ? '#ff9a00' : '#ff5200') : // पहेँलो र सुन्तला पात
+                           'rgba(255, 255, 255, 0.8)') // पानी र हिउँको लागि सेतो
+                });
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, w, h);
+                particles.forEach((p, index) => {
+                    ctx.beginPath();
+                    
+                    if (season === 'monsoon') {
+                        // पानी परेको (Rain)
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+                        ctx.fillRect(p.x, p.y, 1.5, p.speedY);
+                    } else {
+                        // फूल, पात वा हिउँ (Petals, Leaves, Snow)
+                        ctx.fillStyle = p.color;
+                        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, true);
+                        ctx.fill();
+                        
+                        // हावा चलेको जस्तो यता-उता हल्लिने (Swaying effect)
+                        p.x += Math.sin(p.d) * 1.5; 
+                        p.d += 0.05;
+                    }
+
+                    p.y += p.speedY;
+                    p.x += p.speedX;
+
+                    // तल पुगेपछि फेरि माथिबाट झर्ने
+                    if (p.y > h || p.x > w || p.x < 0) {
+                        particles[index].y = -10;
+                        particles[index].x = Math.random() * w;
+                    }
+                });
+                requestAnimationFrame(draw);
+            }
+            draw();
+        }
+        
+        // वेबसाइट लोड हुने बित्तिकै यो इफेक्ट सुरु गर्ने
+        window.addEventListener('load', initSeasonEffect);
     </script>
 </body>
 </html>
