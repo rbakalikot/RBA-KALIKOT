@@ -1,5 +1,10 @@
 [
   {
+    "name": "Sweet Tune",
+    "url": "Sweet Tune.mp3",
+    "img": "Sweet Tune.jpg"
+  },
+  {
     "name": "RBA - AADAT",
     "url": "Aadat.mp3",
     "img": "aadat.jpg"
