@@ -566,8 +566,20 @@
                     ]
                 });
 
-                navigator.mediaSession.setActionHandler('play', toggleAudio);
-                navigator.mediaSession.setActionHandler('pause', toggleAudio);
+                navigator.mediaSession.setActionHandler('play', () => {
+                    audio.play();
+                    document.getElementById('play-icon').className = "fas fa-pause";
+                    document.getElementById('play-icon').style.marginLeft = "0px";
+                    document.getElementById('play-icon-center').className = "fas fa-pause";
+                    document.getElementById('play-icon-center').style.marginLeft = "0px";
+                });
+                navigator.mediaSession.setActionHandler('pause', () => {
+                    audio.pause();
+                    document.getElementById('play-icon').className = "fas fa-play";
+                    document.getElementById('play-icon').style.marginLeft = "4px";
+                    document.getElementById('play-icon-center').className = "fas fa-play";
+                    document.getElementById('play-icon-center').style.marginLeft = "4px";
+                });
                 navigator.mediaSession.setActionHandler('previoustrack', prevSong);
                 navigator.mediaSession.setActionHandler('nexttrack', nextSong);
             }
