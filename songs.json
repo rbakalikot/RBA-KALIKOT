@@ -4,19 +4,19 @@
     "url": "Sweet Tune.mp3",
     "img": "Sweet Tune.jpg"
   },
+    {
+    "name": "Cool Wave",
+    "url": "Cool Wave.mp3",
+    "img": "Cool Wave.jpg"
+  },
   {
-    "name": "RBA - AADAT",
+    "name": "AADAT",
     "url": "Aadat.mp3",
     "img": "aadat.jpg"
   },
   {
-    "name": "RBA - BLACK HEART",
+    "name": "BLACK HEART",
     "url": "Black Heart.mp3",
     "img": "black heart.jpg"
-  },
-  {
-    "name": "RBA - Cool Wave",
-    "url": "Cool Wave.mp3",
-    "img": "Cool Wave.jpg"
   }
 ]
