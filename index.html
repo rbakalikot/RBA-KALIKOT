@@ -166,7 +166,10 @@
     <header>
         <div id="back-btn" class="click-effect" onclick="handleBack()"><i class="fas fa-arrow-left"></i></div>
         <div class="click-effect" onclick="showTab('home')" style="font-weight: 700; color: var(--p-yellow); letter-spacing: 1px; font-size: 1.1rem;">RBA-KALIKOT</div>
-        <div style="margin-left: auto;" class="click-effect" onclick="toggleTheme()"><i class="fas fa-adjust" style="color: var(--p-yellow); font-size: 1.2rem; padding: 5px;"></i></div>
+        <div style="margin-left: auto; display: flex; align-items: center; gap: 20px;">
+            <div class="click-effect" onclick="handleLogin()"><i id="user-icon" class="fas fa-user-circle" style="color: var(--p-yellow); font-size: 1.4rem;"></i></div>
+            <div class="click-effect" onclick="toggleTheme()"><i class="fas fa-adjust" style="color: var(--text-white); font-size: 1.3rem;"></i></div>
+        </div>
     </header>
 
     <!-- 1. TAB: HOME -->
@@ -339,6 +342,13 @@
     <!-- 5. TAB: SETTINGS -->
     <div id="settings" class="tab-content">
         <h2 id="txt-settings-title">Settings</h2>
+
+        <!-- Admin Only Box (तपाईंलाई मात्र देखिने) -->
+        <div id="admin-panel" class="card" style="display: none; border: 1px solid #ff0050; background: rgba(255,0,80,0.1);">
+            <h4 style="color: #ff0050;"><i class="fas fa-user-shield"></i> Admin Dashboard</h4>
+            <p style="font-size: 0.8rem; color: gray; margin-top: 5px;">यो भाग rbakalikotmusic@gmail.com लाई मात्र देखिन्छ।</p>
+            <button class="click-effect" onclick="alert('यहाँ पछि Audience Response हेर्ने सिस्टम राखिनेछ!')" style="background: #ff0050; border: none; padding: 10px; border-radius: 8px; color: white; width: 100%; margin-top: 10px; font-weight: 600;">Audience Messages हेर्नुहोस्</button>
+        </div>
         
         <div class="card">
             <h4 id="txt-lang-label" style="margin-bottom: 10px;">भाषा चयन गर्नुहोस्</h4>
@@ -427,6 +437,7 @@
     <!-- Google Firebase Database Engine (नयाँ थपिएको) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
     <script>
         // --- 1. CONFIGURATION & STATE ---
@@ -823,6 +834,51 @@
             firebase.initializeApp(firebaseConfig);
         }
         const database = firebase.database();
+
+        const auth = firebase.auth();
+        const provider = new firebase.auth.GoogleAuthProvider();
+
+        // लगइन / लगआउट गर्ने फङ्सन
+        function handleLogin() {
+            if (auth.currentUser) {
+                // यदि पहिले नै लगइन छ भने लगआउट सोध्ने
+                if(confirm("के तपाईं Log Out गर्न चाहनुहुन्छ?")) {
+                    auth.signOut();
+                }
+            } else {
+                // लगइन छैन भने गुगलबाट लगइन गराउने
+                auth.signInWithPopup(provider).then((result) => {
+                    alert("Welcome, " + result.user.displayName + "!");
+                }).catch((error) => {
+                    console.error(error);
+                    alert("Login Cancelled or Failed.");
+                });
+            }
+        }
+
+        // कोही लगइन भयो कि भएन भनेर सधैं चेक गर्ने (Magic Code)
+        auth.onAuthStateChanged((user) => {
+            const userIcon = document.getElementById('user-icon');
+            const adminPanel = document.getElementById('admin-panel');
+
+            if (user) {
+                // प्रयोगकर्ता लगइन हुँदा आइकन हरियो र टिकमार्क हुने
+                userIcon.className = "fas fa-user-check";
+                userIcon.style.color = "#60bb46";
+
+                // Admin चेक गर्ने लजिक (तपाईंको इमेल हो कि होइन?)
+                if (user.email === 'rbakalikotmusic@gmail.com') {
+                    adminPanel.style.display = 'block'; // तपाईंलाई मात्र देखाउने
+                } else {
+                    adminPanel.style.display = 'none'; // अरुलाई लुकाउने
+                }
+            } else {
+                // लगआउट हुँदा पुरानै पहेँलो गोलो आइकन हुने
+                userIcon.className = "fas fa-user-circle";
+                userIcon.style.color = "var(--p-yellow)";
+                adminPanel.style.display = 'none'; // एडमिन प्यानल लुकाउने
+            }
+        });
 
         // 1. Guestbook Message पठाउने फङ्सन
         function sendGuestbook() {
