@@ -978,85 +978,8 @@
                     document.getElementById('user-profile-name').innerText = 'Not Logged In';
                     document.getElementById('user-profile-email').innerText = '';
                 }
-const auth = firebase.auth();
-        const provider = new firebase.auth.GoogleAuthProvider();
-        
-        let currentUser = null; // यो नयाँ जादुगरी कुरा थपियो (लगइन भएको मान्छेलाई याद राख्न)
-
-        // माथिको User Icon थिच्दा के हुने?
-        function handleLogin() {
-            if (currentUser) {
-                // यदि लगइन छ भने प्रोफाइल खुल्छ
-                document.getElementById('profile-overlay').classList.add('active');
-            } else {
-                // लगइन छैन भने गुगल एकाउन्ट माग्छ
-                auth.signInWithPopup(provider).catch((error) => {
-                    console.error("Login Error: ", error);
-                });
-            }
-        }
-
-        // प्रोफाइल बन्द गर्ने फङ्सन
-        function closeProfile() {
-            document.getElementById('profile-overlay').classList.remove('active');
-        }
-
-        // लगआउट गर्ने फङ्सन (रातो बटन)
-        function logoutUser() {
-            if(confirm("के तपाईं Log Out गर्न चाहनुहुन्छ?")) {
-                auth.signOut().then(() => {
-                    closeProfile();
-                });
-            }
-        }
-
-        // एकाउन्ट चेन्ज (Switch Account) गर्ने फङ्सन
-        function switchAccount() {
-            provider.setCustomParameters({ prompt: 'select_account' });
-            auth.signInWithPopup(provider).then(() => {
-                 closeProfile();
-            }).catch(e => console.log("Cancelled"));
-        }
-
-        // कोही लगइन भयो कि भएन भनेर सधैं चेक गर्ने र फोटो/नाम तान्ने
-        auth.onAuthStateChanged((user) => {
-            currentUser = user; // यहाँ मान्छेको नाम/डेटा सेभ हुन्छ, जसले गर्दा बटन झुक्किन्न
-
-            const userIcon = document.getElementById('user-icon');
-            const adminPanel = document.getElementById('admin-panel');
-
-            if (user) {
-                // हेडरको आइकन हरियो बनाउने
-                userIcon.className = "fas fa-user-check";
-                userIcon.style.color = "#60bb46";
-
-                // प्रोफाइल भित्र गुगलको फोटो, नाम र इमेल राख्ने
-                if(document.getElementById('user-profile-img')) {
-                    document.getElementById('user-profile-img').src = user.photoURL || 'logo.png';
-                    document.getElementById('user-profile-name').innerText = user.displayName || 'User';
-                    document.getElementById('user-profile-email').innerText = user.email;
-                }
-
-                // Admin चेक गर्ने लजिक (तपाईंको इमेल)
-                if (adminPanel) {
-                    if (user.email === 'rbakalikotmusic@gmail.com') adminPanel.style.display = 'block';
-                    else adminPanel.style.display = 'none';
-                }
-            } else {
-                // लगआउट हुँदा पुरानै पहेँलो आइकन
-                userIcon.className = "fas fa-user-circle";
-                userIcon.style.color = "var(--p-yellow)";
-                if(adminPanel) adminPanel.style.display = 'none';
-                
-                // प्रोफाइल भित्रको डेटा खाली गर्ने
-                if(document.getElementById('user-profile-img')) {
-                    document.getElementById('user-profile-img').src = 'logo.png';
-                    document.getElementById('user-profile-name').innerText = 'Not Logged In';
-                    document.getElementById('user-profile-email').innerText = '';
-                }
             }
         });
-
 
         // 1. Guestbook Message पठाउने फङ्सन
         function sendGuestbook() {
