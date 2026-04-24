@@ -137,6 +137,22 @@
 .sheet-item { display: flex; align-items: center; padding: 16px 0; color: #ccc; font-size: 1.05rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
 .sheet-item i { width: 40px; color: var(--p-yellow); font-size: 1.3rem; }
 .sheet-item span { flex: 1; }
+
+/* --- USER PROFILE OVERLAY --- */
+        .profile-overlay { position: fixed; top: 0; left: 100%; width: 100%; height: 100%; background: var(--bg-dark); z-index: 9999; transition: left 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); overflow-y: auto; padding-bottom: 50px; }
+        .profile-overlay.active { left: 0; }
+        .profile-header { position: relative; height: 220px; background: linear-gradient(45deg, #121212, #2a2a2a); display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 0 0 30px 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
+        .profile-pic { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--p-yellow); object-fit: cover; margin-top: 20px; box-shadow: 0 0 15px rgba(253, 216, 53, 0.4); }
+        .profile-stats { display: flex; justify-content: space-around; background: var(--card-dark); margin: -30px 20px 20px; border-radius: 15px; padding: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.4); position: relative; z-index: 10; border: 1px solid rgba(255,255,255,0.05); }
+        .stat-box { text-align: center; flex: 1; border-right: 1px solid rgba(255,255,255,0.1); }
+        .stat-box:last-child { border-right: none; }
+        .stat-box h4 { color: var(--p-yellow); font-size: 1.2rem; }
+        .stat-box span { color: #888; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+        .profile-menu { padding: 0 20px; margin-top: 10px; }
+        .p-menu-item { background: var(--card-dark); padding: 16px 20px; border-radius: 14px; margin-bottom: 12px; display: flex; align-items: center; border: 1px solid rgba(255,255,255,0.05); font-size: 1.05rem; }
+        .p-menu-item i { width: 35px; font-size: 1.3rem; color: #ccc; }
+
+        
     </style>
 </head>
 <body class="dark-mode">
@@ -303,6 +319,57 @@
     </div>
         </div>
         <audio id="main-audio" crossorigin="anonymous"></audio>
+    </div>
+
+    <!-- USER PROFILE OVERLAY -->
+    <div id="profile-overlay" class="profile-overlay">
+        <!-- ब्याक बटन -->
+        <div style="position: absolute; top: 15px; left: 15px; z-index: 20;" class="click-effect" onclick="closeProfile()">
+            <i class="fas fa-arrow-left" style="color: var(--text-white); font-size: 1.5rem; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 50%; backdrop-filter: blur(5px);"></i>
+        </div>
+        
+        <!-- फोटो र नाम -->
+        <div class="profile-header">
+            <img id="user-profile-img" src="logo.png" class="profile-pic" onerror="this.src='https://via.placeholder.com/150/000000/fdd835?text=User'">
+            <h3 id="user-profile-name" style="margin-top: 10px; color: white; letter-spacing: 1px;">User Name</h3>
+            <p id="user-profile-email" style="color: #aaa; font-size: 0.85rem;">email@example.com</p>
+        </div>
+
+        <!-- तथ्यांक (Stats) -->
+        <div class="profile-stats">
+            <div class="stat-box">
+                <h4 id="user-followers">0</h4>
+                <span>सहयात्री</span>
+            </div>
+            <div class="stat-box">
+                <h4 id="user-total-likes">0</h4>
+                <span>Likes</span>
+            </div>
+            <div class="stat-box">
+                <h4 id="user-total-views">0</h4>
+                <span>Views</span>
+            </div>
+        </div>
+
+        <!-- मेनु (Menu) -->
+        <div class="profile-menu">
+            <div class="p-menu-item click-effect" onclick="alert('Editing System आउँदैछ...')">
+                <i class="fas fa-user-edit" style="color: #4CAF50;"></i> <span style="flex: 1;">Edit Profile</span> <i class="fas fa-chevron-right" style="color:#555; font-size: 0.9rem;"></i>
+            </div>
+            <div class="p-menu-item click-effect" onclick="alert('पछि तपाईंले यहाँबाट Sound Effect अपलोड गर्न सक्नुहुनेछ!')">
+                <i class="fas fa-cloud-upload-alt" style="color: #FF9800;"></i> <span style="flex: 1;">My Uploads (Sounds)</span> <i class="fas fa-chevron-right" style="color:#555; font-size: 0.9rem;"></i>
+            </div>
+            <div class="p-menu-item click-effect" onclick="alert('तपाईंलाई मन परेका Producer/Artist यहाँ सेभ हुनेछन्।')">
+                <i class="fas fa-star" style="color: #2196F3;"></i> <span style="flex: 1;">Favorite Accounts</span> <i class="fas fa-chevron-right" style="color:#555; font-size: 0.9rem;"></i>
+            </div>
+            <div class="p-menu-item click-effect" onclick="switchAccount()">
+                <i class="fas fa-sync-alt" style="color: #9C27B0;"></i> <span style="flex: 1;">Switch Account</span>
+            </div>
+            <!-- Log Out Button (Red) -->
+            <div class="p-menu-item click-effect" onclick="logoutUser()" style="border: 1px solid #ff0050; background: rgba(255,0,80,0.05); margin-top: 20px;">
+                <i class="fas fa-sign-out-alt" style="color: #ff0050;"></i> <span style="flex: 1; color: #ff0050; font-weight: 600;">Log Out</span>
+            </div>
+        </div>
     </div>
 
     <!-- 3. TAB: GALLERY -->
@@ -838,47 +905,76 @@
         const auth = firebase.auth();
         const provider = new firebase.auth.GoogleAuthProvider();
 
-        // लगइन / लगआउट गर्ने फङ्सन
+        // माथिको User Icon थिच्दा के हुने?
         function handleLogin() {
             if (auth.currentUser) {
-                // यदि पहिले नै लगइन छ भने लगआउट सोध्ने
-                if(confirm("के तपाईं Log Out गर्न चाहनुहुन्छ?")) {
-                    auth.signOut();
-                }
+                // यदि लगइन छ भने प्रोफाइल खुल्छ
+                document.getElementById('profile-overlay').classList.add('active');
             } else {
-                // लगइन छैन भने गुगलबाट लगइन गराउने
-                auth.signInWithPopup(provider).then((result) => {
-                    alert("Welcome, " + result.user.displayName + "!");
-                }).catch((error) => {
+                // लगइन छैन भने गुगल एकाउन्ट माग्छ
+                auth.signInWithPopup(provider).catch((error) => {
                     console.error(error);
-                    alert("Login Cancelled or Failed.");
                 });
             }
         }
 
-        // कोही लगइन भयो कि भएन भनेर सधैं चेक गर्ने (Magic Code)
+        // प्रोफाइल बन्द गर्ने फङ्सन
+        function closeProfile() {
+            document.getElementById('profile-overlay').classList.remove('active');
+        }
+
+        // लगआउट गर्ने फङ्सन (रातो बटन)
+        function logoutUser() {
+            if(confirm("के तपाईं Log Out गर्न चाहनुहुन्छ?")) {
+                auth.signOut().then(() => {
+                    closeProfile();
+                });
+            }
+        }
+
+        // एकाउन्ट चेन्ज (Switch Account) गर्ने फङ्सन
+        function switchAccount() {
+            provider.setCustomParameters({ prompt: 'select_account' });
+            auth.signInWithPopup(provider).then(() => {
+                 closeProfile();
+            }).catch(e => console.log("Cancelled"));
+        }
+
+        // कोही लगइन भयो कि भएन भनेर सधैं चेक गर्ने र फोटो/नाम तान्ने
         auth.onAuthStateChanged((user) => {
             const userIcon = document.getElementById('user-icon');
             const adminPanel = document.getElementById('admin-panel');
 
             if (user) {
-                // प्रयोगकर्ता लगइन हुँदा आइकन हरियो र टिकमार्क हुने
+                // हेडरको आइकन हरियो बनाउने
                 userIcon.className = "fas fa-user-check";
                 userIcon.style.color = "#60bb46";
 
-                // Admin चेक गर्ने लजिक (तपाईंको इमेल हो कि होइन?)
-                if (user.email === 'rbakalikotmusic@gmail.com') {
-                    adminPanel.style.display = 'block'; // तपाईंलाई मात्र देखाउने
-                } else {
-                    adminPanel.style.display = 'none'; // अरुलाई लुकाउने
+                // प्रोफाइल भित्र गुगलको फोटो, नाम र इमेल राख्ने
+                document.getElementById('user-profile-img').src = user.photoURL || 'logo.png';
+                document.getElementById('user-profile-name').innerText = user.displayName || 'User';
+                document.getElementById('user-profile-email').innerText = user.email;
+
+                // Admin चेक गर्ने लजिक (तपाईंको इमेल)
+                if (adminPanel) {
+                    if (user.email === 'rbakalikotmusic@gmail.com') adminPanel.style.display = 'block';
+                    else adminPanel.style.display = 'none';
                 }
             } else {
-                // लगआउट हुँदा पुरानै पहेँलो गोलो आइकन हुने
+                // लगआउट हुँदा पुरानै पहेँलो आइकन
                 userIcon.className = "fas fa-user-circle";
                 userIcon.style.color = "var(--p-yellow)";
-                adminPanel.style.display = 'none'; // एडमिन प्यानल लुकाउने
+                if(adminPanel) adminPanel.style.display = 'none';
+                
+                // प्रोफाइल भित्रको डेटा खाली गर्ने
+                document.getElementById('user-profile-img').src = 'logo.png';
+                document.getElementById('user-profile-name').innerText = 'Not Logged In';
+                document.getElementById('user-profile-email').innerText = '';
             }
         });
+            }
+        }
+
 
         // 1. Guestbook Message पठाउने फङ्सन
         function sendGuestbook() {
