@@ -1,7 +1,7 @@
 {
   "name": "RBA-Kalikot Official App",
   "short_name": "RBA-App",
-  "version": "8.2.3",
+  "version": "8.2.7",
   "start_url": "/RBA-KALIKOT/",
   "display": "standalone",
   "background_color": "#0a0a0a",
