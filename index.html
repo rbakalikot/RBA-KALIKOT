@@ -913,17 +913,7 @@
         const auth = firebase.auth();
         const provider = new firebase.auth.GoogleAuthProvider();
 
-        // गुगलबाट फर्किएपछि लगइन भयो कि भएन भनेर ढोकामा पर्खेर बस्ने कोड
-        auth.getRedirectResult().then((result) => {
-            if (result.user) {
-                console.log("Successfully logged in via redirect!");
-                // लगइन भइसकेपछि प्रोफाइल आफैँ खुल्ने बनाउन चाहनुहुन्छ भने यो तलको लाइन अन गर्न सक्नुहुन्छ
-                // document.getElementById('profile-overlay').classList.add('active');
-            }
-        }).catch((error) => {
-            console.error("Redirect Error: ", error);
-            alert("लगइन गर्दा समस्या भयो: " + error.message);
-        });
+    
 
         // माथिको User Icon थिच्दा अब सधैं प्रोफाइल खुल्छ
         function handleLogin() {
@@ -935,13 +925,7 @@
             document.getElementById('profile-overlay').classList.remove('active');
         }
 
-        // गुगलबाट लगइन गर्ने फङ्सन (मोबाइलको लागि Redirect बेस्ट हुन्छ)
-        function signInWithGoogle() {
-            document.getElementById('btn-google-login').innerText = "Connecting..."; // क्लिक गरेपछि मेसेज फेरिने
-            auth.signInWithRedirect(provider).catch((error) => {
-                alert("Login Error: " + error.message); // यदि बिग्रियो भने मोबाइलमै कारण देखाउने
-            });
-        }
+        
 
         // लगआउट गर्ने फङ्सन (रातो बटन)
         function logoutUser() {
@@ -952,10 +936,33 @@
                 });
             }
         }
+
+        // गुगलबाट लगइन गर्ने फङ्सन (Popup + सधैं सेभ हुने तरिका)
+        function signInWithGoogle() {
+            const btn = document.getElementById('btn-google-login');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 8px;"></i> Connecting...'; // लोडिङ देखाउने
+            
+            // मोबाइललाई लगइन सधैं सेभ राख्न कडा निर्देशन दिने
+            auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+            .then(() => {
+                return auth.signInWithPopup(provider);
+            })
+            .catch((error) => {
+                console.error("Login Error: ", error);
+                // यदि बिग्रियो भने बटनलाई पुरानै अवस्थामा फर्काउने
+                btn.innerHTML = '<i class="fab fa-google" style="color: #DB4437; margin-right: 8px;"></i> Sign in with Google';
+                
+                // प्रयोगकर्ताले आफैँ काटेको बाहेक अरु एरर भए मात्र देखाउने
+                if (error.code !== 'auth/popup-closed-by-user') {
+                    alert("लगइन हुन सकेन। कृपया फेरि प्रयास गर्नुहोस्।");
+                }
+            });
+        }
+
         // एकाउन्ट चेन्ज (Switch Account) गर्ने फङ्सन
         function switchAccount() {
             provider.setCustomParameters({ prompt: 'select_account' });
-            auth.signInWithRedirect(provider).catch(e => alert("Error: " + e.message));
+            auth.signInWithPopup(provider).catch(e => console.log("Cancelled"));
         }
 
         // कोही लगइन भयो कि भएन भनेर सधैं चेक गर्ने र प्रोफाइलको डिजाइन मिलाउने
