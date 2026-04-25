@@ -913,6 +913,18 @@
         const auth = firebase.auth();
         const provider = new firebase.auth.GoogleAuthProvider();
 
+        // गुगलबाट फर्किएपछि लगइन भयो कि भएन भनेर ढोकामा पर्खेर बस्ने कोड
+        auth.getRedirectResult().then((result) => {
+            if (result.user) {
+                console.log("Successfully logged in via redirect!");
+                // लगइन भइसकेपछि प्रोफाइल आफैँ खुल्ने बनाउन चाहनुहुन्छ भने यो तलको लाइन अन गर्न सक्नुहुन्छ
+                // document.getElementById('profile-overlay').classList.add('active');
+            }
+        }).catch((error) => {
+            console.error("Redirect Error: ", error);
+            alert("लगइन गर्दा समस्या भयो: " + error.message);
+        });
+
         // माथिको User Icon थिच्दा अब सधैं प्रोफाइल खुल्छ
         function handleLogin() {
             document.getElementById('profile-overlay').classList.add('active');
