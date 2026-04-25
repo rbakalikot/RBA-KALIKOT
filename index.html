@@ -152,6 +152,32 @@
         .p-menu-item { background: var(--card-dark); padding: 16px 20px; border-radius: 14px; margin-bottom: 12px; display: flex; align-items: center; border: 1px solid rgba(255,255,255,0.05); font-size: 1.05rem; }
         .p-menu-item i { width: 35px; font-size: 1.3rem; color: #ccc; }
 
+
+         /* --- EDIT PROFILE OVERLAY --- */
+        .edit-profile-overlay { position: fixed; top: 0; left: 100%; width: 100%; height: 100%; background: var(--bg-dark); z-index: 10000; transition: left 0.3s ease; overflow-y: auto; padding-bottom: 50px; }
+        .edit-profile-overlay.active { left: 0; }
+        
+        .edit-bg-container { width: 100%; height: 200px; background: #2a2a2a; position: relative; border-radius: 0 0 20px 20px; }
+        .edit-bg-img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; border-radius: 0 0 20px 20px; }
+        .edit-bg-pencil { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.6); padding: 10px; border-radius: 50%; color: white; cursor: pointer; backdrop-filter: blur(5px); }
+        
+        .edit-pic-container { position: relative; width: 120px; height: 120px; margin: -60px auto 20px; border-radius: 50%; border: 4px solid var(--p-yellow); background: #000; }
+        .edit-profile-pic { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+        .edit-pic-pencil { position: absolute; bottom: 0; right: 0; background: var(--p-yellow); color: black; padding: 8px; border-radius: 50%; cursor: pointer; border: 2px solid #000; }
+
+        .edit-form { padding: 20px; }
+        .edit-input-group { margin-bottom: 20px; }
+        .edit-input-group label { display: block; color: gray; font-size: 0.85rem; margin-bottom: 5px; }
+        .edit-input-group input { width: 100%; padding: 15px; border-radius: 12px; background: var(--card-dark); border: 1px solid rgba(255,255,255,0.1); color: white; outline: none; font-size: 1rem; }
+        .edit-input-group input:focus { border-color: var(--p-yellow); }
+
+        .color-picker-grid { display: flex; gap: 15px; margin-top: 10px; }
+        .color-circle { width: 40px; height: 40px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
+        .color-circle.active { border-color: white; transform: scale(1.1); box-shadow: 0 0 10px rgba(255,255,255,0.5); }
+        
+        .btn-save-profile { background: var(--p-green); color: white; border: none; padding: 15px; border-radius: 12px; width: 100%; font-weight: 600; font-size: 1.1rem; margin-top: 20px; }
+
+        
         
     </style>
 </head>
@@ -360,7 +386,7 @@
 
             <!-- मेनु (Menu) -->
             <div class="profile-menu">
-                <div class="p-menu-item click-effect" onclick="alert('Editing System आउँदैछ...')">
+                <div class="p-menu-item click-effect" onclick="openEditProfile()">
                     <i class="fas fa-user-edit" style="color: #4CAF50;"></i> <span style="flex: 1;">Edit Profile</span> <i class="fas fa-chevron-right" style="color:#555; font-size: 0.9rem;"></i>
                 </div>
                 <div class="p-menu-item click-effect" onclick="alert('पछि तपाईंले यहाँबाट Sound Effect अपलोड गर्न सक्नुहुनेछ!')">
@@ -377,6 +403,55 @@
                     <i class="fas fa-sign-out-alt" style="color: #ff0050;"></i> <span style="flex: 1; color: #ff0050; font-weight: 600;">Log Out</span>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- EDIT PROFILE OVERLAY -->
+    <div id="edit-profile-overlay" class="edit-profile-overlay">
+        <!-- हेडर र ब्याक बटन -->
+        <div style="display: flex; align-items: center; padding: 15px 20px; position: absolute; top: 0; left: 0; width: 100%; z-index: 20; background: linear-gradient(rgba(0,0,0,0.8), transparent);">
+            <i class="fas fa-arrow-left click-effect" onclick="closeEditProfile()" style="color: white; font-size: 1.5rem; margin-right: 15px; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 50%;"></i>
+            <h3 style="color: white; flex: 1; text-shadow: 1px 1px 3px black;">Edit Profile</h3>
+        </div>
+
+        <!-- ब्याकग्राउन्ड फोटो -->
+        <div class="edit-bg-container">
+            <img id="preview-bg-img" src="bg.jpg" class="edit-bg-img">
+            <div class="edit-bg-pencil click-effect" onclick="document.getElementById('bg-upload').click()">
+                <i class="fas fa-camera"></i>
+            </div>
+            <input type="file" id="bg-upload" accept="image/png, image/jpeg" style="display: none;" onchange="previewImage(event, 'preview-bg-img')">
+        </div>
+
+        <!-- प्रोफाइल फोटो -->
+        <div class="edit-pic-container">
+            <img id="preview-profile-img" src="logo.png" class="edit-profile-pic">
+            <div class="edit-pic-pencil click-effect" onclick="document.getElementById('pic-upload').click()">
+                <i class="fas fa-pen"></i>
+            </div>
+            <input type="file" id="pic-upload" accept="image/png, image/jpeg" style="display: none;" onchange="previewImage(event, 'preview-profile-img')">
+        </div>
+
+        <div class="edit-form">
+            <!-- नाम फेर्ने -->
+            <div class="edit-input-group">
+                <label>तपाईंको नाम (Display Name)</label>
+                <input type="text" id="edit-name-input" placeholder="तपाईंको नाम लेख्नुहोस्...">
+            </div>
+
+            <!-- प्रोफाइल थिम कलर फेर्ने -->
+            <div class="edit-input-group">
+                <label>प्रोफाइल थिम कलर (Profile Color)</label>
+                <div class="color-picker-grid" id="theme-colors">
+                    <div class="color-circle click-effect active" style="background: #fdd835;" onclick="selectThemeColor('#fdd835', this)"></div> <!-- Yellow -->
+                    <div class="color-circle click-effect" style="background: #ff0050;" onclick="selectThemeColor('#ff0050', this)"></div> <!-- Pink/Red -->
+                    <div class="color-circle click-effect" style="background: #00f2ea;" onclick="selectThemeColor('#00f2ea', this)"></div> <!-- Cyan -->
+                    <div class="color-circle click-effect" style="background: #60bb46;" onclick="selectThemeColor('#60bb46', this)"></div> <!-- Green -->
+                    <div class="color-circle click-effect" style="background: #9c27b0;" onclick="selectThemeColor('#9c27b0', this)"></div> <!-- Purple -->
+                </div>
+            </div>
+
+            <button class="btn-save-profile click-effect" onclick="saveProfileChanges()">Save Changes</button>
         </div>
     </div>
 
@@ -1429,6 +1504,83 @@
         
         // वेबसाइट लोड हुने बित्तिकै यो इफेक्ट सुरु गर्ने
         window.addEventListener('load', initSeasonEffect);
+
+
+        // --- EDIT PROFILE LOGIC ---
+        let selectedProfileColor = '#fdd835';
+
+        function openEditProfile() {
+            if (!auth.currentUser) return;
+            document.getElementById('edit-profile-overlay').classList.add('active');
+            
+            // हालको नाम बक्समा देखाउने
+            document.getElementById('edit-name-input').value = auth.currentUser.displayName || '';
+        }
+
+        function closeEditProfile() {
+            document.getElementById('edit-profile-overlay').classList.remove('active');
+        }
+
+        // फाइल छान्दा फोटो देखिने (Preview) र 10MB चेक गर्ने
+        function previewImage(event, imgId) {
+            const file = event.target.files[0];
+            if (file) {
+                // 10MB भन्दा सानो हुनुपर्छ
+                if (file.size > 10 * 1024 * 1024) {
+                    alert("फोटो 10MB भन्दा सानो हुनुपर्छ!");
+                    event.target.value = ''; // छनोट खाली गर्ने
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById(imgId).src = e.target.result;
+                    // पछि यहाँ क्रप गर्ने कोड जोडिनेछ
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // कलर छान्ने लजिक
+        function selectThemeColor(color, element) {
+            selectedProfileColor = color;
+            // सबै सर्कलको active हटाउने
+            const circles = document.querySelectorAll('.color-circle');
+            circles.forEach(c => c.classList.remove('active'));
+            // छानेकोलाई active बनाउने
+            element.classList.add('active');
+        }
+
+        // सेभ गर्दा के हुने?
+        function saveProfileChanges() {
+            const newName = document.getElementById('edit-name-input').value.trim();
+            const btn = document.querySelector('.btn-save-profile');
+            
+            if (newName === "") {
+                alert("नाम खाली राख्न मिल्दैन!");
+                return;
+            }
+
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+            // फायरबेसमा नाम सेभ गर्ने
+            auth.currentUser.updateProfile({
+                displayName: newName
+                // पछि यहाँ फोटोको URL पनि अपडेट गरिनेछ
+            }).then(() => {
+                // प्रोफाइलमा नाम र कलर परिवर्तन गर्ने
+                document.getElementById('user-profile-name').innerText = newName;
+                document.querySelector('.profile-pic').style.borderColor = selectedProfileColor;
+                document.getElementById('txt-list-title').style.color = selectedProfileColor; // अघिको नाम
+                
+                alert("Profile Updated Successfully!");
+                closeEditProfile();
+                btn.innerHTML = 'Save Changes';
+            }).catch((error) => {
+                alert("Error: " + error.message);
+                btn.innerHTML = 'Save Changes';
+            });
+        }
     </script>
 </body>
 </html>
