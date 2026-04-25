@@ -331,43 +331,51 @@
         <!-- फोटो र नाम -->
         <div class="profile-header">
             <img id="user-profile-img" src="logo.png" class="profile-pic" onerror="this.src='https://via.placeholder.com/150/000000/fdd835?text=User'">
-            <h3 id="user-profile-name" style="margin-top: 10px; color: white; letter-spacing: 1px;">User Name</h3>
-            <p id="user-profile-email" style="color: #aaa; font-size: 0.85rem;">email@example.com</p>
+            <h3 id="user-profile-name" style="margin-top: 10px; color: white; letter-spacing: 1px;">Not Logged In</h3>
+            <p id="user-profile-email" style="color: #aaa; font-size: 0.85rem;"></p>
+            
+            <!-- गुगलबाट लगइन गर्ने बटन (लगआउट हुँदा मात्र देखिने) -->
+            <button id="btn-google-login" class="click-effect" onclick="signInWithGoogle()" style="margin-top: 15px; background: white; color: black; border: none; padding: 10px 20px; border-radius: 20px; font-weight: 600; display: none;">
+                <i class="fab fa-google" style="color: #DB4437; margin-right: 8px;"></i> Sign in with Google
+            </button>
         </div>
 
-        <!-- तथ्यांक (Stats) -->
-        <div class="profile-stats">
-            <div class="stat-box">
-                <h4 id="user-followers">0</h4>
-                <span>सहयात्री</span>
+        <!-- लगइन भइसकेपछि मात्र देखिने भाग (Stats & Menu) -->
+        <div id="logged-in-content" style="display: none;">
+            <!-- तथ्यांक (Stats) -->
+            <div class="profile-stats">
+                <div class="stat-box">
+                    <h4 id="user-followers">0</h4>
+                    <span>सहयात्री</span>
+                </div>
+                <div class="stat-box">
+                    <h4 id="user-total-likes">0</h4>
+                    <span>Likes</span>
+                </div>
+                <div class="stat-box">
+                    <h4 id="user-total-views">0</h4>
+                    <span>Views</span>
+                </div>
             </div>
-            <div class="stat-box">
-                <h4 id="user-total-likes">0</h4>
-                <span>Likes</span>
-            </div>
-            <div class="stat-box">
-                <h4 id="user-total-views">0</h4>
-                <span>Views</span>
-            </div>
-        </div>
 
-        <!-- मेनु (Menu) -->
-        <div class="profile-menu">
-            <div class="p-menu-item click-effect" onclick="alert('Editing System आउँदैछ...')">
-                <i class="fas fa-user-edit" style="color: #4CAF50;"></i> <span style="flex: 1;">Edit Profile</span> <i class="fas fa-chevron-right" style="color:#555; font-size: 0.9rem;"></i>
-            </div>
-            <div class="p-menu-item click-effect" onclick="alert('पछि तपाईंले यहाँबाट Sound Effect अपलोड गर्न सक्नुहुनेछ!')">
-                <i class="fas fa-cloud-upload-alt" style="color: #FF9800;"></i> <span style="flex: 1;">My Uploads (Sounds)</span> <i class="fas fa-chevron-right" style="color:#555; font-size: 0.9rem;"></i>
-            </div>
-            <div class="p-menu-item click-effect" onclick="alert('तपाईंलाई मन परेका Producer/Artist यहाँ सेभ हुनेछन्।')">
-                <i class="fas fa-star" style="color: #2196F3;"></i> <span style="flex: 1;">Favorite Accounts</span> <i class="fas fa-chevron-right" style="color:#555; font-size: 0.9rem;"></i>
-            </div>
-            <div class="p-menu-item click-effect" onclick="switchAccount()">
-                <i class="fas fa-sync-alt" style="color: #9C27B0;"></i> <span style="flex: 1;">Switch Account</span>
-            </div>
-            <!-- Log Out Button (Red) -->
-            <div class="p-menu-item click-effect" onclick="logoutUser()" style="border: 1px solid #ff0050; background: rgba(255,0,80,0.05); margin-top: 20px;">
-                <i class="fas fa-sign-out-alt" style="color: #ff0050;"></i> <span style="flex: 1; color: #ff0050; font-weight: 600;">Log Out</span>
+            <!-- मेनु (Menu) -->
+            <div class="profile-menu">
+                <div class="p-menu-item click-effect" onclick="alert('Editing System आउँदैछ...')">
+                    <i class="fas fa-user-edit" style="color: #4CAF50;"></i> <span style="flex: 1;">Edit Profile</span> <i class="fas fa-chevron-right" style="color:#555; font-size: 0.9rem;"></i>
+                </div>
+                <div class="p-menu-item click-effect" onclick="alert('पछि तपाईंले यहाँबाट Sound Effect अपलोड गर्न सक्नुहुनेछ!')">
+                    <i class="fas fa-cloud-upload-alt" style="color: #FF9800;"></i> <span style="flex: 1;">My Uploads (Sounds)</span> <i class="fas fa-chevron-right" style="color:#555; font-size: 0.9rem;"></i>
+                </div>
+                <div class="p-menu-item click-effect" onclick="alert('तपाईंलाई मन परेका Producer/Artist यहाँ सेभ हुनेछन्।')">
+                    <i class="fas fa-star" style="color: #2196F3;"></i> <span style="flex: 1;">Favorite Accounts</span> <i class="fas fa-chevron-right" style="color:#555; font-size: 0.9rem;"></i>
+                </div>
+                <div class="p-menu-item click-effect" onclick="switchAccount()">
+                    <i class="fas fa-sync-alt" style="color: #9C27B0;"></i> <span style="flex: 1;">Switch Account</span>
+                </div>
+                <!-- Log Out Button (Red) -->
+                <div class="p-menu-item click-effect" onclick="logoutUser()" style="border: 1px solid #ff0050; background: rgba(255,0,80,0.05); margin-top: 20px;">
+                    <i class="fas fa-sign-out-alt" style="color: #ff0050;"></i> <span style="flex: 1; color: #ff0050; font-weight: 600;">Log Out</span>
+                </div>
             </div>
         </div>
     </div>
@@ -904,20 +912,10 @@
 
         const auth = firebase.auth();
         const provider = new firebase.auth.GoogleAuthProvider();
-        
-        let currentUser = null; // यो नयाँ जादुगरी कुरा थपियो (लगइन भएको मान्छेलाई याद राख्न)
 
-        // माथिको User Icon थिच्दा के हुने?
+        // माथिको User Icon थिच्दा अब सधैं प्रोफाइल खुल्छ
         function handleLogin() {
-            if (currentUser) {
-                // यदि लगइन छ भने प्रोफाइल खुल्छ
-                document.getElementById('profile-overlay').classList.add('active');
-            } else {
-                // लगइन छैन भने गुगल एकाउन्ट माग्छ
-                auth.signInWithPopup(provider).catch((error) => {
-                    console.error("Login Error: ", error);
-                });
-            }
+            document.getElementById('profile-overlay').classList.add('active');
         }
 
         // प्रोफाइल बन्द गर्ने फङ्सन
@@ -925,10 +923,18 @@
             document.getElementById('profile-overlay').classList.remove('active');
         }
 
+        // गुगलबाट लगइन गर्ने फङ्सन
+        function signInWithGoogle() {
+            auth.signInWithPopup(provider).catch((error) => {
+                console.error("Login Error: ", error);
+            });
+        }
+
         // लगआउट गर्ने फङ्सन (रातो बटन)
         function logoutUser() {
             if(confirm("के तपाईं Log Out गर्न चाहनुहुन्छ?")) {
                 auth.signOut().then(() => {
+                    // लगआउट भएपछि प्रोफाइल आफैँ बन्द हुन्छ
                     closeProfile();
                 });
             }
@@ -937,17 +943,16 @@
         // एकाउन्ट चेन्ज (Switch Account) गर्ने फङ्सन
         function switchAccount() {
             provider.setCustomParameters({ prompt: 'select_account' });
-            auth.signInWithPopup(provider).then(() => {
-                 closeProfile();
-            }).catch(e => console.log("Cancelled"));
+            auth.signInWithPopup(provider).catch(e => console.log("Cancelled"));
         }
 
-        // कोही लगइन भयो कि भएन भनेर सधैं चेक गर्ने र फोटो/नाम तान्ने
+        // कोही लगइन भयो कि भएन भनेर सधैं चेक गर्ने र प्रोफाइलको डिजाइन मिलाउने
         auth.onAuthStateChanged((user) => {
-            currentUser = user; // यहाँ मान्छेको नाम/डेटा सेभ हुन्छ, जसले गर्दा बटन झुक्किन्न
-
             const userIcon = document.getElementById('user-icon');
             const adminPanel = document.getElementById('admin-panel');
+            
+            const btnGoogleLogin = document.getElementById('btn-google-login');
+            const loggedInContent = document.getElementById('logged-in-content');
 
             if (user) {
                 // हेडरको आइकन हरियो बनाउने
@@ -960,6 +965,10 @@
                     document.getElementById('user-profile-name').innerText = user.displayName || 'User';
                     document.getElementById('user-profile-email').innerText = user.email;
                 }
+
+                // बटनहरू लुकाउने/देखाउने (जादु यहाँ छ)
+                if(btnGoogleLogin) btnGoogleLogin.style.display = 'none'; // Sign In बटन लुकाउने
+                if(loggedInContent) loggedInContent.style.display = 'block'; // Stats र मेनु देखाउने
 
                 // Admin चेक गर्ने लजिक (तपाईंको इमेल)
                 if (adminPanel) {
@@ -976,10 +985,15 @@
                 if(document.getElementById('user-profile-img')) {
                     document.getElementById('user-profile-img').src = 'logo.png';
                     document.getElementById('user-profile-name').innerText = 'Not Logged In';
-                    document.getElementById('user-profile-email').innerText = '';
+                    document.getElementById('user-profile-email').innerText = 'लगइन गरेर आफ्नो प्रोफाइल बनाउनुहोस्';
                 }
+
+                // बटनहरू लुकाउने/देखाउने (जादु यहाँ छ)
+                if(btnGoogleLogin) btnGoogleLogin.style.display = 'inline-block'; // Sign In बटन देखाउने
+                if(loggedInContent) loggedInContent.style.display = 'none'; // Stats र मेनु लुकाउने
             }
         });
+   
 
         // 1. Guestbook Message पठाउने फङ्सन
         function sendGuestbook() {
