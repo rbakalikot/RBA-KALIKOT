@@ -923,10 +923,11 @@
             document.getElementById('profile-overlay').classList.remove('active');
         }
 
-        // गुगलबाट लगइन गर्ने फङ्सन
+        // गुगलबाट लगइन गर्ने फङ्सन (मोबाइलको लागि Redirect बेस्ट हुन्छ)
         function signInWithGoogle() {
-            auth.signInWithPopup(provider).catch((error) => {
-                console.error("Login Error: ", error);
+            document.getElementById('btn-google-login').innerText = "Connecting..."; // क्लिक गरेपछि मेसेज फेरिने
+            auth.signInWithRedirect(provider).catch((error) => {
+                alert("Login Error: " + error.message); // यदि बिग्रियो भने मोबाइलमै कारण देखाउने
             });
         }
 
@@ -939,11 +940,10 @@
                 });
             }
         }
-
         // एकाउन्ट चेन्ज (Switch Account) गर्ने फङ्सन
         function switchAccount() {
             provider.setCustomParameters({ prompt: 'select_account' });
-            auth.signInWithPopup(provider).catch(e => console.log("Cancelled"));
+            auth.signInWithRedirect(provider).catch(e => alert("Error: " + e.message));
         }
 
         // कोही लगइन भयो कि भएन भनेर सधैं चेक गर्ने र प्रोफाइलको डिजाइन मिलाउने
