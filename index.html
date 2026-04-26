@@ -1594,6 +1594,7 @@
             element.classList.add('active');
         }
 
+        // सेभ गर्दा के हुने? (डेटाबेसमा फोटो सेभ गर्ने नयाँ तरिका)
         function saveProfileChanges() {
             const newName = document.getElementById('edit-name-input').value.trim();
             const btn = document.querySelector('.btn-save-profile');
@@ -1605,18 +1606,32 @@
 
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
 
+            // 1. पहिले लगइन सिस्टममा नाम मात्र फेर्ने (फोटो नफेर्ने)
             auth.currentUser.updateProfile({
-                displayName: newName,
-                // काटेको फोटो छ भने त्यो हाल्ने, छैन भने पुरानै छोड्ने
-                photoURL: newProfileImageBase64 ? newProfileImageBase64 : auth.currentUser.photoURL
+                displayName: newName
             }).then(() => {
+                // 2. अब काटेको फोटोलाई Firebase Database मा सुरक्षित राख्ने
+                const userRef = database.ref('users/' + auth.currentUser.uid);
+                let updates = { themeColor: selectedProfileColor };
+                
+                if (newProfileImageBase64) updates.profileImage = newProfileImageBase64;
+                if (newBgImageBase64) updates.bgImage = newBgImageBase64;
+
+                return userRef.update(updates); // डेटाबेसमा पठाउने
+            }).then(() => {
+                // 3. सेभ भएपछि डिजाइन मिलाउने
                 document.getElementById('user-profile-name').innerText = newName;
                 document.querySelector('.profile-pic').style.borderColor = selectedProfileColor;
                 document.getElementById('txt-list-title').style.color = selectedProfileColor;
                 
                 if (newProfileImageBase64) {
                     document.getElementById('user-profile-img').src = newProfileImageBase64;
+                    document.getElementById('preview-profile-img').src = newProfileImageBase64;
                 }
+                if (newBgImageBase64) {
+                    document.getElementById('preview-bg-img').src = newBgImageBase64;
+                }
+                
                 alert("Profile Updated Successfully!");
                 closeEditProfile();
                 btn.innerHTML = 'Save Changes';
@@ -1625,6 +1640,73 @@
                 btn.innerHTML = 'Save Changes';
             });
         }
+
+        // कोही लगइन भयो कि भएन भनेर सधैं चेक गर्ने र डेटाबेसबाट फोटो तान्ने
+        auth.onAuthStateChanged((user) => {
+            const userIcon = document.getElementById('user-icon');
+            const adminPanel = document.getElementById('admin-panel');
+            const btnGoogleLogin = document.getElementById('btn-google-login');
+            const loggedInContent = document.getElementById('logged-in-content');
+
+            if (user) {
+                userIcon.className = "fas fa-user-check";
+                userIcon.style.color = "#60bb46";
+
+                // सुरुमा गुगलको फोटो र नाम राख्ने
+                if(document.getElementById('user-profile-img')) {
+                    document.getElementById('user-profile-img').src = user.photoURL || 'logo.png';
+                    document.getElementById('user-profile-name').innerText = user.displayName || 'User';
+                    document.getElementById('user-profile-email').innerText = user.email;
+                }
+                if(document.getElementById('preview-profile-img')) {
+                    document.getElementById('preview-profile-img').src = user.photoURL || 'logo.png';
+                }
+
+                // जादु: अब Database बाट काटेको फोटो र कलर तानेर ल्याउने!
+                database.ref('users/' + user.uid).once('value').then((snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        if (data.profileImage) {
+                            document.getElementById('user-profile-img').src = data.profileImage;
+                            document.getElementById('preview-profile-img').src = data.profileImage;
+                        }
+                        if (data.bgImage) {
+                            document.getElementById('preview-bg-img').src = data.bgImage;
+                        }
+                        if (data.themeColor) {
+                            selectedProfileColor = data.themeColor;
+                            document.querySelector('.profile-pic').style.borderColor = selectedProfileColor;
+                            document.getElementById('txt-list-title').style.color = selectedProfileColor;
+                        }
+                    }
+                });
+
+                if(btnGoogleLogin) btnGoogleLogin.style.display = 'none'; 
+                if(loggedInContent) loggedInContent.style.display = 'block'; 
+
+                if (adminPanel) {
+                    if (user.email === 'rbakalikotmusic@gmail.com') adminPanel.style.display = 'block';
+                    else adminPanel.style.display = 'none';
+                }
+            } else {
+                userIcon.className = "fas fa-user-circle";
+                userIcon.style.color = "var(--p-yellow)";
+                if(adminPanel) adminPanel.style.display = 'none';
+                
+                if(document.getElementById('user-profile-img')) {
+                    document.getElementById('user-profile-img').src = 'logo.png';
+                    document.getElementById('preview-profile-img').src = 'logo.png';
+                    document.getElementById('user-profile-name').innerText = 'Not Logged In';
+                    document.getElementById('user-profile-email').innerText = 'लगइन गरेर आफ्नो प्रोफाइल बनाउनुहोस्';
+                }
+
+                if(btnGoogleLogin) btnGoogleLogin.style.display = 'inline-block'; 
+                if(loggedInContent) loggedInContent.style.display = 'none'; 
+            }
+        });
+
+
+        
     </script>
 </body>
 </html>
