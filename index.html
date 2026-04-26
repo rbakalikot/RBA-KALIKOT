@@ -1075,6 +1075,11 @@
                     document.getElementById('user-profile-email').innerText = user.email;
                 }
 
+                // Edit Profile को बक्समा पनि गुगलको फोटो देखाउने
+                if(document.getElementById('preview-profile-img')) {
+                    document.getElementById('preview-profile-img').src = user.photoURL || 'logo.png';
+                }
+
                 // बटनहरू लुकाउने/देखाउने (जादु यहाँ छ)
                 if(btnGoogleLogin) btnGoogleLogin.style.display = 'none'; // Sign In बटन लुकाउने
                 if(loggedInContent) loggedInContent.style.display = 'block'; // Stats र मेनु देखाउने
@@ -1517,18 +1522,18 @@
             draw();
         }
         
-        // वेबसाइट लोड हुने बित्तिकै यो इफेक्ट सुरु गर्ने
-        window.addEventListener('load', initSeasonEffect);
+        
 
-
-        // --- EDIT PROFILE LOGIC ---
+     // --- EDIT PROFILE LOGIC (CROP + SAVE FIX) ---
         let selectedProfileColor = '#fdd835';
+        let cropper;
+        let currentTargetImgId = ''; 
+        let newProfileImageBase64 = null; // काटेको फोटो सेभ राख्न
+        let newBgImageBase64 = null; 
 
         function openEditProfile() {
             if (!auth.currentUser) return;
             document.getElementById('edit-profile-overlay').classList.add('active');
-            
-            // हालको नाम बक्समा देखाउने
             document.getElementById('edit-name-input').value = auth.currentUser.displayName || '';
         }
 
@@ -1536,11 +1541,6 @@
             document.getElementById('edit-profile-overlay').classList.remove('active');
         }
 
-        // फाइल छान्दा फोटो देखिने (Preview) र 10MB चेक गर्ने
-        let cropper;
-        let currentTargetImgId = ''; // कुन फोटो (Profile कि Background) क्रप हुँदैछ भनेर याद राख्न
-
-        // फाइल छान्दा क्रप गर्ने बक्स खुल्ने
         function previewImage(event, imgId) {
             const file = event.target.files[0];
             if (file) {
@@ -1549,30 +1549,20 @@
                     event.target.value = ''; 
                     return;
                 }
-                
-                currentTargetImgId = imgId; // Profile हो कि Background याद राख्यो
-                
+                currentTargetImgId = imgId; 
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const cropImg = document.getElementById('image-to-crop');
                     cropImg.src = e.target.result;
                     document.getElementById('crop-overlay').style.display = 'flex';
-                    
-                    if(cropper) cropper.destroy(); // पुरानो क्रपर फाल्ने
-                    
-                    // नयाँ क्रपर सुरु गर्ने (Profile लाई गोलो 1:1, Background लाई तेर्सो 16:9)
+                    if(cropper) cropper.destroy(); 
                     const aspectRatio = imgId === 'preview-profile-img' ? 1 / 1 : 16 / 9;
-                    cropper = new Cropper(cropImg, {
-                        aspectRatio: aspectRatio,
-                        viewMode: 2,
-                        background: false
-                    });
+                    cropper = new Cropper(cropImg, { aspectRatio: aspectRatio, viewMode: 2, background: false });
                 }
                 reader.readAsDataURL(file);
             }
         }
 
-        // क्रप क्यान्सिल गर्दा
         function closeCropper() {
             document.getElementById('crop-overlay').style.display = 'none';
             if(cropper) cropper.destroy();
@@ -1580,35 +1570,30 @@
             document.getElementById('bg-upload').value = '';
         }
 
-        // 'Right Tick' मा छुँदा क्रप भएको फोटो सेभ हुने
         function applyCrop() {
             if(!cropper) return;
-            
-            // क्रप गरेको भागलाई तान्ने (सानो साइजमा ताकि इन्टरनेट कम लागोस्)
             const canvas = cropper.getCroppedCanvas({
                 width: currentTargetImgId === 'preview-profile-img' ? 400 : 800,
                 imageSmoothingQuality: 'high'
             });
-            
             const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
-            
-            // Edit Profile को पेजमा नयाँ काटेको फोटो देखाउने
             document.getElementById(currentTargetImgId).src = croppedDataUrl;
             
+            if (currentTargetImgId === 'preview-profile-img') {
+                newProfileImageBase64 = croppedDataUrl;
+            } else {
+                newBgImageBase64 = croppedDataUrl;
+            }
             closeCropper();
         }
 
-        // कलर छान्ने लजिक
         function selectThemeColor(color, element) {
             selectedProfileColor = color;
-            // सबै सर्कलको active हटाउने
             const circles = document.querySelectorAll('.color-circle');
             circles.forEach(c => c.classList.remove('active'));
-            // छानेकोलाई active बनाउने
             element.classList.add('active');
         }
 
-        // सेभ गर्दा के हुने?
         function saveProfileChanges() {
             const newName = document.getElementById('edit-name-input').value.trim();
             const btn = document.querySelector('.btn-save-profile');
@@ -1620,16 +1605,18 @@
 
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
 
-            // फायरबेसमा नाम सेभ गर्ने
             auth.currentUser.updateProfile({
-                displayName: newName
-                // पछि यहाँ फोटोको URL पनि अपडेट गरिनेछ
+                displayName: newName,
+                // काटेको फोटो छ भने त्यो हाल्ने, छैन भने पुरानै छोड्ने
+                photoURL: newProfileImageBase64 ? newProfileImageBase64 : auth.currentUser.photoURL
             }).then(() => {
-                // प्रोफाइलमा नाम र कलर परिवर्तन गर्ने
                 document.getElementById('user-profile-name').innerText = newName;
                 document.querySelector('.profile-pic').style.borderColor = selectedProfileColor;
-                document.getElementById('txt-list-title').style.color = selectedProfileColor; // अघिको नाम
+                document.getElementById('txt-list-title').style.color = selectedProfileColor;
                 
+                if (newProfileImageBase64) {
+                    document.getElementById('user-profile-img').src = newProfileImageBase64;
+                }
                 alert("Profile Updated Successfully!");
                 closeEditProfile();
                 btn.innerHTML = 'Save Changes';
