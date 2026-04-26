@@ -182,6 +182,39 @@
 
         
         
+        /* Custom Toast Notification Design */
+#custom-toast {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: rgba(20, 20, 20, 0.95);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 50px;
+    border: 1px solid var(--p-yellow);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    z-index: 12000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    opacity: 0;
+    pointer-events: none;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+#custom-toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+#custom-toast i {
+    color: var(--p-yellow);
+    font-size: 1.1rem;
+}
+
+
+        
     </style>
 </head>
 <body class="dark-mode">
@@ -1120,7 +1153,7 @@
                     text: message,
                     time: new Date().toLocaleString()
                 });
-                alert("तपाईंको सन्देश सफलतापुर्वक पठाइयो! धन्यवाद!");
+                showToast("तपाईंको सन्देश सफलतापुर्वक पठाइयो!", "fa-paper-plane");
                 msgInput.value = ""; // पठाएपछि बक्स खाली गर्ने
             } else {
                 alert("कृपया सन्देश लेख्नुहोस्!");
@@ -1705,8 +1738,30 @@
             }
         });
 
+// नयाँ राम्रो मेसेज देखाउने फङ्सन
+function showToast(message, icon = 'fa-check-circle') {
+    const toast = document.getElementById('custom-toast');
+    const toastMsg = document.getElementById('toast-message');
+    const toastIcon = document.getElementById('toast-icon');
 
+    toastMsg.innerText = message;
+    toastIcon.className = `fas ${icon}`;
+    
+    toast.classList.add('show');
+
+    // ३ सेकेन्ड पछि आफै हराउँछ
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
         
     </script>
+
+    <!-- Toast Notification Element -->
+<div id="custom-toast">
+    <i class="fas fa-info-circle" id="toast-icon"></i>
+    <span id="toast-message">Message here...</span>
+</div>
+    
 </body>
 </html>
