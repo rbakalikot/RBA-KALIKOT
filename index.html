@@ -1756,28 +1756,70 @@
                     document.getElementById('preview-profile-img').src = user.photoURL || 'logo.png';
 
 
-                });
+                }); // यहाँ तपाईंको पुरानो Profile र Admin लजिक सुरक्षित रूपमा बन्द हुन्छ।
+
+        // १. नयाँ स्टाइलिश मेसेज (Toast) देखाउने फङ्सन
+        function showToast(message, icon = 'fa-check-circle') {
+            const toast = document.getElementById('custom-toast');
+            const toastMsg = document.getElementById('toast-message');
+            const toastIcon = document.getElementById('toast-icon');
+            if(!toast || !toastMsg || !toastIcon) return;
+            
+            toastMsg.innerText = message;
+            toastIcon.className = `fas ${icon}`;
+            toast.classList.add('show');
+            
+            // ३ सेकेन्ड पछि आफै हराउँछ
+            setTimeout(() => { toast.classList.remove('show'); }, 3000);
+        }
+
+        // २. सबै पुराना alert हरूलाई नयाँ स्टाइलमा बदल्ने ट्रिक
+        window.alert = function(message) {
+            showToast(message, 'fa-bell');
+        };
+
+        // ३. भिजुअलाइजर स्टाइल फेर्ने मेनु खोल्ने र बन्द गर्ने लजिक
+        let currentVisStyle = 'bars'; // सुरुमा 'Classic Bars' बस्छ
+
+        function openVisMenu() {
+            // प्लेयर सेटिङ विन्डो पहिले बन्द गर्ने अनि यो खोल्ने
+            if(typeof closePlayerSettings === 'function') closePlayerSettings();
+            document.getElementById('vis-style-overlay').style.display = 'flex';
+        }
+
+        function closeVisMenu() {
+            document.getElementById('vis-style-overlay').style.display = 'none';
+        }
+
+        function changeVisStyle(style, name) {
+            currentVisStyle = style;
+            const nameDisplay = document.getElementById('current-vis-name');
+            if(nameDisplay) nameDisplay.innerText = name;
+            closeVisMenu();
+            showToast("Visualizer Style: " + name, "fa-magic");
+        }
     </script>
 
-    <!-- १. मेसेज देखाउने भाग (Toast Element) -->
+    <!-- ४. नयाँ फिचरका लागि चाहिने HTML Elements -->
+    
+    <!-- मेसेज पपअप (Toast) -->
     <div id="custom-toast">
         <i class="fas fa-info-circle" id="toast-icon"></i>
         <span id="toast-message">Message here...</span>
     </div>
 
-    <!-- २. भिजुअलाइजर स्टाइल रोज्ने पपअप (Visualizer Menu) -->
+    <!-- भिजुअलाइजर स्टाइल रोज्ने विन्डो -->
     <div id="vis-style-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100vh; background:rgba(0,0,0,0.9); z-index:11000; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
-        <div class="card" style="width:90%; max-width:340px; text-align:center; padding:25px; border:1px solid var(--p-yellow);">
+        <div class="card" style="width:90%; max-width:340px; text-align:center; padding:25px; border:1px solid var(--p-yellow); background: #121212; border-radius: 20px;">
             <h3 style="color:var(--p-yellow); margin-bottom:20px;"><i class="fas fa-magic"></i> Choose Style</h3>
             <div style="display:grid; grid-template-columns: 1fr; gap:10px;">
-                <button onclick="changeVisStyle('bars', 'Classic Bars')" style="background:#222; border:1px solid #444; color:white; padding:15px; border-radius:12px; text-align:left;"><i class="fas fa-chart-bar"></i> &nbsp; Classic Bars</button>
-                <button onclick="changeVisStyle('wave', 'Ocean Wave')" style="background:#222; border:1px solid #444; color:white; padding:15px; border-radius:12px; text-align:left;"><i class="fas fa-wave-square"></i> &nbsp; Ocean Wave</button>
-                <button onclick="changeVisStyle('circle', 'Circular Orbit')" style="background:#222; border:1px solid #444; color:white; padding:15px; border-radius:12px; text-align:left;"><i class="fas fa-circle-notch"></i> &nbsp; Circular Orbit</button>
-                <button onclick="changeVisStyle('fire', 'Pulse Glow')" style="background:#222; border:1px solid #444; color:white; padding:15px; border-radius:12px; text-align:left;"><i class="fas fa-fire"></i> &nbsp; Pulse Glow</button>
+                <button onclick="changeVisStyle('bars', 'Classic Bars')" style="background:#1a1a1a; border:1px solid #333; color:white; padding:15px; border-radius:12px; text-align:left; font-size: 1rem;"><i class="fas fa-chart-bar" style="color:var(--p-yellow);"></i> &nbsp; Classic Bars</button>
+                <button onclick="changeVisStyle('wave', 'Ocean Wave')" style="background:#1a1a1a; border:1px solid #333; color:white; padding:15px; border-radius:12px; text-align:left; font-size: 1rem;"><i class="fas fa-wave-square" style="color:#00f2ea;"></i> &nbsp; Ocean Wave</button>
+                <button onclick="changeVisStyle('circle', 'Circular Orbit')" style="background:#1a1a1a; border:1px solid #333; color:white; padding:15px; border-radius:12px; text-align:left; font-size: 1rem;"><i class="fas fa-circle-notch" style="color:#9c27b0;"></i> &nbsp; Circular Orbit</button>
+                <button onclick="changeVisStyle('fire', 'Pulse Glow')" style="background:#1a1a1a; border:1px solid #333; color:white; padding:15px; border-radius:12px; text-align:left; font-size: 1rem;"><i class="fas fa-fire" style="color:#ff0050;"></i> &nbsp; Pulse Glow</button>
             </div>
-            <button onclick="closeVisMenu()" style="background:transparent; border:1px solid gray; color:gray; padding:10px; border-radius:10px; width:100%; margin-top:20px;">Cancel</button>
+            <button onclick="closeVisMenu()" style="background:transparent; border:1px solid #444; color:gray; padding:12px; border-radius:12px; width:100%; margin-top:20px; font-weight: 600;">Cancel</button>
         </div>
     </div>
-
 </body>
 </html>
