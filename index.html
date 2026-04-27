@@ -1798,8 +1798,48 @@
             closeVisMenu();
             showToast("Visualizer Style: " + name, "fa-magic");
         }
+
+                // १. एप खोल्ने साँचो (यसले Splash Screen हटाउँछ)
+        window.onload = () => {
+            loadPlaylist(); 
+            initSeasonEffect();
+            const hash = window.location.hash.substring(1) || 'home';
+            showTab(hash, null, false);
+            setTimeout(() => {
+                const splash = document.getElementById('splash');
+                if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 500); }
+            }, 2500);
+        };
+
+        // २. भिजुअलाइजर स्टाइल फेर्ने फङ्सनहरू
+        let currentVisStyle = 'bars'; 
+        function openVisMenu() { closePlayerSettings(); document.getElementById('vis-style-overlay').style.display = 'flex'; }
+        function closeVisMenu() { document.getElementById('vis-style-overlay').style.display = 'none'; }
+        function changeVisStyle(style, name) {
+            currentVisStyle = style;
+            document.getElementById('current-vis-name').innerText = name;
+            closeVisMenu();
+            showToast("Style: " + name, "fa-magic");
+        }
     </script>
 
+    <!-- ३. स्टाइलिश मेसेज र स्टाइल मेनु -->
+    <div id="custom-toast"><i id="toast-icon"></i> <span id="toast-message"></span></div>
+
+    <div id="vis-style-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100vh; background:rgba(0,0,0,0.9); z-index:11000; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
+        <div class="card" style="width:90%; max-width:340px; text-align:center; padding:25px; border:1px solid var(--p-yellow); border-radius:20px;">
+            <h3 style="color:var(--p-yellow); margin-bottom:20px;">Choose Style</h3>
+            <div style="display:grid; grid-template-columns: 1fr; gap:10px;">
+                <button onclick="changeVisStyle('bars', 'Classic Bars')" style="background:#1a1a1a; color:white; padding:15px; border-radius:12px; border:1px solid #333;">Classic Bars</button>
+                <button onclick="changeVisStyle('wave', 'Ocean Wave')" style="background:#1a1a1a; color:white; padding:15px; border-radius:12px; border:1px solid #333;">Ocean Wave</button>
+                <button onclick="changeVisStyle('circle', 'Circular Orbit')" style="background:#1a1a1a; color:white; padding:15px; border-radius:12px; border:1px solid #333;">Circular Orbit</button>
+                <button onclick="changeVisStyle('fire', 'Pulse Glow')" style="background:#1a1a1a; color:white; padding:15px; border-radius:12px; border:1px solid #333;">Pulse Glow</button>
+            </div>
+            <button onclick="closeVisMenu()" style="background:transparent; color:gray; padding:10px; border:none; margin-top:15px;">Cancel</button>
+        </div>
+    </div>
+
+    
     <!-- ४. नयाँ फिचरका लागि चाहिने HTML Elements -->
     
     <!-- मेसेज पपअप (Toast) -->
