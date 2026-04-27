@@ -1676,8 +1676,7 @@ renderFrame();
                 btn.innerHTML = 'Save Changes';
             });
         }
-
-            // १. प्रयोगकर्ता लगइन र प्रोफाइल चेक गर्ने (Admin र User दुवैका लागि)
+// १. लगइन र प्रोफाइल चेक गर्ने (Admin र User दुवैका लागि)
         auth.onAuthStateChanged((user) => {
             const userIcon = document.getElementById('user-icon');
             const adminPanel = document.getElementById('admin-panel');
@@ -1685,7 +1684,6 @@ renderFrame();
             const loggedInContent = document.getElementById('logged-in-content');
 
             if (user) {
-                // लगइन भएको अवस्थामा
                 userIcon.className = "fas fa-user-check";
                 userIcon.style.color = "#60bb46";
 
@@ -1704,7 +1702,6 @@ renderFrame();
                 if(btnGoogleLogin) btnGoogleLogin.style.display = 'none'; 
                 if(loggedInContent) loggedInContent.style.display = 'block'; 
             } else {
-                // लगआउट भएको अवस्थामा
                 userIcon.className = "fas fa-user-circle";
                 userIcon.style.color = "var(--p-yellow)";
                 if(adminPanel) adminPanel.style.display = 'none';
@@ -1713,7 +1710,7 @@ renderFrame();
             }
         });
 
-        // २. नयाँ स्टाइलिश मेसेज (Toast) फङ्सन
+        // २. नयाँ मेसेज देखाउने फङ्सन (Toast)
         function showToast(message, icon = 'fa-check-circle') {
             const toast = document.getElementById('custom-toast');
             if(!toast) return;
@@ -1723,22 +1720,20 @@ renderFrame();
             setTimeout(() => { toast.classList.remove('show'); }, 3000);
         }
 
-        // ३. पुराना alert लाई नयाँ मेसेज स्टाइलमा बदल्ने
+        // ३. पुराना alert लाई नयाँमा बदल्ने
         window.alert = function(msg) { showToast(msg, 'fa-bell'); };
 
-        // ४. एप सुरु गर्ने साँचो (यसले नै Splash Screen हटाउँछ)
+        // ४. एप सुरु गर्ने मुख्य साँचो (Splash Screen यसले नै हटाउँछ)
         window.onload = () => {
-            // भाषा र प्लेलिस्ट लोड गर्ने
             const savedLang = localStorage.getItem('rba_lang') || 'ne';
             if(typeof changeLanguage === 'function') changeLanguage(savedLang);
             if(typeof loadPlaylist === 'function') loadPlaylist();
             if(typeof initSeasonEffect === 'function') initSeasonEffect();
 
-            // सुरुमा कुन पेज देखाउने (Home वा अरु)
             const hash = window.location.hash.substring(1) || 'home';
             if(typeof showTab === 'function') showTab(hash, null, false);
             
-            // २.५ सेकेन्ड पछि Splash Screen हटाउने
+            // २.५ सेकेन्ड पछि Splash Screen हट्छ
             setTimeout(() => {
                 const splash = document.getElementById('splash');
                 if(splash) {
@@ -1749,10 +1744,12 @@ renderFrame();
         };
     </script>
 
-    <!-- ५. मेसेज बक्सको लागि चाहिने HTML -->
+    <!-- ५. मेसेज देखाउन चाहिने HTML -->
     <div id="custom-toast">
         <i class="fas fa-info-circle" id="toast-icon"></i>
         <span id="toast-message">Message here...</span>
     </div>
 </body>
 </html>
+            
+        
