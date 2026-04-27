@@ -1173,6 +1173,8 @@
                 if(document.getElementById('preview-profile-img')) {
                     document.getElementById('preview-profile-img').src = user.photoURL || 'logo.png';
                 }
+            }
+        }); // यहाँ तपाईंको पुरानो Profile र Admin लजिक सुरक्षित रूपमा बन्द हुन्छ।
 
                 // बटनहरू लुकाउने/देखाउने (जादु यहाँ छ)
                 if(btnGoogleLogin) btnGoogleLogin.style.display = 'none'; // Sign In बटन लुकाउने
