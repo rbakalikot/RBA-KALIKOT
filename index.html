@@ -1801,28 +1801,7 @@
             showToast("Visualizer Style: " + name, "fa-magic");
         }
 
-                // १. एप खोल्ने साँचो (यसले Splash Screen हटाउँछ)
-        window.onload = () => {
-            loadPlaylist(); 
-            initSeasonEffect();
-            const hash = window.location.hash.substring(1) || 'home';
-            showTab(hash, null, false);
-            setTimeout(() => {
-                const splash = document.getElementById('splash');
-                if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 500); }
-            }, 2500);
-        };
-
-        // २. भिजुअलाइजर स्टाइल फेर्ने फङ्सनहरू
-        let currentVisStyle = 'bars'; 
-        function openVisMenu() { closePlayerSettings(); document.getElementById('vis-style-overlay').style.display = 'flex'; }
-        function closeVisMenu() { document.getElementById('vis-style-overlay').style.display = 'none'; }
-        function changeVisStyle(style, name) {
-            currentVisStyle = style;
-            document.getElementById('current-vis-name').innerText = name;
-            closeVisMenu();
-            showToast("Style: " + name, "fa-magic");
-        }
+        
     </script>
 
     <!-- ३. स्टाइलिश मेसेज र स्टाइल मेनु -->
