@@ -1677,7 +1677,7 @@ renderFrame();
             });
         }
 
-        // कोही लगइन भयो कि भएन भनेर सधैं चेक गर्ने र डेटाबेसबाट फोटो तान्ने
+            // १. प्रयोगकर्ता लगइन र प्रोफाइल चेक गर्ने (Admin र User दुवैका लागि)
         auth.onAuthStateChanged((user) => {
             const userIcon = document.getElementById('user-icon');
             const adminPanel = document.getElementById('admin-panel');
@@ -1685,60 +1685,74 @@ renderFrame();
             const loggedInContent = document.getElementById('logged-in-content');
 
             if (user) {
+                // लगइन भएको अवस्थामा
                 userIcon.className = "fas fa-user-check";
                 userIcon.style.color = "#60bb46";
 
-                // सुरुमा गुगलको फोटो र नाम राख्ने
                 if(document.getElementById('user-profile-img')) {
                     document.getElementById('user-profile-img').src = user.photoURL || 'logo.png';
                     document.getElementById('user-profile-name').innerText = user.displayName || 'User';
                     document.getElementById('user-profile-email').innerText = user.email;
                 }
-                if(document.getElementById('preview-profile-img')) {
-                    document.getElementById('preview-profile-img').src = user.photoURL || 'logo.png';
 
+                // एडमिन चेक (तपाईंको इमेल)
+                if (adminPanel) {
+                    if (user.email === 'rbakalikotmusic@gmail.com') adminPanel.style.display = 'block';
+                    else adminPanel.style.display = 'none';
+                }
 
-                }); // यहाँ तपाईंको पुरानो Profile र Admin लजिक सुरक्षित रूपमा बन्द हुन्छ।
+                if(btnGoogleLogin) btnGoogleLogin.style.display = 'none'; 
+                if(loggedInContent) loggedInContent.style.display = 'block'; 
+            } else {
+                // लगआउट भएको अवस्थामा
+                userIcon.className = "fas fa-user-circle";
+                userIcon.style.color = "var(--p-yellow)";
+                if(adminPanel) adminPanel.style.display = 'none';
+                if(btnGoogleLogin) btnGoogleLogin.style.display = 'inline-block'; 
+                if(loggedInContent) loggedInContent.style.display = 'none'; 
+            }
+        });
 
-        // १. नयाँ स्टाइलिश मेसेज (Toast) देखाउने फङ्सन
+        // २. नयाँ स्टाइलिश मेसेज (Toast) फङ्सन
         function showToast(message, icon = 'fa-check-circle') {
             const toast = document.getElementById('custom-toast');
-            const toastMsg = document.getElementById('toast-message');
-            const toastIcon = document.getElementById('toast-icon');
-            if(!toast || !toastMsg || !toastIcon) return;
-            
-            toastMsg.innerText = message;
-            toastIcon.className = `fas ${icon}`;
+            if(!toast) return;
+            document.getElementById('toast-message').innerText = message;
+            document.getElementById('toast-icon').className = `fas ${icon}`;
             toast.classList.add('show');
-            
-            // ३ सेकेन्ड पछि आफै हराउँछ
             setTimeout(() => { toast.classList.remove('show'); }, 3000);
         }
 
-        // २. सबै पुराना alert हरूलाई नयाँ स्टाइलमा बदल्ने ट्रिक
-        window.alert = function(message) {
-            showToast(message, 'fa-bell');
-        };
+        // ३. पुराना alert लाई नयाँ मेसेज स्टाइलमा बदल्ने
+        window.alert = function(msg) { showToast(msg, 'fa-bell'); };
 
-        
+        // ४. एप सुरु गर्ने साँचो (यसले नै Splash Screen हटाउँछ)
+        window.onload = () => {
+            // भाषा र प्लेलिस्ट लोड गर्ने
+            const savedLang = localStorage.getItem('rba_lang') || 'ne';
+            if(typeof changeLanguage === 'function') changeLanguage(savedLang);
+            if(typeof loadPlaylist === 'function') loadPlaylist();
+            if(typeof initSeasonEffect === 'function') initSeasonEffect();
+
+            // सुरुमा कुन पेज देखाउने (Home वा अरु)
+            const hash = window.location.hash.substring(1) || 'home';
+            if(typeof showTab === 'function') showTab(hash, null, false);
+            
+            // २.५ सेकेन्ड पछि Splash Screen हटाउने
+            setTimeout(() => {
+                const splash = document.getElementById('splash');
+                if(splash) {
+                    splash.style.opacity = '0';
+                    setTimeout(() => splash.style.display = 'none', 500);
+                }
+            }, 2500);
+        };
     </script>
 
-    <!-- ३. स्टाइलिश मेसेज र स्टाइल मेनु -->
-    <div id="custom-toast"><i id="toast-icon"></i> <span id="toast-message"></span></div>
-
-    <div id="vis-style-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100vh; background:rgba(0,0,0,0.9); z-index:11000; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
-        <div class="card" style="width:90%; max-width:340px; text-align:center; padding:25px; border:1px solid var(--p-yellow); border-radius:20px;">
-            <h3 style="color:var(--p-yellow); margin-bottom:20px;">Choose Style</h3>
-            <div style="display:grid; grid-template-columns: 1fr; gap:10px;">
-                <button onclick="changeVisStyle('bars', 'Classic Bars')" style="background:#1a1a1a; color:white; padding:15px; border-radius:12px; border:1px solid #333;">Classic Bars</button>
-                <button onclick="changeVisStyle('wave', 'Ocean Wave')" style="background:#1a1a1a; color:white; padding:15px; border-radius:12px; border:1px solid #333;">Ocean Wave</button>
-                <button onclick="changeVisStyle('circle', 'Circular Orbit')" style="background:#1a1a1a; color:white; padding:15px; border-radius:12px; border:1px solid #333;">Circular Orbit</button>
-                <button onclick="changeVisStyle('fire', 'Pulse Glow')" style="background:#1a1a1a; color:white; padding:15px; border-radius:12px; border:1px solid #333;">Pulse Glow</button>
-            </div>
-            <button onclick="closeVisMenu()" style="background:transparent; color:gray; padding:10px; border:none; margin-top:15px;">Cancel</button>
-        </div>
+    <!-- ५. मेसेज बक्सको लागि चाहिने HTML -->
+    <div id="custom-toast">
+        <i class="fas fa-info-circle" id="toast-icon"></i>
+        <span id="toast-message">Message here...</span>
     </div>
-
-
 </body>
 </html>
