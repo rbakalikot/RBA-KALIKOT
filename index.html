@@ -1175,26 +1175,18 @@ renderFrame();
             const likeRef = database.ref('total_likes');
             likeRef.set(firebase.database.ServerValue.increment(1));
         }
-
-        function copyEsewa() {
+            
+function copyEsewa() {
             navigator.clipboard.writeText("9768978945").then(() => {
                 const msg = document.getElementById('copy-msg');
-                msg.style.display = 'block';
-                setTimeout(() => msg.style.display = 'none', 2500);
-            }).catch(err => {
-                alert("नम्बर: 9768978945");
-            });
+                if(msg) msg.style.display = 'block';
+                setTimeout(() => { if(msg) msg.style.display = 'none'; }, 2500);
+                showToast("नम्बर कपी भयो!", "fa-copy");
+            }).catch(err => { alert("नम्बर: 9768978945"); });
         }
 
-        // --- ADVANCED POPUP LOGIC (Download & Sleep) ---
         let sleepTimer;
-        let sleepMinutes = 0;
-
-        function closePopup() {
-            document.getElementById('popup-overlay').style.display = 'none';
-        }
-
-        // --- Download Logic ---
+        function closePopup() { document.getElementById('popup-overlay').style.display = 'none'; }
         function showDownloadMenu() {
             if(playlist.length === 0) return;
             document.getElementById('dl-song-name').innerText = playlist[currentIndex].name;
@@ -1202,554 +1194,130 @@ renderFrame();
             document.getElementById('download-menu-box').style.display = 'block';
             document.getElementById('popup-overlay').style.display = 'flex';
         }
-
         function executeDownload() {
             const song = playlist[currentIndex];
             const link = document.createElement('a');
-            link.href = song.url;
-            link.download = song.name;
-            link.click();
+            link.href = song.url; link.download = song.name; link.click();
             closePopup();
         }
-
-        
-        // --- Sleep Timer Logic ---
         function showSleepMenu() {
             document.getElementById('download-menu-box').style.display = 'none';
             document.getElementById('sleep-menu-box').style.display = 'block';
             document.getElementById('popup-overlay').style.display = 'flex';
         }
-
         function setSleepTimer(mins) {
             const icon = document.getElementById('sleep-icon');
-            clearTimeout(sleepTimer); // पुरानो टाइमर क्यान्सिल गर्ने
-            closePopup(); // बक्स बन्द गर्ने
-
-            if (mins === 0) {
-                sleepMinutes = 0;
-                icon.style.color = "#aaa";
-                alert("स्लिप टाइमर बन्द भयो ☀️");
-                return;
-            }
-
+            clearTimeout(sleepTimer); closePopup();
+            if (mins === 0) { icon.style.color = "#aaa"; showToast("स्लिप टाइमर बन्द भयो", "fa-sun"); return; }
             if (mins === 'custom') {
-                let customInput = prompt("कति मिनेट पछि बन्द गर्ने? (नम्बर मात्र लेख्नुहोस्, जस्तै: 10)");
-                mins = parseInt(customInput);
-                if (isNaN(mins) || mins <= 0) {
-                    alert("कृपया सही नम्बर राख्नुहोस्!");
-                    return;
-                }
+                let val = prompt("कति मिनेट पछि बन्द गर्ने?");
+                mins = parseInt(val);
+                if (isNaN(mins) || mins <= 0) return;
             }
-
-            sleepMinutes = mins;
-            icon.style.color = "var(--p-yellow)"; // टाइमर अन हुँदा चन्द्रमा पहेँलो बल्छ
-            alert(sleepMinutes + " मिनेटपछि गीत आफैं बन्द हुनेछ 🌙");
-            
-            sleepTimer = setTimeout(() => {
-                if(!audio.paused) toggleAudio();
-                sleepMinutes = 0;
-                icon.style.color = "#aaa";
-            }, sleepMinutes * 60000); // मिनेटलाई मिलिसेकेन्डमा लगेको
+            icon.style.color = "var(--p-yellow)";
+            showToast(mins + " मिनेटपछि बन्द हुनेछ", "fa-moon");
+            sleepTimer = setTimeout(() => { if(!audio.paused) toggleAudio(); icon.style.color = "#aaa"; }, mins * 60000);
         }
 
-        // 3. लाइभ Like कति पुग्यो भनेर हेर्ने फङ्सन (सधैं चलिरहन्छ)
         database.ref('total_likes').on('value', (snapshot) => {
             let currentLikes = snapshot.val() || 0;
-            // लाइकलाई 1.2K जस्तो देखाउने लजिक
-            let displayLikes = currentLikes;
-            if(currentLikes >= 1000) displayLikes = (currentLikes / 1000).toFixed(1) + 'K';
-            
-            document.getElementById('like-display').innerText = displayLikes;
+            document.getElementById('like-display').innerText = currentLikes >= 1000 ? (currentLikes / 1000).toFixed(1) + 'K' : currentLikes;
         });
 
-        // --- 8. INITIALIZATION ---
         window.onload = () => {
-            // 1. Setup Language
-            const savedLang = localStorage.getItem('rba_lang') || 'ne';
-            changeLanguage(savedLang);
-            
-            // 2. Fetch Music
+            changeLanguage(localStorage.getItem('rba_lang') || 'ne');
             loadPlaylist();
-            
-            // 3. Handle Initial Route (if user shared a link with #studio)
-            const hash = window.location.hash.substring(1) || 'home';
-            showTab(hash, null, false);
-
-            // 4. Hide Splash Screen after safe delay
+            initSeasonEffect();
+            showTab(window.location.hash.substring(1) || 'home', null, false);
             setTimeout(() => {
                 const splash = document.getElementById('splash');
-                splash.style.opacity = '0';
-                setTimeout(() => splash.style.display = 'none', 500); // fade out effect
+                if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 500); }
             }, 2500);
         };
 
-        // --- PWA OFFLINE SYSTEM (नयाँ थपिएको) ---
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                .then(reg => console.log('Offline Mode Ready!'))
-                .catch(err => console.log('Offline Error: ', err));
-            });
+            window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(e => {}); });
         }
 
-        // --- PRO MEDIA PLAYER LOGIC (Added Features) ---
-        let isLocked = false;
-        let controlsTimeout;
+        let isLocked = false; let controlsTimeout;
         const playerUi = document.getElementById('player-ui');
         const videoArea = document.getElementById('video-area');
-
-        // १. भिडियोमा ट्याप गर्दा अपन आउने/जाने र भिजुअलाइजर कन्ट्रोल
         function toggleControls() {
-            if (playerUi.classList.contains('hidden')) {
-                playerUi.classList.remove('hidden');
-                videoArea.classList.add('ui-active');
-                resetControlsTimeout();
-            } else {
-                playerUi.classList.add('hidden');
-                videoArea.classList.remove('ui-active');
-            }
+            if (playerUi.classList.contains('hidden')) { playerUi.classList.remove('hidden'); resetControlsTimeout(); } 
+            else { playerUi.classList.add('hidden'); }
         }
-
         function resetControlsTimeout() {
             clearTimeout(controlsTimeout);
-            if (!isLocked) {
-                controlsTimeout = setTimeout(() => {
-                    playerUi.classList.add('hidden');
-                    videoArea.classList.remove('ui-active');
-                }, 4000); // ४ सेकेन्डमा आफैँ लुक्छ
-            }
+            if (!isLocked) controlsTimeout = setTimeout(() => { playerUi.classList.add('hidden'); }, 4000);
         }
-
-        // २. लक स्क्रिन (Lock Screen)
         function toggleLock(event) {
-            event.stopPropagation(); // तलको ट्यापलाई रोक्न
-            isLocked = !isLocked;
+            event.stopPropagation(); isLocked = !isLocked;
             const lockBtn = document.getElementById('lock-btn');
-            if (isLocked) {
-                lockBtn.innerHTML = '<i class="fas fa-lock" style="color:#ff0050;"></i>';
-                playerUi.parentElement.classList.add('locked-screen');
-                // लक भएपछि बाँकी सबै लुकाउने
-                setTimeout(() => { playerUi.classList.add('hidden'); videoArea.classList.remove('ui-active'); }, 1000);
-            } else {
-                lockBtn.innerHTML = '<i class="fas fa-unlock"></i>';
-                playerUi.parentElement.classList.remove('locked-screen');
-                resetControlsTimeout();
-            }
+            if (isLocked) { lockBtn.innerHTML = '<i class="fas fa-lock" style="color:#ff0050;"></i>'; playerUi.classList.add('hidden'); } 
+            else { lockBtn.innerHTML = '<i class="fas fa-unlock"></i>'; resetControlsTimeout(); }
+        }
+        function skipTime(s, e) { e.stopPropagation(); audio.currentTime += s; }
+        function toggleFullscreen(e) {
+            e.stopPropagation(); const pc = document.getElementById('my-player');
+            if (!document.fullscreenElement) { pc.requestFullscreen().catch(err => pc.webkitRequestFullscreen()); pc.classList.add('fullscreen-mode'); } 
+            else { document.exitFullscreen(); pc.classList.remove('fullscreen-mode'); }
         }
 
-        // ३. १० सेकेन्ड अगाडि/पछाडि (Skip)
-        function skipTime(seconds, event) {
-            event.stopPropagation();
-            if(!audio.duration) return;
-            audio.currentTime += seconds;
-            showIndicator(seconds > 0 ? "+10s" : "-10s");
-        }
+        function openPlayerSettings(e) { if(e) e.stopPropagation(); document.getElementById('sheet-overlay').style.display = 'block'; setTimeout(() => document.getElementById('player-settings-sheet').classList.add('active'), 10); }
+        function closePlayerSettings() { document.getElementById('player-settings-sheet').classList.remove('active'); setTimeout(() => document.getElementById('sheet-overlay').style.display = 'none', 300); }
+        
+        let speedIdx = 1; const speeds = [0.75, 1, 1.25, 1.5];
+        function cycleSpeed() { speedIdx = (speedIdx + 1) % speeds.length; audio.playbackRate = speeds[speedIdx]; document.getElementById('speed-display').innerText = speeds[speedIdx] + 'x'; }
+        function toggleBass() { if(!bassFilter) return; let on = bassFilter.gain.value === 0; bassFilter.gain.value = on ? 15 : 0; document.getElementById('bass-display').innerText = on ? 'ON' : 'OFF'; }
+        function toggleVisualizer() { let v = document.getElementById('visualizer'); let on = v.style.visibility !== 'hidden'; v.style.visibility = on ? 'hidden' : 'visible'; document.getElementById('vis-display').innerText = on ? 'OFF' : 'ON'; }
 
-        // ४. फुलस्क्रिन र मोबाइल तेर्सो (Rotate/Fullscreen)
-        function toggleFullscreen(event) {
-            event.stopPropagation();
-            const playerCard = document.getElementById('my-player');
-            const fsIcon = document.getElementById('fs-icon');
-            const header = document.getElementById('studio-header');
-
-            if (!document.fullscreenElement) {
-                if (playerCard.requestFullscreen) { playerCard.requestFullscreen(); }
-                else if (playerCard.webkitRequestFullscreen) { playerCard.webkitRequestFullscreen(); } // iOS
-                
-                playerCard.classList.add('fullscreen-mode');
-                header.style.display = 'none';
-                fsIcon.className = 'fas fa-compress';
-                // मोबाइल तेर्सो पार्ने कोसिस (सबै ब्राउजरले सपोर्ट नगर्न सक्छ)
-                if(screen.orientation && screen.orientation.lock) { screen.orientation.lock('landscape').catch(e=>{}); }
-            } else {
-                if (document.exitFullscreen) { document.exitFullscreen(); }
-                else if (document.webkitExitFullscreen) { document.webkitExitFullscreen(); }
-                
-                playerCard.classList.remove('fullscreen-mode');
-                header.style.display = 'flex';
-                fsIcon.className = 'fas fa-expand';
-                if(screen.orientation && screen.orientation.unlock) { screen.orientation.unlock(); }
-            }
-        }
-
-        // फुलस्क्रिनबाट ब्याक गर्दा डिजाइन बिग्रिन नदिन
-        document.addEventListener('fullscreenchange', () => {
-            if (!document.fullscreenElement) {
-                document.getElementById('my-player').classList.remove('fullscreen-mode');
-                document.getElementById('studio-header').style.display = 'flex';
-                document.getElementById('fs-icon').className = 'fas fa-expand';
-            }
-        });
-
-        // ५. भोल्युम र ब्राइटनेस (Swipe Controls)
-        let startY = 0;
-        let isRightSide = false;
-        let currentVol = 1;
-        let currentBright = 0; // 0 भनेको फुल उज्यालो, 0.8 भनेको अँध्यारो
-
-        videoArea.addEventListener('touchstart', (e) => {
-            if(isLocked) return;
-            startY = e.touches[0].clientY;
-            const touchX = e.touches[0].clientX;
-            const screenWidth = window.innerWidth;
-            isRightSide = touchX > screenWidth / 2; // दायाँ हो कि बायाँ चेक गर्ने
-            currentVol = audio.volume;
-            resetControlsTimeout();
-        });
-
-        videoArea.addEventListener('touchmove', (e) => {
-            if(isLocked) return;
-            e.preventDefault(); // स्क्रोल हुन नदिन
-            const deltaY = startY - e.touches[0].clientY;
-            const sensitivity = 0.005; 
-
-            if (isRightSide) {
-                // दायाँ: भोल्युम
-                let newVol = currentVol + (deltaY * sensitivity);
-                newVol = Math.max(0, Math.min(1, newVol)); // 0 देखि 1 भित्र राख्ने
-                audio.volume = newVol;
-                showIndicator(`Volume: ${Math.round(newVol * 100)}%`);
-            } else {
-                // बायाँ: ब्राइटनेस (कालो पर्दाको opacity बढाउने/घटाउने)
-                let newBright = currentBright - (deltaY * sensitivity);
-                newBright = Math.max(0, Math.min(0.8, newBright)); // 0 देखि 0.8 भित्र
-                currentBright = newBright;
-                document.getElementById('brightness-overlay').style.opacity = currentBright;
-                showIndicator(`Light: ${Math.round((1 - (currentBright/0.8)) * 100)}%`);
-            }
-        }, {passive: false});
-
-        function showIndicator(text) {
-            const ind = document.getElementById('swipe-indicator');
-            ind.innerText = text;
-            ind.style.display = 'block';
-            clearTimeout(ind.timeout);
-            ind.timeout = setTimeout(() => ind.style.display = 'none', 1000);
-        }
-
-        // Play/Pause आइकन सिंक गर्न (माथिको र बीचको दुवै प्ले बटन)
-        const originalToggleAudio = toggleAudio;
-        toggleAudio = function(e) {
-            if(e) e.stopPropagation();
-            originalToggleAudio();
-            const centerIcon = document.getElementById('play-icon-center');
-            if(audio.paused) { centerIcon.className = "fas fa-play"; centerIcon.style.marginLeft = "4px"; }
-            else { centerIcon.className = "fas fa-pause"; centerIcon.style.marginLeft = "0px"; }
-        }
-
-        // --- PLAYER SETTINGS LOGIC ---
-        function openPlayerSettings(event) {
-            if(event) event.stopPropagation();
-            document.getElementById('sheet-overlay').style.display = 'block';
-            setTimeout(() => document.getElementById('player-settings-sheet').classList.add('active'), 10);
-            if(document.getElementById('player-ui')) document.getElementById('player-ui').classList.add('hidden'); // पपअप खुल्दा भिडियोको अपन लुकाउने
-        }
-
-        function closePlayerSettings() {
-            document.getElementById('player-settings-sheet').classList.remove('active');
-            setTimeout(() => document.getElementById('sheet-overlay').style.display = 'none', 300);
-        }
-
-        // १. Playback Speed (0.75x, 1x, 1.25x)
-        let currentSpeedIdx = 1; // 1x is default
-        const speeds = [0.75, 1, 1.25, 1.5];
-        function cycleSpeed() {
-            currentSpeedIdx = (currentSpeedIdx + 1) % speeds.length;
-            audio.playbackRate = speeds[currentSpeedIdx];
-            document.getElementById('speed-display').innerText = speeds[currentSpeedIdx] + 'x';
-            document.getElementById('speed-display').style.color = speeds[currentSpeedIdx] !== 1 ? 'var(--p-yellow)' : 'white';
-        }
-
-        // २. Extra Bass Boost (On/Off)
-        let isBassOn = false;
-        function toggleBass() {
-            isBassOn = !isBassOn;
-            if(bassFilter) {
-                bassFilter.gain.value = isBassOn ? 15 : 0; // 15dB बेस बढाउने
-            }
-            const display = document.getElementById('bass-display');
-            display.innerText = isBassOn ? 'ON' : 'OFF';
-            display.style.color = isBassOn ? '#ff0050' : 'gray';
-        }
-
-        // ३. Visualizer (On/Off)
-        let isVisOn = true;
-        function toggleVisualizer() {
-            isVisOn = !isVisOn;
-            document.getElementById('visualizer').style.visibility = isVisOn ? 'visible' : 'hidden';
-            const display = document.getElementById('vis-display');
-            display.innerText = isVisOn ? 'ON' : 'OFF';
-            display.style.color = isVisOn ? 'var(--p-yellow)' : 'gray';
-        }
-
-        // --- SMART SEASON ENGINE (Mausam Anusar Effect) ---
         function initSeasonEffect() {
-            const canvas = document.getElementById('season-canvas');
-            if(!canvas) return;
-            const ctx = canvas.getContext('2d');
-            let particles = [];
-            let w, h;
-
-            function resize() {
-                w = canvas.width = canvas.offsetWidth;
-                h = canvas.height = canvas.offsetHeight;
-            }
-            window.addEventListener('resize', resize);
-            resize();
-
-            // हालको महिना पत्ता लगाउने (1 = Jan, 12 = Dec)
-            const month = new Date().getMonth() + 1; 
-            let season = 'spring'; 
-            
-            if (month >= 12 || month <= 2) season = 'winter'; // पुस, माघ, फागुन (Snow)
-            else if (month >= 6 && month <= 8) season = 'monsoon'; // असार, साउन, भदौ (Rain)
-            else if (month >= 9 && month <= 11) season = 'autumn'; // असोज, कार्तिक, मंसिर (Yellow Leaves)
-            else season = 'spring'; // चैत, बैशाख, जेठ (Green/Pink Petals)
-
-            const maxParticles = season === 'monsoon' ? 120 : 60; // पानी पर्दा धेरै थोपा, अरु बेलािक्कै
-
-            for (let i = 0; i < maxParticles; i++) {
-                particles.push({
-                    x: Math.random() * w,
-                    y: Math.random() * h,
-                    r: Math.random() * 4 + 1, // साइज
-                    d: Math.random() * maxParticles, // हावामा हल्लिने दिशा (Sway)
-                    // मौसम अनुसार स्पिड
-                    speedY: season === 'monsoon' ? Math.random() * 15 + 15 : Math.random() * 2 + 1,
-                    speedX: season === 'monsoon' ? 0 : Math.random() * 2 - 1, 
-                    // मौसम अनुसार कलर
-                    color: season === 'spring' ? (Math.random() > 0.5 ? '#ffb7c5' : '#a8e6cf') : // गुलाबी र हरियो पालुवा
-                           (season === 'autumn' ? (Math.random() > 0.5 ? '#ff9a00' : '#ff5200') : // पहेँलो र सुन्तला पात
-                           'rgba(255, 255, 255, 0.8)') // पानी र हिउँको लागि सेतो
-                });
-            }
-
-            function draw() {
-                ctx.clearRect(0, 0, w, h);
-                particles.forEach((p, index) => {
-                    ctx.beginPath();
-                    
-                    if (season === 'monsoon') {
-                        // पानी परेको (Rain)
-                        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-                        ctx.fillRect(p.x, p.y, 1.5, p.speedY);
-                    } else {
-                        // फूल, पात वा हिउँ (Petals, Leaves, Snow)
-                        ctx.fillStyle = p.color;
-                        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, true);
-                        ctx.fill();
-                        
-                        // हावा चलेको जस्तो यता-उता हल्लिने (Swaying effect)
-                        p.x += Math.sin(p.d) * 1.5; 
-                        p.d += 0.05;
-                    }
-
-                    p.y += p.speedY;
-                    p.x += p.speedX;
-
-                    // तल पुगेपछि फेरि माथिबाट झर्ने
-                    if (p.y > h || p.x > w || p.x < 0) {
-                        particles[index].y = -10;
-                        particles[index].x = Math.random() * w;
-                    }
-                });
-                requestAnimationFrame(draw);
-            }
-            draw();
-        }
-        
-        
-
-     // --- EDIT PROFILE LOGIC (CROP + SAVE FIX) ---
-        let selectedProfileColor = '#fdd835';
-        let cropper;
-        let currentTargetImgId = ''; 
-        let newProfileImageBase64 = null; // काटेको फोटो सेभ राख्न
-        let newBgImageBase64 = null; 
-
-        function openEditProfile() {
-            if (!auth.currentUser) return;
-            document.getElementById('edit-profile-overlay').classList.add('active');
-            document.getElementById('edit-name-input').value = auth.currentUser.displayName || '';
+            const canvas = document.getElementById('season-canvas'); if(!canvas) return;
+            const ctx = canvas.getContext('2d'); let particles = []; let w = canvas.width = canvas.offsetWidth; let h = canvas.height = canvas.offsetHeight;
+            const month = new Date().getMonth() + 1; let season = (month >= 6 && month <= 8) ? 'monsoon' : 'winter';
+            for (let i = 0; i < 50; i++) particles.push({ x: Math.random() * w, y: Math.random() * h, r: Math.random() * 3 + 1, speedY: Math.random() * 2 + 1 });
+            function draw() { ctx.clearRect(0,0,w,h); ctx.fillStyle = "rgba(255,255,255,0.6)"; particles.forEach(p => { ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill(); p.y += p.speedY; if(p.y > h) p.y = -5; }); requestAnimationFrame(draw); } draw();
         }
 
-        function closeEditProfile() {
-            document.getElementById('edit-profile-overlay').classList.remove('active');
+        function openEditProfile() { document.getElementById('edit-profile-overlay').classList.add('active'); document.getElementById('edit-name-input').value = auth.currentUser ? auth.currentUser.displayName : ''; }
+        function closeEditProfile() { document.getElementById('edit-profile-overlay').classList.remove('active'); }
+        function previewImage(event, imgId) { 
+            const reader = new FileReader(); reader.onload = (e) => { document.getElementById(imgId).src = e.target.result; }; reader.readAsDataURL(event.target.files[0]);
+        }
+        function saveProfileChanges() { 
+            const name = document.getElementById('edit-name-input').value;
+            if(auth.currentUser) auth.currentUser.updateProfile({displayName: name}).then(() => { showToast("Profile Updated!", "fa-user-check"); closeEditProfile(); });
         }
 
-        function previewImage(event, imgId) {
-            const file = event.target.files[0];
-            if (file) {
-                if (file.size > 10 * 1024 * 1024) {
-                    alert("फोटो 10MB भन्दा सानो हुनुपर्छ!");
-                    event.target.value = ''; 
-                    return;
-                }
-                currentTargetImgId = imgId; 
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const cropImg = document.getElementById('image-to-crop');
-                    cropImg.src = e.target.result;
-                    document.getElementById('crop-overlay').style.display = 'flex';
-                    if(cropper) cropper.destroy(); 
-                    const aspectRatio = imgId === 'preview-profile-img' ? 1 / 1 : 16 / 9;
-                    cropper = new Cropper(cropImg, { aspectRatio: aspectRatio, viewMode: 2, background: false });
-                }
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function closeCropper() {
-            document.getElementById('crop-overlay').style.display = 'none';
-            if(cropper) cropper.destroy();
-            document.getElementById('pic-upload').value = '';
-            document.getElementById('bg-upload').value = '';
-        }
-
-        function applyCrop() {
-            if(!cropper) return;
-            const canvas = cropper.getCroppedCanvas({
-                width: currentTargetImgId === 'preview-profile-img' ? 400 : 800,
-                imageSmoothingQuality: 'high'
-            });
-            const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
-            document.getElementById(currentTargetImgId).src = croppedDataUrl;
-            
-            if (currentTargetImgId === 'preview-profile-img') {
-                newProfileImageBase64 = croppedDataUrl;
-            } else {
-                newBgImageBase64 = croppedDataUrl;
-            }
-            closeCropper();
-        }
-
-        function selectThemeColor(color, element) {
-            selectedProfileColor = color;
-            const circles = document.querySelectorAll('.color-circle');
-            circles.forEach(c => c.classList.remove('active'));
-            element.classList.add('active');
-        }
-
-        // सेभ गर्दा के हुने? (डेटाबेसमा फोटो सेभ गर्ने नयाँ तरिका)
-        function saveProfileChanges() {
-            const newName = document.getElementById('edit-name-input').value.trim();
-            const btn = document.querySelector('.btn-save-profile');
-            
-            if (newName === "") {
-                alert("नाम खाली राख्न मिल्दैन!");
-                return;
-            }
-
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-
-            // 1. पहिले लगइन सिस्टममा नाम मात्र फेर्ने (फोटो नफेर्ने)
-            auth.currentUser.updateProfile({
-                displayName: newName
-            }).then(() => {
-                // 2. अब काटेको फोटोलाई Firebase Database मा सुरक्षित राख्ने
-                const userRef = database.ref('users/' + auth.currentUser.uid);
-                let updates = { themeColor: selectedProfileColor };
-                
-                if (newProfileImageBase64) updates.profileImage = newProfileImageBase64;
-                if (newBgImageBase64) updates.bgImage = newBgImageBase64;
-
-                return userRef.update(updates); // डेटाबेसमा पठाउने
-            }).then(() => {
-                // 3. सेभ भएपछि डिजाइन मिलाउने
-                document.getElementById('user-profile-name').innerText = newName;
-                document.querySelector('.profile-pic').style.borderColor = selectedProfileColor;
-                document.getElementById('txt-list-title').style.color = selectedProfileColor;
-                
-                if (newProfileImageBase64) {
-                    document.getElementById('user-profile-img').src = newProfileImageBase64;
-                    document.getElementById('preview-profile-img').src = newProfileImageBase64;
-                }
-                if (newBgImageBase64) {
-                    document.getElementById('preview-bg-img').src = newBgImageBase64;
-                }
-                
-                alert("Profile Updated Successfully!");
-                closeEditProfile();
-                btn.innerHTML = 'Save Changes';
-            }).catch((error) => {
-                alert("Error: " + error.message);
-                btn.innerHTML = 'Save Changes';
-            });
-        }
-// १. लगइन र प्रोफाइल चेक गर्ने (Admin र User दुवैका लागि)
         auth.onAuthStateChanged((user) => {
-            const userIcon = document.getElementById('user-icon');
-            const adminPanel = document.getElementById('admin-panel');
-            const btnGoogleLogin = document.getElementById('btn-google-login');
-            const loggedInContent = document.getElementById('logged-in-content');
-
+            const icon = document.getElementById('user-icon');
+            const admin = document.getElementById('admin-panel');
             if (user) {
-                userIcon.className = "fas fa-user-check";
-                userIcon.style.color = "#60bb46";
-
-                if(document.getElementById('user-profile-img')) {
-                    document.getElementById('user-profile-img').src = user.photoURL || 'logo.png';
-                    document.getElementById('user-profile-name').innerText = user.displayName || 'User';
-                    document.getElementById('user-profile-email').innerText = user.email;
-                }
-
-                // एडमिन चेक (तपाईंको इमेल)
-                if (adminPanel) {
-                    if (user.email === 'rbakalikotmusic@gmail.com') adminPanel.style.display = 'block';
-                    else adminPanel.style.display = 'none';
-                }
-
-                if(btnGoogleLogin) btnGoogleLogin.style.display = 'none'; 
-                if(loggedInContent) loggedInContent.style.display = 'block'; 
+                icon.className = "fas fa-user-check"; icon.style.color = "#60bb46";
+                document.getElementById('user-profile-img').src = user.photoURL || 'logo.png';
+                document.getElementById('user-profile-name').innerText = user.displayName || 'User';
+                if(admin) admin.style.display = (user.email === 'rbakalikotmusic@gmail.com') ? 'block' : 'none';
+                document.getElementById('btn-google-login').style.display = 'none';
+                document.getElementById('logged-in-content').style.display = 'block';
             } else {
-                userIcon.className = "fas fa-user-circle";
-                userIcon.style.color = "var(--p-yellow)";
-                if(adminPanel) adminPanel.style.display = 'none';
-                if(btnGoogleLogin) btnGoogleLogin.style.display = 'inline-block'; 
-                if(loggedInContent) loggedInContent.style.display = 'none'; 
+                icon.className = "fas fa-user-circle"; icon.style.color = "var(--p-yellow)";
+                document.getElementById('btn-google-login').style.display = 'inline-block';
+                document.getElementById('logged-in-content').style.display = 'none';
             }
         });
 
-        // २. नयाँ मेसेज देखाउने फङ्सन (Toast)
-        function showToast(message, icon = 'fa-check-circle') {
-            const toast = document.getElementById('custom-toast');
-            if(!toast) return;
-            document.getElementById('toast-message').innerText = message;
-            document.getElementById('toast-icon').className = `fas ${icon}`;
-            toast.classList.add('show');
-            setTimeout(() => { toast.classList.remove('show'); }, 3000);
+        function showToast(msg, icon = 'fa-check-circle') {
+            const t = document.getElementById('custom-toast');
+            document.getElementById('toast-message').innerText = msg;
+            document.getElementById('toast-icon').className = "fas " + icon;
+            t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000);
         }
-
-        // ३. पुराना alert लाई नयाँमा बदल्ने
-        window.alert = function(msg) { showToast(msg, 'fa-bell'); };
-
-        // ४. एप सुरु गर्ने मुख्य साँचो (Splash Screen यसले नै हटाउँछ)
-        window.onload = () => {
-            const savedLang = localStorage.getItem('rba_lang') || 'ne';
-            if(typeof changeLanguage === 'function') changeLanguage(savedLang);
-            if(typeof loadPlaylist === 'function') loadPlaylist();
-            if(typeof initSeasonEffect === 'function') initSeasonEffect();
-
-            const hash = window.location.hash.substring(1) || 'home';
-            if(typeof showTab === 'function') showTab(hash, null, false);
-            
-            // २.५ सेकेन्ड पछि Splash Screen हट्छ
-            setTimeout(() => {
-                const splash = document.getElementById('splash');
-                if(splash) {
-                    splash.style.opacity = '0';
-                    setTimeout(() => splash.style.display = 'none', 500);
-                }
-            }, 2500);
-        };
+        window.alert = function(m) { showToast(m, 'fa-bell'); };
     </script>
-
-    <!-- ५. मेसेज देखाउन चाहिने HTML -->
-    <div id="custom-toast">
-        <i class="fas fa-info-circle" id="toast-icon"></i>
-        <span id="toast-message">Message here...</span>
-    </div>
+    <div id="custom-toast"><i id="toast-icon"></i> <span id="toast-message"></span></div>
 </body>
 </html>
-            
         
+            
+            
+                
