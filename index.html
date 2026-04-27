@@ -900,89 +900,32 @@
                 dataArray = new Uint8Array(analyser.frequencyBinCount);
                 canvas = document.getElementById('visualizer');
                 ctx = canvas.getContext('2d');
+
+
                 
                 function renderFrame() {
     requestAnimationFrame(renderFrame);
-    
-    // क्यानभासको साइज मिलाउने
     canvas.width = canvas.offsetWidth; 
     canvas.height = canvas.offsetHeight;
-    
-    // संगीतको डेटा लिने
     analyser.getByteFrequencyData(dataArray);
-    
-    // क्यानभास सफा गर्ने
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // १. बास अनुसार फोटो थर्किने (Bass-Responsive Pulse)
-    let bass = dataArray[0]; // सबैभन्दा तल्लो फ्रिक्वेन्सी (Bass)
-    const bgImg = document.getElementById('song-bg-img');
-    if (bass > 210) {
-        bgImg.style.transform = `scale(${1 + (bass/2500)})`; // बास आउँदा अलिकति फुल्ने
-        bgImg.style.filter = `brightness(${1 + (bass/1000)})`; // बास आउँदा अलिकति चम्किने
-    } else {
-        bgImg.style.transform = `scale(1)`;
-        bgImg.style.filter = `brightness(1)`;
-    }
-
-    // २. छानिएको स्टाइल अनुसार भिजुअलाइजर कोर्ने
-    if (currentVisStyle === 'bars') {
-        // --- Classic Bars Style ---
-        const barCount = 40;
-        const barWidth = (canvas.width / barCount);
-        for (let i = 0; i < barCount; i++) {
-            const height = (dataArray[i] / 255) * canvas.height;
-            const gradient = ctx.createLinearGradient(0, canvas.height, 0, canvas.height - height);
-            gradient.addColorStop(0, '#ff0050'); // पिङ्क/रातो
-            gradient.addColorStop(1, '#fdd835'); // पहेँलो
-            ctx.fillStyle = gradient;
-            ctx.fillRect(i * barWidth, canvas.height - height, barWidth - 2, height);
-        }
-    } 
-    else if (currentVisStyle === 'wave') {
-        // --- Ocean Wave Style ---
-        ctx.beginPath();
-        ctx.lineWidth = 4;
-        ctx.strokeStyle = '#fdd835';
-        for (let i = 0; i < dataArray.length; i++) {
-            const v = dataArray[i] / 128.0;
-            const y = v * canvas.height / 2;
-            const x = (canvas.width / dataArray.length) * i;
-            if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-        }
-        ctx.stroke();
-    }
-    else if (currentVisStyle === 'circle') {
-        // --- Circular Orbit Style ---
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
-        const radius = 40;
-        for (let i = 0; i < 360; i += 6) {
-            const barHeight = (dataArray[i % 32] / 255) * 60;
-            const angle = i * Math.PI / 180;
-            const x1 = centerX + Math.cos(angle) * radius;
-            const y1 = centerY + Math.sin(angle) * radius;
-            const x2 = centerX + Math.cos(angle) * (radius + barHeight);
-            const y2 = centerY + Math.sin(angle) * (radius + barHeight);
-            ctx.strokeStyle = `hsl(${(i + (bass/2)}, 100%, 50%)`; // बास अनुसार रङ बदलिने
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(x1, y1);
-            ctx.lineTo(x2, y2);
-            ctx.stroke();
-        }
-    }
-    else if (currentVisStyle === 'fire') {
-        // --- Pulse Glow Style ---
-        const pulse = (bass / 255) * (canvas.width / 3);
-        const grd = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 5, canvas.width/2, canvas.height/2, pulse);
-        grd.addColorStop(0, "rgba(253, 216, 53, 0.8)");
-        grd.addColorStop(0.5, "rgba(255, 0, 80, 0.4)");
-        grd.addColorStop(1, "transparent");
-        ctx.fillStyle = grd;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    const barCount = 32;
+    const barWidth = (canvas.width / barCount) - 2;
+    
+    for (let i = 0; i < barCount; i++) {
+        const value = dataArray[i]; 
+        const height = (value / 255) * canvas.height * 0.95;
+        const gradient = ctx.createLinearGradient(0, canvas.height, 0, canvas.height - height);
+        gradient.addColorStop(0, '#ff0050'); // रातो/पिङ्क
+        gradient.addColorStop(0.5, '#fdd835'); // पहेँलो
+        gradient.addColorStop(1, '#ff00ff'); // पर्पल/पिङ्क
+        ctx.fillStyle = gradient;
+        ctx.fillRect(i * (barWidth + 2), canvas.height - height, barWidth, height);
     }
 }
+renderFrame();
+    
 
         // --- 6. NAVIGATION & UI LOGIC ---
         function showTab(id, el = null, pushState = true) {
