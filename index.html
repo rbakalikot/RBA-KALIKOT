@@ -243,7 +243,13 @@
     <!-- Header -->
     <header>
         <div id="back-btn" class="click-effect" onclick="handleBack()"><i class="fas fa-arrow-left"></i></div>
-        <div class="click-effect" onclick="showTab('home')" style="font-weight: 700; color: var(--p-yellow); letter-spacing: 1px; font-size: 1.1rem;">RBA-KALIKOT</div>
+        
+        <!-- RBA-KALIKOT र नयाँ Menu Button (≡) सँगै राखेको -->
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div class="click-effect" onclick="showTab('home')" style="font-weight: 700; color: var(--p-yellow); letter-spacing: 1px; font-size: 1.1rem;">RBA-KALIKOT</div>
+            <div class="click-effect" onclick="toggleMainMenu()"><i class="fas fa-bars" style="color: var(--text-white); font-size: 1.4rem;"></i></div>
+        </div>
+
         <div style="margin-left: auto; display: flex; align-items: center; gap: 20px;">
             <div class="click-effect" onclick="showTab('settings')"><i class="fas fa-globe" style="color: var(--text-white); font-size: 1.3rem;"></i></div>
             <div class="click-effect" onclick="handleLogin()"><i id="user-icon" class="fas fa-user-circle" style="color: var(--p-yellow); font-size: 1.4rem;"></i></div>
