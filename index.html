@@ -271,8 +271,54 @@
         </div>
 
         <!-- Phase 2 & 3 को लागि खाली ठाउँ (पछि थप्न सजिलो होस् भनेर) -->
-        <div class="menu-section" id="menu-phase-2-placeholder"></div>
-        <div class="menu-section" id="menu-phase-3-placeholder"></div>
+        <!-- Phase 2: Creator's Hub & Community -->
+        <div class="menu-section">
+            <div class="menu-section-title">Creator's Hub</div>
+            <div class="menu-item click-effect" onclick="alert('Community Beats पछि बन्नेछ!')">
+                <i class="fas fa-compact-disc"></i> Community Beats
+            </div>
+            <div class="menu-item click-effect" onclick="alert('Upload Sound पछि बन्नेछ!')">
+                <i class="fas fa-cloud-upload-alt" style="color: #60bb46;"></i> Upload Your Sound
+            </div>
+            <div class="menu-item click-effect" onclick="alert('Collab & Remix पछि बन्नेछ!')">
+                <i class="fas fa-microphone-alt"></i> Collab & Remix
+            </div>
+            <div class="menu-item click-effect" onclick="alert('Top Creators पछि बन्नेछ!')">
+                <i class="fas fa-fire" style="color: #ff0050;"></i> Trending Echoes
+            </div>
+            <div class="menu-item click-effect" onclick="alert('SFX Library पछि बन्नेछ!')">
+                <i class="fas fa-photo-video"></i> SFX Library
+            </div>
+            <div class="menu-item click-effect" onclick="alert('RBA Choice पछि बन्नेछ!')">
+                <i class="fas fa-star" style="color: #00f2ea;"></i> RBA's Choice
+            </div>
+        </div>
+        <!-- Phase 3: Creator Tools & App System -->
+        <div class="menu-section">
+            <div class="menu-section-title">Settings & Tools</div>
+            <div class="menu-item click-effect" onclick="alert('My Studio पछि बन्नेछ!')">
+                <i class="fas fa-sliders-h"></i> My Studio
+            </div>
+            <div class="menu-item click-effect" onclick="alert('Insights पछि बन्नेछ!')">
+                <i class="fas fa-chart-pie"></i> Creator Insights
+            </div>
+            <div class="menu-item click-effect" onclick="alert('Guidelines पछि बन्नेछ!')">
+                <i class="fas fa-book-open"></i> Upload Guidelines
+            </div>
+            <div class="menu-item click-effect" onclick="alert('Tutorials पछि बन्नेछ!')">
+                <i class="fas fa-lightbulb" style="color: #fdd835;"></i> Tutorials / Tips
+            </div>
+            <div class="menu-item click-effect" onclick="alert('Report & Support पछि बन्नेछ!')">
+                <i class="fas fa-headset"></i> Report & Support
+            </div>
+            <div class="menu-item click-effect" onclick="alert('Invite Friends पछि बन्नेछ!')">
+                <i class="fas fa-user-plus" style="color: #25d366;"></i> Invite Friends
+            </div>
+            <!-- Log Out Button (रातो रङमा अलि छुट्टै देखिने) -->
+            <div class="menu-item click-effect" onclick="logoutUser(); toggleMainMenu();" style="border: 1px solid #ff0050; background: rgba(255,0,80,0.05); margin-top: 15px;">
+                <i class="fas fa-sign-out-alt" style="color: #ff0050;"></i> <span style="color: #ff0050; font-weight: 600;">Log Out</span>
+            </div>
+        </div>
     </div>
 
     <!-- Playlist Drawer Overlay -->
