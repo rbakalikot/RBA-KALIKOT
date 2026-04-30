@@ -1249,9 +1249,14 @@
                 if(loggedInContent) loggedInContent.style.display = 'block'; // Stats र मेनु देखाउने
 
                 // Admin चेक गर्ने लजिक (तपाईंको इमेल)
-                if (adminPanel) {
-                    if (user.email === 'rbakalikotmusic@gmail.com') adminPanel.style.display = 'block';
-                    else adminPanel.style.display = 'none';
+                if (user.email === 'rbakalikotmusic@gmail.com') {
+                    if (adminPanel) adminPanel.style.display = 'block';
+                    if (document.getElementById('admin-studio-btn')) document.getElementById('admin-studio-btn').style.display = 'block';
+                    if (document.getElementById('admin-gallery-btn')) document.getElementById('admin-gallery-btn').style.display = 'block';
+                } else {
+                    if (adminPanel) adminPanel.style.display = 'none';
+                    if (document.getElementById('admin-studio-btn')) document.getElementById('admin-studio-btn').style.display = 'none';
+                    if (document.getElementById('admin-gallery-btn')) document.getElementById('admin-gallery-btn').style.display = 'none';
                 }
             } else {
                 // लगआउट हुँदा पुरानै पहेँलो आइकन
@@ -1890,6 +1895,29 @@ function showToast(message, icon = 'fa-check-circle') {
 window.alert = function(message) {
     showToast(message, 'fa-bell'); 
 };
+
+
+// --- ADMIN UPLOAD SYSTEM (तपाईंको लागि मात्र) ---
+        let currentUploadType = 'music';
+
+        function openAdminUpload(type) {
+            currentUploadType = type;
+            const modal = document.getElementById('admin-upload-modal');
+            const title = document.getElementById('upload-title');
+            const audioSection = document.getElementById('audio-upload-section');
+            const nameInput = document.getElementById('up-song-name');
+
+            if(type === 'gallery') {
+                title.innerHTML = '<i class="fas fa-image"></i> Upload Photo';
+                audioSection.style.display = 'none'; // ग्यालरीमा MP3 हाल्ने ठाउँ लुकाउने
+                nameInput.placeholder = "फोटोको नाम (जस्तै: concert-pic)";
+            } else {
+                title.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Upload Music';
+                audioSection.style.display = 'block'; // म्युजिकमा MP3 हाल्ने ठाउँ देखाउने
+                nameInput.placeholder = "गीतको नाम (जस्तै: RBA - New Beat)";
+            }
+            modal.style.display = 'flex';
+        }
         
     </script>
 
