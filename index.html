@@ -702,6 +702,33 @@
         </div>
     </div>
 
+    <!-- USER UPLOAD MODAL (अरुले साउन्ड हाल्ने ठाउँ) -->
+    <div id="user-upload-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100vh; background:rgba(0,0,0,0.9); z-index:11000; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
+        <div class="card" style="width:92%; max-width:400px; padding:25px; position:relative; border: 1px solid var(--p-yellow);">
+            <i class="fas fa-times click-effect" onclick="document.getElementById('user-upload-modal').style.display='none'" style="position:absolute; top:20px; right:20px; font-size:1.5rem; color:gray;"></i>
+            <h3 style="color:var(--p-yellow); margin-bottom:15px;"><i class="fas fa-cloud-upload-alt"></i> Upload Your Sound</h3>
+            
+            <input type="text" id="user-up-title" placeholder="साउन्डको नाम (उदा: चराको आवाज)" style="width:100%; padding:12px; margin-bottom:12px; background:#111; border:1px solid #333; color:white; border-radius:10px; outline:none;">
+            
+            <select id="user-up-category" style="width:100%; padding:12px; margin-bottom:12px; background:#111; border:1px solid #333; color:white; border-radius:10px; outline:none;">
+                <option value="Nature">Nature (प्रकृति)</option>
+                <option value="Cinematic">Cinematic (फिल्म)</option>
+                <option value="Funny">Funny (हँसाउने)</option>
+                <option value="Instruments">Instruments (बाजा)</option>
+                <option value="Other">Other (अन्य)</option>
+            </select>
+
+            <textarea id="user-up-desc" placeholder="यसको बारेमा थोरै लेख्नुहोस् (Google Search को लागि)" style="width:100%; height:70px; padding:12px; margin-bottom:12px; background:#111; border:1px solid #333; color:white; border-radius:10px; outline:none; font-size:0.9rem;"></textarea>
+            
+            <label style="color:gray; font-size:0.8rem;">साउन्ड फाइल छान्नुहोस् (MP3/WAV):</label>
+            <input type="file" id="user-up-file" accept="audio/*" style="width:100%; padding:10px; margin-bottom:15px; background:#111; color:white; border-radius:10px; border:1px solid #333;">
+            
+            <p style="font-size: 0.7rem; color: #888; margin-bottom: 15px;">* यो साउन्ड मेरो आफ्नै हो र कसैको कपीराइट छैन।</p>
+
+            <button id="btn-user-upload" class="click-effect" onclick="startUserUpload()" style="width:100%; padding:14px; background:var(--p-green); color:white; font-weight:bold; border:none; border-radius:10px; font-size:1.1rem;">Upload Now</button>
+        </div>
+    </div>
+
     <!-- Bottom Navigation -->
     <nav>
         <a onclick="showTab('home', this)" class="active"><i class="fas fa-home"></i><span id="nav-home">Home</span></a>
@@ -1163,6 +1190,87 @@
             firebase.initializeApp(firebaseConfig);
         }
         const database = firebase.database();
+
+        // --- SMART USER UPLOAD ENGINE ---
+        const storage = firebase.storage(); // स्टोरेज एक्टिभ गरेको
+
+        // --- SMART CLOUDINARY UPLOAD ENGINE ---
+        async function startUserUpload() {
+            const user = auth.currentUser;
+            if (!user) {
+                alert("साउन्ड अपलोड गर्न पहिले Log In गर्नुहोस्!");
+                handleLogin();
+                return;
+            }
+
+            const title = document.getElementById('user-up-title').value.trim();
+            const category = document.getElementById('user-up-category').value;
+            const desc = document.getElementById('user-up-desc').value.trim();
+            const file = document.getElementById('user-up-file').files[0];
+            const btn = document.getElementById('btn-user-upload');
+
+            if (!title || !file) {
+                alert("कृपया नाम र साउन्ड फाइल दुवै राख्नुहोस्!");
+                return;
+            }
+
+            // ५ एमबी भन्दा ठूलो फाइललाई रोक्ने (स्टोरेज बचाउन)
+            if (file.size > 5 * 1024 * 1024) {
+                alert("कृपया ५ एमबी भन्दा सानो फाइल मात्र अपलोड गर्नुहोस्!");
+                return;
+            }
+
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing & Uploading...';
+            btn.disabled = true;
+
+            // --- CLOUDINARY CONFIG ---
+            // तलको कोट भित्र आफ्नो 'Cloud Name' लेख्नुहोस्
+            const CLOUD_NAME = "dp2c41s6g"; 
+            const UPLOAD_PRESET = "rba_sfx";
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', UPLOAD_PRESET);
+
+            try {
+                // १. Cloudinary मा अपलोड गर्ने
+                const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                const downloadURL = data.secure_url;
+
+                if(!downloadURL) throw new Error("Upload failed. आफ्नो Cloud Name मिलेको छ कि छैन चेक गर्नुहोस्।");
+
+                // २. विवरण Firebase Database मा सेभ गर्ने (गुगल सर्चको लागि यही विवरण चाहिन्छ)
+                await database.ref('sfx_library').push({
+                    title: title,
+                    category: category,
+                    description: desc,
+                    url: downloadURL,
+                    uploader: user.displayName,
+                    uploaderPhoto: user.photoURL,
+                    time: firebase.database.ServerValue.TIMESTAMP,
+                    likes: 0
+                });
+
+                showToast("साउन्ड सफलतापुर्वक अपलोड भयो! 🎉", "fa-check-circle");
+                document.getElementById('user-upload-modal').style.display = 'none';
+                
+                // फारम खाली गर्ने
+                document.getElementById('user-up-title').value = '';
+                document.getElementById('user-up-desc').value = '';
+                document.getElementById('user-up-file').value = '';
+
+            } catch (error) {
+                console.error(error);
+                alert("Upload Error: " + error.message);
+            }
+
+            btn.innerHTML = 'Upload Now';
+            btn.disabled = false;
+        }
 
         const auth = firebase.auth();
         const provider = new firebase.auth.GoogleAuthProvider();
