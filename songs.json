@@ -4,7 +4,7 @@
     "url": "Sweet Tune.mp3",
     "img": "Sweet Tune.jpg"
   },
-    {
+  {
     "name": "Cool Wave",
     "url": "Cool Wave.mp3",
     "img": "Cool Wave.jpg"
@@ -18,5 +18,10 @@
     "name": "BLACK HEART",
     "url": "Black Heart.mp3",
     "img": "black heart.jpg"
+  },
+  {
+    "name": "Music of RBA",
+    "img": "https://raw.githubusercontent.com/rbakalikot/RBA-KALIKOT/main/gallery/1777545431143_1000020369.png",
+    "url": "https://raw.githubusercontent.com/rbakalikot/RBA-KALIKOT/main/music/1777545435275_fl4_(1).mp3"
   }
 ]
