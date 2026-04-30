@@ -22,6 +22,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     
     <style>
+
+        /* Echo Button Design */
+.echo-btn { padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; cursor: pointer; border: 1px solid var(--p-yellow); transition: all 0.3s; display: flex; align-items: center; gap: 5px; }
+.echo-btn.active { background: #333; color: #aaa; border-color: #444; }
+.echo-btn i { font-size: 0.8rem; }
+
+/* Khatra Animation when clicked */
+@keyframes echo-ping {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); color: var(--p-yellow); }
+    100% { transform: scale(1); opacity: 1; }
+}
+.echo-animation { animation: echo-ping 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+
         :root {
             --p-green: #2e7d32; --p-yellow: #fdd835; --bg-dark: #0a0a0a;
             --card-dark: #121212; --text-white: #ffffff;
@@ -332,6 +347,19 @@
         </div>
         <div id="playlist-container">
             <p style="text-align: center; color: gray;">Loading songs from GitHub...</p>
+        </div>
+    </div>
+
+    <!-- ECHO OPTIONS SHEET -->
+    <div id="echo-sheet" class="bottom-sheet">
+        <div class="sheet-header">
+            <span><i class="fas fa-podcast" style="color:var(--p-yellow);"></i> Echo Options</span>
+            <i class="fas fa-times click-effect" onclick="closeEchoSheet()"></i>
+        </div>
+        <div class="sheet-options">
+            <div class="sheet-item click-effect" onclick="setEchoMode('all')"><i class="fas fa-bell"></i> <span>All (सबै नोटिफिकेसन)</span></div>
+            <div class="sheet-item click-effect" onclick="setEchoMode('none')"><i class="fas fa-bell-slash"></i> <span>None (मौन)</span></div>
+            <div class="sheet-item click-effect" onclick="confirmUnecho()" style="color:#ff0050;"><i class="fas fa-user-minus"></i> <span>Unecho (हटाउनुहोस्)</span></div>
         </div>
     </div>
 
@@ -1265,6 +1293,7 @@
                     url: downloadURL,
                     uploader: user.displayName,
                     uploaderPhoto: user.photoURL,
+                    uploaderID: user.uid,
                     time: firebase.database.ServerValue.TIMESTAMP,
                     likes: 0
                 });
@@ -2136,37 +2165,44 @@ window.alert = function(message) {
         // --- SFX LIBRARY DISPLAY ENGINE ---
         function loadSFXLibrary() {
             const container = document.getElementById('sfx-container');
-            
-            // Firebase बाट डाटा तान्ने
-            database.ref('sfx_library').on('value', (snapshot) => {
-                container.innerHTML = ""; // लोड हुनुअघि सफा गर्ने
-                const data = snapshot.val();
-                
-                if (!data) {
-                    container.innerHTML = "<p style='text-align:center;color:gray;padding:20px;'>अहिलेसम्म कुनै साउन्ड छैन। पहिलो साउन्ड तपाईं अपलोड गर्नुहोस्!</p>";
-                    return;
-                }
+            const currentUser = auth.currentUser;
 
-                // नयाँ साउन्डलाई माथि देखाउन उल्टा गर्ने (Reverse)
+            database.ref('sfx_library').on('value', (snapshot) => {
+                container.innerHTML = "";
+                const data = snapshot.val();
+                if (!data) return;
+
                 Object.keys(data).reverse().forEach(key => {
                     const sfx = data[key];
+                    const uploaderID = sfx.uploaderID || "unknown"; // कतै uploaderID छैन भने 'unknown'
+
+                    // आफ्नो साउन्डमा Echo बटन नलगाउने कन्डिसन
+                    const showEchoBtn = (currentUser && currentUser.uid !== uploaderID) ? 'block' : 'none';
+
                     const card = `
                         <div class="card" style="padding: 15px; border-left: 4px solid var(--p-yellow); margin-bottom:15px;">
                             <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
                                 <img src="${sfx.uploaderPhoto || 'logo.png'}" style="width:35px; height:35px; border-radius:50%; border:1px solid #444;">
                                 <div style="flex:1; overflow:hidden;">
-                                    <h4 style="color:var(--p-yellow); margin:0; font-size:1rem; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">${sfx.title}</h4>
-                                    <span style="font-size:0.7rem; color:gray;">By ${sfx.uploader} • ${sfx.category}</span>
+                                    <div style="display:flex; align-items:center; gap:8px;">
+                                        <h4 style="color:var(--p-yellow); margin:0; font-size:0.95rem;">${sfx.uploader}</h4>
+                                        <!-- ECHO BUTTON -->
+                                        <div id="echo-box-${key}" style="display:${showEchoBtn}">
+                                            <div id="btn-echo-${key}" class="echo-btn click-effect" onclick="handleEchoClick('${key}', '${uploaderID}', event)">
+                                                <i class="fas fa-podcast"></i> <span id="txt-echo-${key}">Echo</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span style="font-size:0.7rem; color:gray;">${sfx.category} • ${sfx.title}</span>
                                 </div>
-                                <div class="click-effect" onclick="reportSFX('${key}')" style="color:#555; padding:5px;"><i class="fas fa-flag"></i></div>
+                                <div class="click-effect" onclick="reportSFX('${key}')" style="color:#555;"><i class="fas fa-flag"></i></div>
                             </div>
-                            <p style="font-size:0.8rem; color:#aaa; margin-bottom:12px;">${sfx.description || 'No description provided.'}</p>
-                            <audio controls style="width: 100%; height: 35px; border-radius: 5px; background: #f1f3f4;">
-                                <source src="${sfx.url}" type="audio/mpeg">
-                            </audio>
+                            <p style="font-size:0.8rem; color:#aaa; margin-bottom:12px;">${sfx.description}</p>
+                            <audio controls style="width: 100%; height: 35px;"><source src="${sfx.url}"></audio>
                         </div>
                     `;
                     container.innerHTML += card;
+                    checkEchoStatus(key, uploaderID); // पुरानो अवस्था चेक गर्ने
                 });
             });
         }
@@ -2187,6 +2223,76 @@ window.alert = function(message) {
                 console.log("Report cancelled by user");
             }
         }
+
+         // --- STEP 4: ECHO SYSTEM LOGIC ---
+        let currentEchoKey = null;
+
+        function handleEchoClick(key, uploaderID, event) {
+            event.stopPropagation(); // साउन्ड प्ले हुनबाट रोक्न
+            const btn = document.getElementById(`btn-echo-${key}`);
+            const txt = document.getElementById(`txt-echo-${key}`);
+            const currentUser = auth.currentUser;
+
+            if (!currentUser) {
+                showToast("Echo गर्न पहिले Log In गर्नुहोस्!", "fa-lock");
+                handleLogin();
+                return;
+            }
+
+            if (!btn.classList.contains('active')) {
+                // १. Echo गर्ने (Animation सहित)
+                btn.classList.add('echo-animation');
+                setTimeout(() => {
+                    btn.classList.remove('echo-animation');
+                    btn.classList.add('active');
+                    btn.innerHTML = `<i class="fas fa-check"></i> Echoed <i class="fas fa-chevron-down" style="font-size:0.6rem; margin-left:5px;"></i>`;
+                    showToast("तपाईंले Echo गर्नुभयो! 🎙️", "fa-podcast");
+                }, 500);
+                
+                // डेटाबेसमा सेभ गर्ने
+                database.ref('users/' + currentUser.uid + '/echoes/' + uploaderID).set(true);
+            } else {
+                // २. Echoed छ भने यूट्यूब जस्तै मेनु खोल्ने
+                currentEchoKey = key;
+                document.getElementById('echo-sheet').classList.add('active');
+                document.getElementById('sheet-overlay').style.display = 'block';
+            }
+        }
+
+        function closeEchoSheet() {
+            document.getElementById('echo-sheet').classList.remove('active');
+            document.getElementById('sheet-overlay').style.display = 'none';
+        }
+
+        function confirmUnecho() {
+            if(confirm("के तपाईं Echo हटाउन चाहनुहुन्छ?")) {
+                const btn = document.getElementById(`btn-echo-${currentEchoKey}`);
+                btn.classList.remove('active');
+                btn.innerHTML = `<i class="fas fa-podcast"></i> Echo`;
+                closeEchoSheet();
+                showToast("Echo हटाइयो।", "fa-info-circle");
+            }
+        }
+
+        function setEchoMode(mode) {
+            showToast("नोटिफिकेसन मोड: " + mode, "fa-bell");
+            closeEchoSheet();
+        }
+
+        function checkEchoStatus(key, uploaderID) {
+            const currentUser = auth.currentUser;
+            if (currentUser) {
+                database.ref('users/' + currentUser.uid + '/echoes/' + uploaderID).once('value', (snapshot) => {
+                    if (snapshot.exists()) {
+                        const btn = document.getElementById(`btn-echo-${key}`);
+                        if (btn) {
+                            btn.classList.add('active');
+                            btn.innerHTML = `<i class="fas fa-check"></i> Echoed <i class="fas fa-chevron-down" style="font-size:0.6rem; margin-left:5px;"></i>`;
+                        }
+                    }
+                });
+            }
+        }               
         
     </script>
 
