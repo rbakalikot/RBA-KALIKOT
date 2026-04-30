@@ -2026,6 +2026,28 @@
         });
 
 // नयाँ राम्रो मेसेज देखाउने फङ्सन
+        // --- CUSTOM CONFIRM ENGINE ---
+        function showCustomConfirm(message, callback) {
+            const modal = document.getElementById('custom-confirm-modal');
+            const msgText = document.getElementById('confirm-message-text');
+            const okBtn = document.getElementById('confirm-ok-btn');
+            const cancelBtn = document.getElementById('confirm-cancel-btn');
+
+            msgText.innerText = message;
+            modal.style.display = 'flex';
+
+            // OK थिच्दा
+            okBtn.onclick = () => {
+                modal.style.display = 'none';
+                callback(true);
+            };
+
+            // Cancel थिच्दा
+            cancelBtn.onclick = () => {
+                modal.style.display = 'none';
+                callback(false);
+            };
+        }
 function showToast(message, icon = 'fa-check-circle') {
     const toast = document.getElementById('custom-toast');
     const toastMsg = document.getElementById('toast-message');
@@ -2208,20 +2230,12 @@ window.alert = function(message) {
         }
 
         function reportSFX(id) {
-            // कन्फर्मेसन बक्स देखाउने
-            const confirmed = confirm("के तपाईं यो साउन्ड रिपोर्ट गर्न चाहनुहुन्छ? (नराम्रो वा कपीराइट सामग्री भएमा मात्र रिपोर्ट गर्नुहोस्)");
-            
-            if (confirmed) {
-                // यदि प्रयोगकर्ताले OK थिच्यो भने डेटाबेसमा रिपोर्टको जानकारी पठाउने
-                database.ref('sfx_library/' + id + '/reports').transaction((currentReports) => {
-                    return (currentReports || 0) + 1;
-                });
-                
-                showToast("रिपोर्ट सफलतापुर्वक दर्ता भयो। आरक्षकले रिभ्यु गर्नेछन्।", "fa-flag");
-            } else {
-                // यदि Cancel थिच्यो भने केही नगर्ने
-                console.log("Report cancelled by user");
-            }
+            showCustomConfirm("के तपाईं यो साउन्ड रिपोर्ट गर्न चाहनुहुन्छ? (नराम्रो सामग्री भएमा मात्र रिपोर्ट गर्नुहोस्)", (confirmed) => {
+                if (confirmed) {
+                    database.ref('sfx_library/' + id + '/reports').transaction((c) => (c || 0) + 1);
+                    showToast("रिपोर्ट दर्ता भयो।", "fa-flag");
+                }
+            });
         }
 
          // --- STEP 4: ECHO SYSTEM LOGIC ---
@@ -2265,13 +2279,18 @@ window.alert = function(message) {
         }
 
         function confirmUnecho() {
-            if(confirm("के तपाईं Echo हटाउन चाहनुहुन्छ?")) {
-                const btn = document.getElementById(`btn-echo-${currentEchoKey}`);
-                btn.classList.remove('active');
-                btn.innerHTML = `<i class="fas fa-podcast"></i> Echo`;
-                closeEchoSheet();
-                showToast("Echo हटाइयो।", "fa-info-circle");
-            }
+            showCustomConfirm("के तपाईं Echo हटाउन चाहनुहुन्छ?", (confirmed) => {
+                if (confirmed) {
+                    const btn = document.getElementById(`btn-echo-${currentEchoKey}`);
+                    btn.classList.remove('active');
+                    btn.innerHTML = `<i class="fas fa-podcast"></i> Echo`;
+                    // डेटाबेसमा पनि अपडेट गर्ने (Optional)
+                    const currentUser = auth.currentUser;
+                    database.ref('users/' + currentUser.uid + '/echoes/' + currentEchoKey).remove();
+                    closeEchoSheet();
+                    showToast("Echo हटाइयो।", "fa-info-circle");
+                }
+            });
         }
 
         function setEchoMode(mode) {
@@ -2292,9 +2311,49 @@ window.alert = function(message) {
                     }
                 });
             }
-        }               
+        }      
+
+        // --- LIVE ECHO COUNTER ENGINE ---
+        function startLiveCounters() {
+            const user = auth.currentUser;
+            if (!user) return;
+
+            // १. मैले कति जनालाई Echo गरें (Following count for Menu)
+            database.ref('users/' + user.uid + '/echoes').on('value', (snapshot) => {
+                const count = snapshot.numChildren() || 0;
+                const badge = document.getElementById('menu-echoes-count');
+                if (badge) badge.innerText = count;
+            });
+
+            // २. मलाई कतिले Echo गरे (Followers/Roots count for Profile)
+            // यसका लागि एउटा छुट्टै डेटाबेस नोड 'roots' प्रयोग गर्न सकिन्छ
+            database.ref('roots/' + user.uid).on('value', (snapshot) => {
+                const count = snapshot.numChildren() || 0;
+                const rootDisplay = document.getElementById('user-followers');
+                if (rootDisplay) rootDisplay.innerText = count;
+            });
+        }
+
+        // लगइन हुने बित्तिकै काउन्टर सुरु गर्ने
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                startLiveCounters();
+            }
+        });
         
     </script>
+
+    <!-- CUSTOM CONFIRM MODAL (चिटिक्क परेको मेसेज बक्स) -->
+    <div id="custom-confirm-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100vh; background:rgba(0,0,0,0.8); z-index:15000; align-items:center; justify-content:center; backdrop-filter:blur(5px);">
+        <div class="card" style="width:85%; max-width:320px; text-align:center; padding:25px; border: 1px solid var(--p-yellow); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+            <i class="fas fa-question-circle" style="font-size:3rem; color:var(--p-yellow); margin-bottom:15px;"></i>
+            <p id="confirm-message-text" style="color:white; font-size:1rem; margin-bottom:25px; line-height:1.5;"></p>
+            <div style="display:flex; gap:12px;">
+                <button id="confirm-cancel-btn" class="click-effect" style="flex:1; background:#222; color:gray; border:1px solid #444; padding:12px; border-radius:10px; font-weight:600;">Cancel</button>
+                <button id="confirm-ok-btn" class="click-effect" style="flex:1; background:var(--p-yellow); color:black; border:none; padding:12px; border-radius:10px; font-weight:700;">OK</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Toast Notification Element -->
 <div id="custom-toast">
