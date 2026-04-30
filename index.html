@@ -2172,7 +2172,20 @@ window.alert = function(message) {
         }
 
         function reportSFX(id) {
-            alert("यो साउन्ड रिपोर्ट भयो। आरक्षक (RBA) ले यसलाई छिट्टै रिभ्यु गर्नेछन्।");
+            // कन्फर्मेसन बक्स देखाउने
+            const confirmed = confirm("के तपाईं यो साउन्ड रिपोर्ट गर्न चाहनुहुन्छ? (नराम्रो वा कपीराइट सामग्री भएमा मात्र रिपोर्ट गर्नुहोस्)");
+            
+            if (confirmed) {
+                // यदि प्रयोगकर्ताले OK थिच्यो भने डेटाबेसमा रिपोर्टको जानकारी पठाउने
+                database.ref('sfx_library/' + id + '/reports').transaction((currentReports) => {
+                    return (currentReports || 0) + 1;
+                });
+                
+                showToast("रिपोर्ट सफलतापुर्वक दर्ता भयो। आरक्षकले रिभ्यु गर्नेछन्।", "fa-flag");
+            } else {
+                // यदि Cancel थिच्यो भने केही नगर्ने
+                console.log("Report cancelled by user");
+            }
         }
         
     </script>
