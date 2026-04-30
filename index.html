@@ -751,12 +751,11 @@
             <input type="text" id="up-song-name" placeholder="गीतको नाम (जस्तै: RBA - New Beat)" style="width:100%; padding:12px; margin-bottom:15px; background:#111; border:1px solid #444; color:white; border-radius:8px; outline:none;">
             
             <label style="color:gray; font-size:0.8rem;">फोटो छान्नुहोस् (JPG/PNG):</label>
-            <input type="file" id="up-mp3-file" accept=".mp3,audio/mpeg,.wav,audio/wav,audio/x-wav" style="width:100%; padding:10px; margin-bottom:20px; background:#111; color:white; border-radius:8px; border:1px solid #333;">
-
+            <input type="file" id="up-img-file" accept="image/*" style="width:100%; padding:10px; margin-bottom:15px; background:#111; color:white; border-radius:8px; border:1px solid #333;">
             
             <div id="audio-upload-section">
-                <label style="color:gray; font-size:0.8rem;">गीत छान्नुहोस् (MP3):</label>
-                <input type="file" id="up-mp3-file" accept="audio/mp3, audio/wav" style="width:100%; padding:10px; margin-bottom:20px; background:#111; color:white; border-radius:8px; border:1px solid #333;">
+                <label style="color:gray; font-size:0.8rem;">गीत छान्नुहोस् (Audio):</label>
+                <input type="file" id="up-mp3-file" accept="audio/*" style="width:100%; padding:10px; margin-bottom:20px; background:#111; color:white; border-radius:8px; border:1px solid #333;">
             </div>
             
             <button id="btn-start-upload" class="click-effect" onclick="startGitHubUpload()" style="width:100%; padding:12px; background:#60bb46; color:white; font-weight:bold; border:none; border-radius:8px; font-size:1.1rem;">Upload Now</button>
