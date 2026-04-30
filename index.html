@@ -286,7 +286,7 @@
             <div class="menu-item click-effect" onclick="alert('Top Creators पछि बन्नेछ!')">
                 <i class="fas fa-fire" style="color: #ff0050;"></i> Trending Echoes
             </div>
-            <div class="menu-item click-effect" onclick="alert('SFX Library पछि बन्नेछ!')">
+            <div class="menu-item click-effect" onclick="showTab('sfx-library'); toggleMainMenu();">
                 <i class="fas fa-photo-video"></i> SFX Library
             </div>
             <div class="menu-item click-effect" onclick="alert('RBA Choice पछि बन्नेछ!')">
@@ -646,6 +646,19 @@
         <div class="tiktok-card click-effect" onclick="window.open('https://vt.tiktok.com/ZSHFssLBJ/')"><i class="fab fa-tiktok"></i><span>Chadani</span></div>
         <div class="tiktok-card click-effect" onclick="window.open('https://vt.tiktok.com/ZSHFGRhXK/')"><i class="fab fa-tiktok"></i><span>Aadat</span></div>
         <div class="tiktok-card click-effect" onclick="window.open('https://vt.tiktok.com/ZSHFsvJJf/')"><i class="fab fa-tiktok"></i><span>Lekaali</span></div>
+    </div>
+
+    <!-- 6. TAB: SFX LIBRARY (समुदायले हालेका साउन्डहरू) -->
+    <div id="sfx-library" class="tab-content">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+            <h2 style="color:var(--p-yellow);"><i class="fas fa-volume-up"></i> SFX Library</h2>
+            <button class="click-effect" onclick="document.getElementById('user-upload-modal').style.display='flex'" style="background:var(--p-green); color:white; border:none; padding:8px 15px; border-radius:10px; font-size:0.8rem;">+ Upload</button>
+        </div>
+        
+        <!-- साउन्डहरू यहाँ देखिनेछन् -->
+        <div id="sfx-container" style="display: grid; grid-template-columns: 1fr; gap: 15px;">
+            <p style="text-align: center; color: gray;">Loading community sounds...</p>
+        </div>
     </div>
 
     <!-- 5. TAB: SETTINGS -->
@@ -1119,6 +1132,7 @@
             // Lazy Loaders
             if(id === 'gallery') loadGalleryData();
             if(id === 'journey') loadJourneyData();
+            if(id === 'sfx-library') loadSFXLibrary();
             
             window.scrollTo(0,0);
         }
@@ -2117,6 +2131,48 @@ window.alert = function(message) {
 
             btn.innerHTML = 'Upload Now';
             btn.disabled = false;
+        }
+
+        // --- SFX LIBRARY DISPLAY ENGINE ---
+        function loadSFXLibrary() {
+            const container = document.getElementById('sfx-container');
+            
+            // Firebase बाट डाटा तान्ने
+            database.ref('sfx_library').on('value', (snapshot) => {
+                container.innerHTML = ""; // लोड हुनुअघि सफा गर्ने
+                const data = snapshot.val();
+                
+                if (!data) {
+                    container.innerHTML = "<p style='text-align:center;color:gray;padding:20px;'>अहिलेसम्म कुनै साउन्ड छैन। पहिलो साउन्ड तपाईं अपलोड गर्नुहोस्!</p>";
+                    return;
+                }
+
+                // नयाँ साउन्डलाई माथि देखाउन उल्टा गर्ने (Reverse)
+                Object.keys(data).reverse().forEach(key => {
+                    const sfx = data[key];
+                    const card = `
+                        <div class="card" style="padding: 15px; border-left: 4px solid var(--p-yellow); margin-bottom:15px;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+                                <img src="${sfx.uploaderPhoto || 'logo.png'}" style="width:35px; height:35px; border-radius:50%; border:1px solid #444;">
+                                <div style="flex:1; overflow:hidden;">
+                                    <h4 style="color:var(--p-yellow); margin:0; font-size:1rem; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">${sfx.title}</h4>
+                                    <span style="font-size:0.7rem; color:gray;">By ${sfx.uploader} • ${sfx.category}</span>
+                                </div>
+                                <div class="click-effect" onclick="reportSFX('${key}')" style="color:#555; padding:5px;"><i class="fas fa-flag"></i></div>
+                            </div>
+                            <p style="font-size:0.8rem; color:#aaa; margin-bottom:12px;">${sfx.description || 'No description provided.'}</p>
+                            <audio controls style="width: 100%; height: 35px; border-radius: 5px; background: #f1f3f4;">
+                                <source src="${sfx.url}" type="audio/mpeg">
+                            </audio>
+                        </div>
+                    `;
+                    container.innerHTML += card;
+                });
+            });
+        }
+
+        function reportSFX(id) {
+            alert("यो साउन्ड रिपोर्ट भयो। आरक्षक (RBA) ले यसलाई छिट्टै रिभ्यु गर्नेछन्।");
         }
         
     </script>
