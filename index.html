@@ -758,7 +758,7 @@
                 <input type="file" id="up-mp3-file" accept="audio/mp3, audio/wav" style="width:100%; padding:10px; margin-bottom:20px; background:#111; color:white; border-radius:8px; border:1px solid #333;">
             </div>
             
-            <button id="btn-start-upload" class="click-effect" onclick="alert('पर्खनुस्! अपलोड गर्ने जादु (कोडिङ) दोस्रो भागमा आउँदैछ।')" style="width:100%; padding:12px; background:#60bb46; color:white; font-weight:bold; border:none; border-radius:8px; font-size:1.1rem;">Upload Now</button>
+            <button id="btn-start-upload" class="click-effect" onclick="startGitHubUpload()" style="width:100%; padding:12px; background:#60bb46; color:white; font-weight:bold; border:none; border-radius:8px; font-size:1.1rem;">Upload Now</button>
         </div>
     </div>
     
@@ -1917,6 +1917,98 @@ window.alert = function(message) {
                 nameInput.placeholder = "गीतको नाम (जस्तै: RBA - New Beat)";
             }
             modal.style.display = 'flex';
+        }
+
+        // --- GITHUB UPLOAD MAGIC (सधैंको लागि फ्री र सुरक्षित) ---
+        async function startGitHubUpload() {
+            const nameInput = document.getElementById('up-song-name').value.trim();
+            const imgFile = document.getElementById('up-img-file').files[0];
+            const mp3File = document.getElementById('up-mp3-file').files[0];
+            const btn = document.getElementById('btn-start-upload');
+
+            if(currentUploadType === 'music') {
+                if(!nameInput || !imgFile || !mp3File) return alert("कृपया गीतको नाम, फोटो र MP3 फाइल सबै छान्नुहोस्!");
+            } else {
+                if(!imgFile) return alert("कृपया फोटो छान्नुहोस्!");
+            }
+
+            // साँचो (Token) माग्ने र सेभ गर्ने तरिका (ताकि कोडमा राख्न नपरोस् र सुरक्षित होस्)
+            let githubToken = localStorage.getItem('rba_gh_token');
+            if(!githubToken) {
+                githubToken = prompt("तपाईंको GitHub Token (ghp_...) यहाँ टाँस्नुहोस्:");
+                if(!githubToken) return alert("Upload Cancelled! साँचो नराखी अपलोड हुँदैन।");
+                localStorage.setItem('rba_gh_token', githubToken.trim());
+            }
+
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading... (यसलाई केही समय लाग्न सक्छ)';
+            btn.disabled = true;
+
+            try {
+                // फाइललाई Base64 (GitHub ले बुझ्ने भाषा) मा बदल्ने फङ्सन
+                const getBase64 = (file) => new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = () => resolve(reader.result.split(',')[1]);
+                    reader.onerror = error => reject(error);
+                });
+
+                // GitHub मा फाइल पठाउने फङ्सन
+                const uploadToGH = async (file, path) => {
+                    const b64 = await getBase64(file);
+                    const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `token ${githubToken}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: `Uploaded ${file.name} via App`, content: b64 })
+                    });
+                    if(!res.ok) throw new Error("Upload Failed! Token बिग्रिएको हुन सक्छ।");
+                    const data = await res.json();
+                    return data.content.download_url;
+                };
+
+                // १. फोटो अपलोड गर्ने (ग्यालरी फोल्डरमा)
+                let imgUrl = await uploadToGH(imgFile, `gallery/${Date.now()}_${imgFile.name.replace(/\s+/g, '_')}`);
+
+                // २. म्युजिक हो भने MP3 अपलोड गर्ने र songs.json मा थप्ने
+                if(currentUploadType === 'music') {
+                    // म्युजिक फोल्डरमा गीत पठाउने
+                    // नोट: GitHub मा 25MB भन्दा ठूलो फाइल पठाउन मिल्दैन!
+                    let mp3Url = await uploadToGH(mp3File, `music/${Date.now()}_${mp3File.name.replace(/\s+/g, '_')}`);
+                    
+                    // songs.json तानेर त्यसमा नयाँ गीत जोड्ने
+                    const jsonRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/songs.json`);
+                    const jsonData = await jsonRes.json();
+                    const currentSongs = JSON.parse(decodeURIComponent(escape(atob(jsonData.content))));
+                    
+                    // नयाँ गीत लिस्टमा थप्ने
+                    currentSongs.push({ name: nameInput, img: imgUrl, url: mp3Url });
+                    
+                    // फेरि GitHub ले बुझ्ने भाषामा बदल्ने
+                    const newContent = btoa(unescape(encodeURIComponent(JSON.stringify(currentSongs, null, 2))));
+                    
+                    // अपडेट भएको songs.json लाई GitHub मा पठाउने
+                    await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/songs.json`, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `token ${githubToken}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: `Added ${nameInput} to songs.json`, content: newContent, sha: jsonData.sha })
+                    });
+                }
+
+                alert("Upload Successful! 🎉 सफलतापुर्वक अपलोड भयो!");
+                document.getElementById('admin-upload-modal').style.display = 'none';
+                
+                // बक्स खाली गर्ने
+                document.getElementById('up-song-name').value = '';
+                document.getElementById('up-img-file').value = '';
+                if(document.getElementById('up-mp3-file')) document.getElementById('up-mp3-file').value = '';
+
+            } catch(e) {
+                console.error(e);
+                alert("Upload Error: " + e.message);
+                localStorage.removeItem('rba_gh_token');
+            }
+
+            btn.innerHTML = 'Upload Now';
+            btn.disabled = false;
         }
         
     </script>
